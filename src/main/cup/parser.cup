@@ -1,0 +1,75 @@
+import java_cup.runtime.*;
+import java.util.LinkedList;
+import ru.spbau.mit.dbmsau.syntax.ast.*;
+import ru.spbau.mit.dbmsau.syntax.exception.SyntaxFatalError;
+
+parser code {: 
+    
+    LinkedList< String > errors;
+
+    public LinkedList< String > getErrors() {
+        return errors;
+    }
+    
+    protected int error_sync_size() {
+        return 20;
+    }
+
+    public void report_error(String message, Object info) {
+        errors.add(message);
+    }
+
+    public void report_fatal_error(String message, Object info) throws Exception {
+        throw new SyntaxFatalError(message);
+    }
+    
+    public void syntax_error(Symbol cur_token) {
+        report_error("Syntax error at: " + cur_token.value.toString(), null);
+    }
+    
+    public void unrecovered_syntax_error(Symbol cur_token) throws Exception {
+        syntax_error(cur_token);
+        report_fatal_error("Couldn't repair and continue parse", null);
+    }
+    
+:};
+
+init with {: 
+    errors = new LinkedList<>();
+:};
+
+terminal TerminalNode CREATE,TABLE,OR,DIV,MOD,AND,MAIN,LEFTPAR,RIGHTPAR,SEMICOLON,COMMA,EQUALS,COLON,NOT,NOTEQUAL,LESS,LESSOREQUAL,MORE,MOREOREQUAL,PLUS,MINUS,MULTIPLY,DIVIDE,LEFTBRACKET,RIGHTBRACKET,DOT;
+terminal TerminalNode INTEGER_LITERAL;
+terminal TerminalNode STRING_LITERAL, IDENT;
+terminal TerminalNode DOUBLE_LITERAL;
+
+non terminal String create_table_query;
+non terminal String fields_descriptions_list;
+non terminal String field_description;
+non terminal String type_description;
+
+precedence left PLUS, MINUS;
+precedence left DIV, MULTIPLY, DIVIDE, MOD, AND;
+precedence left EQUALS,NOTEQUAL,LESS,LESSOREQUAL,MORE,MOREOREQUAL, OR;
+
+create_table_query ::= CREATE:e1 TABLE:e2 IDENT:tableName LEFTPAR:e3 fields_descriptions_list:fdescList RIGHTPAR:e5
+                       {: RESULT = tableName.getLexemeValue()+"(" + fdescList + ")"; :}
+                       ;
+
+fields_descriptions_list ::= field_description:e1
+                             {: RESULT = e1; :}
+                             |
+                             field_description:e1 COMMA:e2 fields_descriptions_list:e3
+                             {: RESULT = e1 + "," + e3; :}
+                             ;
+
+field_description ::= IDENT:e1 type_description:e2
+                      {: RESULT = e1.getLexemeValue() + " " + e2; :}
+                      ;
+
+type_description ::= IDENT:e1
+                     {: RESULT = e1.getLexemeValue(); :}
+                     |
+                     IDENT:e1 LEFTPAR:e2 INTEGER_LITERAL:e3 RIGHTPAR:e4
+                     {: RESULT = e1.getLexemeValue() + "(" + e3.getLexemeValue() + ")"; :}
+                     ;
