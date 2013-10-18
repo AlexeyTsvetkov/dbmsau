@@ -12,3 +12,5 @@ cd куда-нибудь/cup-maven-plugin && mvn install
 
 mvn assembly:assembly
 java -cp target/dbmsau-1.0-SNAPSHOT-jar-with-dependencies.jar ru.spbau.mit.dbmsau.App
+
+или для дебага mvn package && mvn exec:exec
