@@ -63,7 +63,7 @@ DecDoubleLiteral = (0 | [1-9][0-9]*)  "." [0-9]+
 "%"              { return symbol(LexemeType.MOD); }
 "("              { return symbol(LexemeType.LEFTPAR); }
 ")"              { return symbol(LexemeType.RIGHTPAR); }
-";"              { return symbol(LexemeType.SEMICOLON); }
+";"              { return symbol(LexemeType.EOF); }
 ","              { return symbol(LexemeType.COMMA); }
 "="              { return symbol(LexemeType.EQUALS); }
 ":"              { return symbol(LexemeType.COLON); }

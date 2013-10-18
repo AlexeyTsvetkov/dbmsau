@@ -15,7 +15,6 @@ public class LexerUtils {
             case LexemeType.AND: { return "AND"; }
             case LexemeType.MAIN: { return "MAIN"; }
             case LexemeType.LEFTPAR: { return "LEFTPAR"; }
-            case LexemeType.SEMICOLON: { return "SEMICOLON"; }
             case LexemeType.COMMA: { return "COMMA"; }
             case LexemeType.EQUALS: { return "EQUALS"; }
             case LexemeType.COLON: { return "COLON"; }
