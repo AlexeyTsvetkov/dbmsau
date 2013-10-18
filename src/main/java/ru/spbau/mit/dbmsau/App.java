@@ -14,7 +14,7 @@ public class App
 
         try {
             a.execute(System.in);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             System.err.println(e.getMessage());
             System.exit(1);
         }

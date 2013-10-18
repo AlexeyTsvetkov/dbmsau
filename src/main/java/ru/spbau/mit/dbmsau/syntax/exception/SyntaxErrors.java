@@ -4,14 +4,14 @@ package ru.spbau.mit.dbmsau.syntax.exception;
 import java.util.LinkedList;
 import java.util.List;
 
-public class SyntaxErrorsException extends Exception {
+public class SyntaxErrors extends Error {
     private List< String > errors;
 
-    public SyntaxErrorsException(List<String> errors) {
+    public SyntaxErrors(List<String> errors) {
         this.errors = errors;
     }
 
-    public SyntaxErrorsException(String s) {
+    public SyntaxErrors(String s) {
         errors = new LinkedList<>();
         errors.add(s);
     }
