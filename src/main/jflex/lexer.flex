@@ -21,7 +21,7 @@ import ru.spbau.mit.dbmsau.syntax.exception.LexicalError;
   int stringBeginLine,stringBeginColumn;
 
   private Symbol symbol(int type) {
-    return symbol(type, yytext());
+    return symbol(type, yytext().toString().toLowerCase());
   }
   private Symbol symbol(int type, Object value) {
     TerminalNode node = new TerminalNode(value, type, yyline+1, yycolumn+1, yylength());
