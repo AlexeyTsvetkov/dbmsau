@@ -28,7 +28,6 @@ parser code {:
     }
     
     public void unrecovered_syntax_error(Symbol cur_token) throws Exception {
-        syntax_error(cur_token);
         report_fatal_error("Couldn't repair and continue parse", null);
     }
     
