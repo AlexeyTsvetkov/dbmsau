@@ -1,5 +1,7 @@
 package ru.spbau.mit.dbmsau;
 
+import ru.spbau.mit.dbmsau.command.AbstractSQLCommand;
+import ru.spbau.mit.dbmsau.command.SQLCommandResult;
 import ru.spbau.mit.dbmsau.syntax.SyntaxAnalyzer;
 
 /**
@@ -10,10 +12,18 @@ public class App
 {
     public static void main( String[] args )
     {
-        SyntaxAnalyzer a = new SyntaxAnalyzer();
+        SyntaxAnalyzer analyzer = new SyntaxAnalyzer(System.in);
 
         try {
-            a.execute(System.in);
+            for (AbstractSQLCommand command : analyzer) {
+                SQLCommandResult result = command.execute();
+
+                if (result.isOk())  {
+                    System.out.println("ok");
+                } else {
+                    System.out.println("is not ok");
+                }
+            }
         } catch (Throwable e) {
             System.err.println(e.getMessage());
             System.exit(1);

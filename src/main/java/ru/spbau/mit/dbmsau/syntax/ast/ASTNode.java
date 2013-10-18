@@ -1,5 +1,7 @@
 package ru.spbau.mit.dbmsau.syntax.ast;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 
@@ -67,6 +69,7 @@ abstract public class ASTNode {
         return "line " + getLeftLine().toString() + ", column " + getLeftColumn().toString(); 
     }
     
-    abstract public void accept(ASTNodeVisitor visitor);
-    
+    public void accept(ASTNodeVisitor visitor) {
+        throw new NotImplementedException();
+    }
 }

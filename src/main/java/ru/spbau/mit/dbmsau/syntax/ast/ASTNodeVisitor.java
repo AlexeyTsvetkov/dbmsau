@@ -8,6 +8,10 @@ abstract public class ASTNodeVisitor {
     public void visit(TerminalNode node) {
         curTerminalValue = node.getLexemeValue();
     }
+
+    public void visit(CreateTableStatementNode node) {
+        throw new NotImplementedException();
+    }
     
     protected String getTerminalValue(ASTNode node) {
         node.accept(this);

@@ -7,7 +7,7 @@ public class TerminalNode extends ASTNode {
     protected Object value;
     protected Integer token;
     
-    public TerminalNode(Object value, Integer token, Integer leftLine,Integer leftColumn,Integer rightLine,Integer rightColumn) {
+    public TerminalNode(Object value, Integer token, Integer leftLine, Integer leftColumn, Integer rightLine, Integer rightColumn) {
         this.value = value;
         this.leftColumn = leftColumn;
         this.leftLine = leftLine;
@@ -17,7 +17,7 @@ public class TerminalNode extends ASTNode {
         this.token = token;
     }
     
-    public TerminalNode(Object value, Integer token, Integer leftLine,Integer leftColumn, Integer length) {
+    public TerminalNode(Object value, Integer token, Integer leftLine, Integer leftColumn, Integer length) {
         this.value = value;
         this.leftColumn = leftColumn;
         this.leftLine = leftLine;

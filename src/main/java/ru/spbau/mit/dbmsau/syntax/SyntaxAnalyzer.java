@@ -1,36 +1,69 @@
 package ru.spbau.mit.dbmsau.syntax;
+import ru.spbau.mit.dbmsau.command.AbstractSQLCommand;
+import ru.spbau.mit.dbmsau.syntax.ast.ASTNode;
 import ru.spbau.mit.dbmsau.syntax.exception.LexicalError;
 import ru.spbau.mit.dbmsau.syntax.exception.SyntaxErrors;
 import ru.spbau.mit.dbmsau.syntax.exception.SyntaxFatalError;
 
 import java.io.InputStream;
+import java.util.Iterator;
+import java.util.List;
 
-public class SyntaxAnalyzer {
+public class SyntaxAnalyzer implements Iterable< AbstractSQLCommand >, Iterator< AbstractSQLCommand > {
 
-    private Object getParserResultByLexer(Lexer l) {
-        Parser p = new Parser(l);
+    private Parser parser;
+    private ASTNode nextStatementNode = null;
+    private SQLStatementsVisitor visitor = new SQLStatementsVisitor();
+
+    public SyntaxAnalyzer(InputStream is) {
+        setParserByLexer(buildLexer(is));
+    }
+
+    public SyntaxAnalyzer(String s) {
+        setParserByLexer(buildLexer(s));
+    }
+
+    @Override
+    public boolean hasNext() {
+        nextStatementNode = (ASTNode)nextParserResult();
+
+        return nextStatementNode != null;
+    }
+
+    @Override
+    public AbstractSQLCommand next() {
+        return visitor.buildCommand(nextStatementNode);
+    }
+
+    @Override
+    public void remove() {
+
+    }
+
+    @Override
+    public Iterator<AbstractSQLCommand> iterator() {
+        return this;
+    }
+
+    private Object nextParserResult() {
 
         Object result = null;
         try {
-            result = p.parse().value;
+            result = parser.parse().value;
         } catch (LexicalError e) {
             throw new SyntaxErrors(e.getMessage());
         } catch (SyntaxFatalError e) {
-            throw new SyntaxErrors(p.getErrors());
+            throw new SyntaxErrors(parser.getErrors());
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
 
-        if (p.getErrors().size() > 0) {
-            throw new SyntaxErrors(p.getErrors());
+        if (parser.getErrors().size() > 0) {
+            throw new SyntaxErrors(parser.getErrors());
         }
 
         return result;
-    }
-
-    private void executeByLexer(Lexer l) {
-        System.out.println((String)getParserResultByLexer(l));
     }
 
     private Lexer buildLexer(String s) {
@@ -41,12 +74,8 @@ public class SyntaxAnalyzer {
         return new Lexer(is);
     }
 
-    public void execute(String s) {
-         executeByLexer(buildLexer(s));
-    }
-
-    public void execute(InputStream is) {
-        executeByLexer(buildLexer(is));
+    private void setParserByLexer(Lexer l) {
+        parser = new Parser(l);
     }
 }
 
