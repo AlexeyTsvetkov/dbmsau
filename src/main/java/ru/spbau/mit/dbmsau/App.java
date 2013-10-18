@@ -15,7 +15,7 @@ public class App
         try {
             a.execute(System.in);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
             System.exit(1);
         }
     }
