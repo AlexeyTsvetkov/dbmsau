@@ -12,10 +12,20 @@ public class App
 {
     public static void main( String[] args )
     {
+
+        if (args.length == 0) {
+            System.err.println("Usage: dbmsau <path>");
+            System.exit(1);
+        }
+
+        Context context = Context.loadContextFromPath(args[0]);
+
         SyntaxAnalyzer analyzer = new SyntaxAnalyzer(System.in);
 
         try {
             for (AbstractSQLCommand command : analyzer) {
+                command.setContext(context);
+
                 SQLCommandResult result = command.execute();
 
                 if (result.isOk())  {
