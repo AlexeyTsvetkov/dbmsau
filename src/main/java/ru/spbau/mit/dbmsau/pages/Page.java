@@ -11,6 +11,13 @@ public class Page {
 
     public Page(Integer id, byte[] data) {
         this.id = id;
+
+        if (data != null) {
+            setData(data);
+        }
+    }
+
+    public void setData(byte[] data) {
         this.data = data;
 
         this.byteBuffer = ByteBuffer.wrap(data);

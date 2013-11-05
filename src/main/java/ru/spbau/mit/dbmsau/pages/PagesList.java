@@ -2,6 +2,8 @@ package ru.spbau.mit.dbmsau.pages;
 
 import ru.spbau.mit.dbmsau.Context;
 
+import java.util.Arrays;
+
 public class PagesList {
     private Integer headPageId;
     private Context context;
@@ -11,23 +13,34 @@ public class PagesList {
         this.context = context;
     }
 
-    private DirectoryPage getHeadPage() {
-        return new DirectoryPage(context.getPageManager().getPageById(headPageId));
+    public void initList() {
+        initNewLastPage(new Page(headPageId, null));
     }
 
-    private Integer firstUsedSlotIndex(DirectoryPage page) {
-        for (int i = 1; i < page.getMaxRecordsCount(); i++) {
-            if (page.isSlotUsed(i)) {
-                return i;
-            }
-        }
+    private DirectoryPage initNewLastPage(Page page) {
+        byte[] cleanData = new byte[PageManager.PAGE_SIZE];
+        Arrays.fill(cleanData, (byte) 0);
 
-        return null;
+        page.setData(cleanData);
+
+        DirectoryPage directoryPage = new DirectoryPage(page);
+        directoryPage.getClearRecord().setIntegerValue(0, Page.NULL_PAGE_ID);
+
+        context.getPageManager().savePage(directoryPage);
+
+        return directoryPage;
     }
 
     public Integer peek() {
-        DirectoryPage page = getHeadPage();
-        return page.getRecordFromSlot(firstUsedSlotIndex(page)).getIntegerValue(0);
+        DirectoryPage headPage = getHeadPage();
+
+        Integer slotIndex = firstUsedSlotIndex(headPage);
+
+        if (slotIndex == null) {
+            return null;
+        }
+
+        return headPage.getRecordFromSlot(slotIndex).getIntegerValue(0);
     }
 
     public Integer pop() {
@@ -38,7 +51,7 @@ public class PagesList {
              return null;
         }
 
-        Integer result = headPage.getRecordFromSlot(slotIndex).getIntegerValue(0);
+        Integer result = peek();
 
         headPage.freeRecord(slotIndex);
 
@@ -61,7 +74,6 @@ public class PagesList {
         DirectoryPage page = getHeadPage();
 
         while (page.isDirectoryFull()) {
-
             Integer nextPageId = page.nextDirectoryPageId();
 
             if (!nextPageId.equals(Page.NULL_PAGE_ID)) {
@@ -69,7 +81,7 @@ public class PagesList {
             } else {
                 DirectoryPage oldPage = page;
                 Page allocatedPage = context.getPageManager().allocatePage();
-                page = new DirectoryPage(allocatedPage);
+                page = initNewLastPage(allocatedPage);
                 oldPage.setNextDirectoryPageId(page.getId());
                 context.getPageManager().savePage(oldPage);
             }
@@ -79,4 +91,17 @@ public class PagesList {
         context.getPageManager().savePage(page);
     }
 
+    private DirectoryPage getHeadPage() {
+        return new DirectoryPage(context.getPageManager().getPageById(headPageId));
+    }
+
+    private Integer firstUsedSlotIndex(DirectoryPage page) {
+        for (int i = 1; i < page.getMaxRecordsCount(); i++) {
+            if (page.isSlotUsed(i)) {
+                return i;
+            }
+        }
+
+        return null;
+    }
 }
