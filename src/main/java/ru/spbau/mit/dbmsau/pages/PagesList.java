@@ -14,7 +14,7 @@ public class PagesList {
     }
 
     public void initList() {
-        initNewLastPage(new Page(headPageId, null));
+        initNewLastPage(context.getPageManager().getPageById(headPageId));
     }
 
     private DirectoryPage initNewLastPage(Page page) {

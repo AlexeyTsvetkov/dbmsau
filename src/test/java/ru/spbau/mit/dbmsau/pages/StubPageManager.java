@@ -1,6 +1,7 @@
 package ru.spbau.mit.dbmsau.pages;
 
 import ru.spbau.mit.dbmsau.Context;
+import ru.spbau.mit.dbmsau.pages.exception.PageManagerInitException;
 
 import java.io.FileNotFoundException;
 import java.util.HashMap;
@@ -19,7 +20,7 @@ public class StubPageManager extends PageManager {
     private static final int STUB_PAGES_COUNT = 20000;
 
     @Override
-    public PageManager init() throws FileNotFoundException {
+    public PageManager init() {
         for (int i = 0; i < STUB_PAGES_COUNT; i++) {
             allPages.put(i, new Page(i, new byte[PAGE_SIZE]));
 

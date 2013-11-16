@@ -2,8 +2,7 @@ package ru.spbau.mit.dbmsau;
 
 import ru.spbau.mit.dbmsau.pages.FilePageManager;
 import ru.spbau.mit.dbmsau.pages.PageManager;
-
-import java.io.FileNotFoundException;
+import ru.spbau.mit.dbmsau.pages.exception.PageManagerInitException;
 
 public class Context {
     private String path;
@@ -41,7 +40,7 @@ public class Context {
         this.pageManager = pageManager;
     }
 
-    public void init() throws FileNotFoundException {
+    public void init() throws PageManagerInitException {
         getPageManager().init();
     }
 }

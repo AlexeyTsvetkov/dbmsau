@@ -1,6 +1,8 @@
 package ru.spbau.mit.dbmsau.pages;
 
 import ru.spbau.mit.dbmsau.Context;
+import ru.spbau.mit.dbmsau.pages.exception.PageManagerException;
+import ru.spbau.mit.dbmsau.pages.exception.PageManagerInitException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,7 +24,7 @@ public class FilePageManager extends PageManager {
         super(context);
     }
 
-    public PageManager init() throws FileNotFoundException {
+    public PageManager init() throws PageManagerInitException {
         String currentDataFilename =  context.getPath() + "/" +dataFilename;
 
         File file = new File(currentDataFilename);
@@ -32,18 +34,26 @@ public class FilePageManager extends PageManager {
         if (!file.exists()) {
             wasFileNew = true;
         }
-
-        dataFile = new RandomAccessFile(currentDataFilename, "rw");
+        try {
+            dataFile = new RandomAccessFile(currentDataFilename, "rw");
+        } catch (FileNotFoundException e) {
+            throw new PageManagerInitException("File not found: " + currentDataFilename);
+        }
+        emptyPagesList = new PagesList(EMPTY_PAGES_LIST_HEAD_PAGE_ID, context);
 
         if (wasFileNew) {
-            initNewDataFile();
+            try {
+                initNewDataFile();
+            } catch (IOException e) {
+                throw new PageManagerInitException("IO: " + e.getMessage());
+            }
         }
 
-        emptyPagesList = new PagesList(EMPTY_PAGES_LIST_HEAD_PAGE_ID, context);
         return this;
     }
 
-    public void initNewDataFile() {
+    private void initNewDataFile() throws IOException {
+        dataFile.setLength(PAGE_SIZE);
         emptyPagesList.initList();
     }
 
@@ -62,7 +72,7 @@ public class FilePageManager extends PageManager {
             dataFile.seek(getOffsetByPageId(id));
             dataFile.readFully(data, 0, PAGE_SIZE);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new PageManagerException(e.getMessage());
         }
 
         Page page = new Page(id, data);

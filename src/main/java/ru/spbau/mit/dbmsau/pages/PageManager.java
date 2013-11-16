@@ -1,13 +1,7 @@
 package ru.spbau.mit.dbmsau.pages;
 
 import ru.spbau.mit.dbmsau.Context;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.HashMap;
-import java.util.Map;
+import ru.spbau.mit.dbmsau.pages.exception.PageManagerInitException;
 
 abstract public class PageManager {
     public static final Integer PAGE_SIZE = 4 * 1024;
@@ -19,7 +13,7 @@ abstract public class PageManager {
         this.context = context;
     }
 
-    public PageManager init() throws FileNotFoundException {
+    public PageManager init() throws PageManagerInitException {
         return this;
     }
 

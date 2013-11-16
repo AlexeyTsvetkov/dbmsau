@@ -3,16 +3,19 @@ package ru.spbau.mit.dbmsau;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import ru.spbau.mit.dbmsau.pages.PageManager;
 import ru.spbau.mit.dbmsau.pages.StubPageManager;
-
-import java.io.FileNotFoundException;
+import ru.spbau.mit.dbmsau.pages.exception.PageManagerInitException;
 
 public class BaseTest extends  Assert {
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     protected Context context;
 
@@ -22,7 +25,7 @@ public class BaseTest extends  Assert {
 
         try {
             context.init();
-        } catch (FileNotFoundException e) {
+        } catch (PageManagerInitException e) {
             assertTrue(false);
         }
 
@@ -35,6 +38,10 @@ public class BaseTest extends  Assert {
 
     @Before
     public void setUp() throws Exception {
-         context = buildContext();
+        setUpContext();
+    }
+
+    protected void setUpContext() {
+        context = buildContext();
     }
 }
