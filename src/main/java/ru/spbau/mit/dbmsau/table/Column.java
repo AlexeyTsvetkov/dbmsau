@@ -1,10 +1,10 @@
-package ru.spbau.mit.dbmsau.command.create_table;
+package ru.spbau.mit.dbmsau.table;
 
-public class ColumnDescription {
+public class Column {
     private String name;
-    private TypeDescription type;
+    private Type type;
 
-    public ColumnDescription(String name, TypeDescription type) {
+    public Column(String name, Type type) {
         this.name = name;
         this.type = type;
     }
@@ -13,7 +13,7 @@ public class ColumnDescription {
         return name;
     }
 
-    public TypeDescription getType() {
+    public Type getType() {
         return type;
     }
 

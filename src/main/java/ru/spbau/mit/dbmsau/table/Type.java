@@ -1,10 +1,10 @@
-package ru.spbau.mit.dbmsau.command.create_table;
+package ru.spbau.mit.dbmsau.table;
 
-public class TypeDescription {
+public class Type {
     private String identifier;
     private Integer length;
 
-    public TypeDescription(String identifier, Integer length) {
+    public Type(String identifier, Integer length) {
         this.identifier = identifier;
         this.length = length;
     }
