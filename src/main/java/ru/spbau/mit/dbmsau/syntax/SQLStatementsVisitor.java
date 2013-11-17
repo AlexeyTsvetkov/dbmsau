@@ -2,7 +2,7 @@ package ru.spbau.mit.dbmsau.syntax;
 
 import ru.spbau.mit.dbmsau.command.AbstractSQLCommand;
 import ru.spbau.mit.dbmsau.table.Column;
-import ru.spbau.mit.dbmsau.command.create_table.CreateTableCommand;
+import ru.spbau.mit.dbmsau.command.CreateTableCommand;
 import ru.spbau.mit.dbmsau.table.Type;
 import ru.spbau.mit.dbmsau.syntax.ast.*;
 
@@ -28,7 +28,7 @@ public class SQLStatementsVisitor extends ASTNodeVisitor {
         List<Column> columnDescriptions = new LinkedList<>();
 
         for (ColumnDescriptionNode columnDescriptionNode : node.getColumns() ) {
-            Type typeDescription = new Type(
+            Type typeDescription = Type.getType(
                     columnDescriptionNode.getType().getTypeIdentifier(),
                     columnDescriptionNode.getType().getLength()
             );

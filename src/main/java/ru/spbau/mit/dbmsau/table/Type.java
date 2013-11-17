@@ -1,16 +1,38 @@
 package ru.spbau.mit.dbmsau.table;
 
 public class Type {
-    private String identifier;
+    public static final int TYPE_INTEGER = 0;
+    public static final int TYPE_VARCHAR = 1;
+
+    public static final String TYPE_IDENTIFIER_INTEGER = "integer";
+    public static final String TYPE_IDENTIFIER_VARCHAR = "varchar";
+
+    private static final String[] identifiers = new String[]{ TYPE_IDENTIFIER_INTEGER, TYPE_IDENTIFIER_VARCHAR };
+
+    private Integer type;
     private Integer length;
 
-    public Type(String identifier, Integer length) {
-        this.identifier = identifier;
+    public Type(Integer type, Integer length) {
+        this.type = type;
         this.length = length;
     }
 
+    public static Type getType(String identifier, Integer length) {
+        switch (identifier.toLowerCase()) {
+            case TYPE_IDENTIFIER_INTEGER:
+                return new Type(TYPE_INTEGER, null);
+            case TYPE_IDENTIFIER_VARCHAR:
+                return new Type(TYPE_VARCHAR, length);
+        }
+        return null;
+    }
+
+    public static Type getType(String identifier) {
+        return getType(identifier, null);
+    }
+
     public String getIdentifier() {
-        return identifier;
+        return identifiers[type];
     }
 
     public Integer getLength() {
@@ -19,9 +41,13 @@ public class Type {
 
     public String toString() {
         if (length == null) {
-            return identifier;
+            return getIdentifier();
         }
 
-        return identifier + "(" + length.toString() + ")";
+        return getIdentifier() + "(" + length.toString() + ")";
+    }
+
+    public Integer getType() {
+        return type;
     }
 }

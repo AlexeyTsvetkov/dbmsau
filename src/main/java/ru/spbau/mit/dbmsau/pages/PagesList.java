@@ -8,6 +8,16 @@ public class PagesList {
     private Integer headPageId;
     private Context context;
 
+    static public PagesList createNewList(Context context) {
+        Page page = context.getPageManager().allocatePage();
+
+        PagesList list = new PagesList(page.getId(), context);
+
+        list.initList();
+
+        return list;
+    }
+
     public PagesList(Integer headPageId, Context context) {
         this.headPageId = headPageId;
         this.context = context;
@@ -15,20 +25,6 @@ public class PagesList {
 
     public void initList() {
         initNewLastPage(context.getPageManager().getPageById(headPageId));
-    }
-
-    private DirectoryPage initNewLastPage(Page page) {
-        byte[] cleanData = new byte[PageManager.PAGE_SIZE];
-        Arrays.fill(cleanData, (byte) 0);
-
-        page.setData(cleanData);
-
-        DirectoryPage directoryPage = new DirectoryPage(page);
-        directoryPage.getClearRecord().setIntegerValue(0, Page.NULL_PAGE_ID);
-
-        context.getPageManager().savePage(directoryPage);
-
-        return directoryPage;
     }
 
     public Integer peek() {
@@ -91,6 +87,10 @@ public class PagesList {
         context.getPageManager().savePage(page);
     }
 
+    public Integer getHeadPageId() {
+        return headPageId;
+    }
+
     private DirectoryPage getHeadPage() {
         return new DirectoryPage(context.getPageManager().getPageById(headPageId));
     }
@@ -103,5 +103,19 @@ public class PagesList {
         }
 
         return null;
+    }
+
+    private DirectoryPage initNewLastPage(Page page) {
+        byte[] cleanData = new byte[PageManager.PAGE_SIZE];
+        Arrays.fill(cleanData, (byte) 0);
+
+        page.setData(cleanData);
+
+        DirectoryPage directoryPage = new DirectoryPage(page);
+        directoryPage.getClearRecord().setIntegerValue(0, Page.NULL_PAGE_ID);
+
+        context.getPageManager().savePage(directoryPage);
+
+        return directoryPage;
     }
 }

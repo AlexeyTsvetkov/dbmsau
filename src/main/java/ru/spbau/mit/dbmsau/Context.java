@@ -3,15 +3,21 @@ package ru.spbau.mit.dbmsau;
 import ru.spbau.mit.dbmsau.pages.FilePageManager;
 import ru.spbau.mit.dbmsau.pages.PageManager;
 import ru.spbau.mit.dbmsau.pages.exception.PageManagerInitException;
+import ru.spbau.mit.dbmsau.table.FileTableManager;
+import ru.spbau.mit.dbmsau.table.TableManager;
+
+import java.io.File;
 
 public class Context {
     private String path;
     private PageManager pageManager;
+    private TableManager tableManager;
 
     public static Context loadContextFromPath(String path) {
         Context obj = new Context(path);
         try {
             obj.pageManager = new FilePageManager(obj);
+            obj.tableManager = new FileTableManager(obj);
             obj.init();
         } catch (Exception e) {
             e.printStackTrace();
@@ -28,6 +34,10 @@ public class Context {
         return path;
     }
 
+    public File getRootDir() {
+        return new File(getPath());
+    }
+
     public void setPath(String path) {
         this.path = path;
     }
@@ -40,7 +50,16 @@ public class Context {
         this.pageManager = pageManager;
     }
 
+    public TableManager getTableManager() {
+        return tableManager;
+    }
+
+    public void setTableManager(TableManager tableManager) {
+        this.tableManager = tableManager;
+    }
+
     public void init() throws PageManagerInitException {
         getPageManager().init();
+        getTableManager().init();
     }
 }

@@ -6,7 +6,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import ru.spbau.mit.dbmsau.command.AbstractSQLCommand;
-import ru.spbau.mit.dbmsau.command.create_table.CreateTableCommand;
+import ru.spbau.mit.dbmsau.command.CreateTableCommand;
 import ru.spbau.mit.dbmsau.syntax.SyntaxAnalyzer;
 import ru.spbau.mit.dbmsau.syntax.exception.SyntaxErrors;
 
