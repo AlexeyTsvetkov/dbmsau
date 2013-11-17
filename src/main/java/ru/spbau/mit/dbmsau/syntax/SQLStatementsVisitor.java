@@ -1,6 +1,7 @@
 package ru.spbau.mit.dbmsau.syntax;
 
 import ru.spbau.mit.dbmsau.command.AbstractSQLCommand;
+import ru.spbau.mit.dbmsau.command.InsertCommand;
 import ru.spbau.mit.dbmsau.table.Column;
 import ru.spbau.mit.dbmsau.command.CreateTableCommand;
 import ru.spbau.mit.dbmsau.table.Type;
@@ -38,5 +39,13 @@ public class SQLStatementsVisitor extends ASTNodeVisitor {
         CreateTableCommand command = new CreateTableCommand(node.getTableName(), columnDescriptions);
 
         setLastCommand(command);
+    }
+
+    @Override
+    public void visit(InsertStatementNode node) {
+        List<String> columns = convertTerminalsListToStringList(node.getColumns());
+        List<String> values = convertTerminalsListToStringList(node.getValues());
+
+        setLastCommand(new InsertCommand(node.getTableName().getLexemeValue(), columns, values));
     }
 }

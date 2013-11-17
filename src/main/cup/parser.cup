@@ -37,16 +37,28 @@ init with {:
     errors = new LinkedList<>();
 :};
 
-terminal TerminalNode CREATE,TABLE,OR,DIV,MOD,AND,MAIN,LEFTPAR,RIGHTPAR,COMMA,EQUALS,COLON,NOT,NOTEQUAL,LESS,LESSOREQUAL,MORE,MOREOREQUAL,PLUS,MINUS,MULTIPLY,DIVIDE,LEFTBRACKET,RIGHTBRACKET,DOT;
+terminal TerminalNode CREATE,TABLE,INSERT,INTO,VALUES;
+terminal TerminalNode LEFTPAR,RIGHTPAR,LEFTBRACKET,RIGHTBRACKET;
+terminal TerminalNode OR,DIV,MOD,AND,MAIN,COMMA,EQUALS,COLON,NOT,NOTEQUAL,LESS,LESSOREQUAL,MORE,MOREOREQUAL,PLUS,MINUS,MULTIPLY,DIVIDE,DOT;
 terminal TerminalNode INTEGER_LITERAL;
 terminal TerminalNode STRING_LITERAL, IDENT;
 terminal TerminalNode DOUBLE_LITERAL;
 
 non terminal ASTNode                      command;
+non terminal ASTNode                      statement;
+
+non terminal LinkedList< TerminalNode >   idents_list;
+non terminal LinkedList< TerminalNode >   values_list;
+non terminal TerminalNode                 value;
+
+non terminal InsertStatementNode          insert_statement;
+non terminal LinkedList< TerminalNode >   columns_list;
+
 non terminal CreateTableStatementNode     create_table_statement;
 non terminal LinkedList< ColumnDescriptionNode > columns_descriptions_list;
 non terminal ColumnDescriptionNode        column_description;
 non terminal TypeDescriptionNode          type_description;
+
 non terminal TerminalNode                 empty;
 
 precedence left PLUS, MINUS;
@@ -55,10 +67,43 @@ precedence left EQUALS,NOTEQUAL,LESS,LESSOREQUAL,MORE,MOREOREQUAL, OR;
 
 start with command;
 
-command ::= create_table_statement;
+command ::= statement:e1 {: RESULT = e1; parser.done_parsing(); :};
+
+statement ::= create_table_statement:e1 {: RESULT = e1; :}
+             |
+              insert_statement:e1 {: RESULT = e1; :}
+             ;
+
+insert_statement ::= INSERT INTO IDENT:tableName LEFTPAR columns_list:cList RIGHTPAR VALUES
+                           LEFTPAR:e3 values_list:vList RIGHTPAR:e5
+                        {: RESULT = new InsertStatementNode(tableName, cList, vList); :}
+                    ;
+
+columns_list ::= idents_list:e1 {: RESULT = e1; :};
+
+idents_list ::= IDENT:e1
+                 {: RESULT = new LinkedList<>(); RESULT.add(e1); :}
+                 |
+                 IDENT:e1 COMMA:e2 idents_list:e3
+                 {: RESULT = e3; RESULT.addFirst(e1); :}
+                 ;
+
+values_list ::= value:e1
+                 {: RESULT = new LinkedList<>(); RESULT.add(e1); :}
+                 |
+                value:e1 COMMA:e2 values_list:e3
+                 {: RESULT = e3; RESULT.addFirst(e1); :}
+                 ;
+
+value       ::= INTEGER_LITERAL:e1 {: RESULT = e1; :}
+                 |
+                DOUBLE_LITERAL:e1 {: RESULT = e1; :}
+                 |
+                STRING_LITERAL:e1 {: RESULT = e1; :}
+                ;
 
 create_table_statement ::= CREATE:e1 TABLE:e2 IDENT:tableName LEFTPAR:e3 columns_descriptions_list:fdescList RIGHTPAR:e5
-                       {: RESULT = new CreateTableStatementNode(tableName, fdescList); parser.done_parsing(); :}
+                       {: RESULT = new CreateTableStatementNode(tableName, fdescList); :}
                        ;
 
 columns_descriptions_list ::= column_description:e1

@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import ru.spbau.mit.dbmsau.command.AbstractSQLCommand;
 import ru.spbau.mit.dbmsau.command.CreateTableCommand;
+import ru.spbau.mit.dbmsau.command.InsertCommand;
 import ru.spbau.mit.dbmsau.syntax.SyntaxAnalyzer;
 import ru.spbau.mit.dbmsau.syntax.exception.SyntaxErrors;
 
@@ -50,5 +51,26 @@ public class SyntaxAnalyzerTest extends Assert {
         thrown.expectMessage("Syntax error at: ')' at line 1, column 51");
 
         getFirstResult("CREATE TABLE TEST ( id integer, name VARCHAR(50), ); ");
+    }
+
+    @Test
+    public void testInsert() throws Exception {
+        InsertCommand command = (InsertCommand)getFirstResult("INSERT INTO test (id, name) VALUES(1,'2');");
+
+        assertThat(command.getTableName(), is("test"));
+        assertThat(command.getColumns().size(), is(2));
+
+        assertThat(command.getColumns().get(0), is("id"));
+        assertThat(command.getColumns().get(1), is("name"));
+
+        assertThat(command.getValues().get(0), is("1"));
+        assertThat(command.getValues().get(1), is("2"));
+    }
+
+    @Test
+    public void testInsertSyntaxError() throws Exception {
+        thrown.expect(SyntaxErrors.class);
+        thrown.expectMessage("Syntax error at: ',' at line 1, column 19");
+        getFirstResult("INSERT INTO test (, name) (1,'2'); ");
     }
 }
