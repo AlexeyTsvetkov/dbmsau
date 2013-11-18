@@ -19,10 +19,6 @@ abstract public class PageManager {
 
     abstract public Page getPageById(Integer id);
 
-    public RecordsPage getRecordPageById(Integer id, Integer length) {
-        return new RecordsPage(getPageById(id), length);
-    }
-
     abstract public void savePage(Page page);
 
     abstract public void freePage(Integer pageId);

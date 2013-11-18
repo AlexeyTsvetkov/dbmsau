@@ -81,10 +81,6 @@ public class FilePageManager extends PageManager {
         return page;
     }
 
-    public RecordsPage getRecordPageById(Integer id, Integer length) {
-        return new RecordsPage(getPageById(id), length);
-    }
-
     public void savePage(Page page) {
         try {
             dataFile.seek(getOffsetByPageId(page.getId()));
