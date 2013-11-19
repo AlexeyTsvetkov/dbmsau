@@ -8,6 +8,7 @@ import org.junit.rules.ExpectedException;
 import ru.spbau.mit.dbmsau.command.AbstractSQLCommand;
 import ru.spbau.mit.dbmsau.command.CreateTableCommand;
 import ru.spbau.mit.dbmsau.command.InsertCommand;
+import ru.spbau.mit.dbmsau.command.SelectCommand;
 import ru.spbau.mit.dbmsau.syntax.SyntaxAnalyzer;
 import ru.spbau.mit.dbmsau.syntax.exception.SyntaxErrors;
 
@@ -72,5 +73,19 @@ public class SyntaxAnalyzerTest extends Assert {
         thrown.expect(SyntaxErrors.class);
         thrown.expectMessage("Syntax error at: ',' at line 1, column 19");
         getFirstResult("INSERT INTO test (, name) (1,'2'); ");
+    }
+
+    @Test
+    public void testSelect() throws Exception {
+        SelectCommand command = (SelectCommand)getFirstResult("SELECT * FROM test;");
+
+        assertThat(command.getTable(), is("test"));
+    }
+
+    @Test
+    public void testSelectSyntaxError() throws Exception {
+        thrown.expect(SyntaxErrors.class);
+        thrown.expectMessage("Illegal character <#>");
+        getFirstResult("SELECT #* FROM 124;");
     }
 }

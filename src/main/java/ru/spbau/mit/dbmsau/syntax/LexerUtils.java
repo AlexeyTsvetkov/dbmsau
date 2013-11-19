@@ -26,7 +26,7 @@ public class LexerUtils {
             case LexemeType.MOREOREQUAL: { return "MOREOREQUAL"; }
             case LexemeType.PLUS: { return "PLUS"; }
             case LexemeType.MINUS: { return "MINUS"; }
-            case LexemeType.MULTIPLY: { return "MULTIPLY"; }
+            case LexemeType.ASTERISK: { return "ASTERISK"; }
             case LexemeType.DIVIDE: { return "DIVIDE"; }
             case LexemeType.LEFTBRACKET: { return "LEFTBRACKET"; }
             case LexemeType.RIGHTBRACKET: { return "RIGHTBRACKET"; }

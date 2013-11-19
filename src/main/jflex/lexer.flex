@@ -55,10 +55,12 @@ DecDoubleLiteral = (0 | [1-9][0-9]*)  "." [0-9]+
  /* keywords */
 <YYINITIAL> {
 "CREATE"         { return symbol(LexemeType.CREATE); }
+"SELECT"         { return symbol(LexemeType.SELECT); }
+"FROM"           { return symbol(LexemeType.FROM); }
 "TABLE"          { return symbol(LexemeType.TABLE); }
-"INSERT"             { return symbol(LexemeType.INSERT); }
-"INTO"             { return symbol(LexemeType.INTO); }
-"VALUES"             { return symbol(LexemeType.VALUES); }
+"INSERT"         { return symbol(LexemeType.INSERT); }
+"INTO"           { return symbol(LexemeType.INTO); }
+"VALUES"         { return symbol(LexemeType.VALUES); }
 "NOT"            { return symbol(LexemeType.NOT); }
 "AND"            { return symbol(LexemeType.AND); }
 "OR"             { return symbol(LexemeType.OR); }
@@ -77,7 +79,7 @@ DecDoubleLiteral = (0 | [1-9][0-9]*)  "." [0-9]+
 ">="             { return symbol(LexemeType.MOREOREQUAL); }
 "+"              { return symbol(LexemeType.PLUS); }
 "-"              { return symbol(LexemeType.MINUS); }
-"*"              { return symbol(LexemeType.MULTIPLY); }
+"*"              { return symbol(LexemeType.ASTERISK); }
 "["              { return symbol(LexemeType.LEFTBRACKET); }
 "]"              { return symbol(LexemeType.RIGHTBRACKET); }
 "."              { return symbol(LexemeType.DOT); }
