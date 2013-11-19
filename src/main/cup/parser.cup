@@ -67,7 +67,7 @@ precedence left EQUALS,NOTEQUAL,LESS,LESSOREQUAL,MORE,MOREOREQUAL, OR;
 
 start with command;
 
-command ::= statement:e1 {: RESULT = e1; parser.done_parsing(); :};
+command ::= statement:e1 {: RESULT = e1; parser.done_parsing(); :} | empty {: RESULT = null; parser.done_parsing(); :};
 
 statement ::= create_table_statement:e1 {: RESULT = e1; :}
              |
