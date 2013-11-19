@@ -29,6 +29,13 @@ public class App
                 SQLCommandResult result = command.execute();
 
                 if (result.isOk())  {
+
+                    if (result.isIterable()) {
+                        for (String resultLine : result) {
+                            System.out.println(resultLine);
+                        }
+                    }
+
                     System.out.println("ok");
                 } else {
                     System.out.println("is not ok");

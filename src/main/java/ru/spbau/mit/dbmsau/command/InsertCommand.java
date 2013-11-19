@@ -31,11 +31,7 @@ public class InsertCommand extends AbstractSQLCommand {
 
     @Override
     public SQLCommandResult execute() throws CommandExecutionException {
-        Table table = getContext().getTableManager().getTable(getTableName());
-
-        if (table == null) {
-            throw new CommandExecutionException("No such table `" +  getTableName() + "`");
-        }
+        Table table = getTable(getTableName());
 
         try {
             getContext().getRecordManager().insert(table, getColumns(), getValues());

@@ -79,7 +79,7 @@ public class SyntaxAnalyzerTest extends Assert {
     public void testSelect() throws Exception {
         SelectCommand command = (SelectCommand)getFirstResult("SELECT * FROM test;");
 
-        assertThat(command.getTable(), is("test"));
+        assertThat(command.getTableName(), is("test"));
     }
 
     @Test

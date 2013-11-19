@@ -4,14 +4,9 @@ import ru.spbau.mit.dbmsau.Context;
 import ru.spbau.mit.dbmsau.ContextContainer;
 import ru.spbau.mit.dbmsau.pages.Page;
 import ru.spbau.mit.dbmsau.pages.PagesList;
-import ru.spbau.mit.dbmsau.pages.Record;
-import ru.spbau.mit.dbmsau.pages.RecordsPage;
 import ru.spbau.mit.dbmsau.table.exception.RecordManagerException;
 
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 public class RecordManager extends ContextContainer {
     public RecordManager(Context context) {
@@ -57,7 +52,7 @@ public class RecordManager extends ContextContainer {
         }
     }
 
-    public Iterable<TableRecord> select(Table table) {
+    public RecordSet select(Table table) {
         return new RecordSet(
                 table,
                 buildPagesListByHeadPageId(table.getFullPagesListHeadPageId()),
