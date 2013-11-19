@@ -18,4 +18,8 @@ public class TableRecord {
     public void setValue(String column, String value) {
         setIntegerValue(column, Integer.valueOf(value));
     }
+
+    public String getIntegerValue(String column) {
+        return record.getIntegerValue(table.getColumnOffsetByName(column)).toString();
+    }
 }

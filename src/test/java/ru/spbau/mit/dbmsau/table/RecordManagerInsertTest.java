@@ -3,13 +3,14 @@ package ru.spbau.mit.dbmsau.table;
 import static org.hamcrest.CoreMatchers.*;
 import org.junit.Test;
 import ru.spbau.mit.dbmsau.BaseTest;
-import ru.spbau.mit.dbmsau.pages.Page;
 
 import java.util.ArrayList;
 
-public class RecordManagerTest extends BaseTest {
+public class RecordManagerInsertTest extends BaseTest {
     @Test
     public void testInsert() throws Exception {
+        initSQLDumpLoad("create_test.sql");
+
         ArrayList<String> columns = new ArrayList<>();
         ArrayList<String> values = new ArrayList<>();
 
@@ -49,10 +50,5 @@ public class RecordManagerTest extends BaseTest {
         int i = p.getMaxRecordsCount()-1;
         assertThat(p.getByteBuffer().getInt(0), is(i-1));
         assertThat(p.getByteBuffer().getInt(4), is(-(i-1)));
-    }
-
-    @Override
-    protected String getInitSQLDumpResourceName() {
-        return "create_test.sql";
     }
 }

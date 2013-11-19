@@ -58,14 +58,12 @@ public class BaseTest extends Assert {
 
     protected void setUpContext() throws Exception {
         context = buildContext();
-        initSQLDumpLoad();
     }
     
-    protected void initSQLDumpLoad() throws Exception {
-        String res = getInitSQLDumpResourceName();
-        if (res != null) {
+    protected void initSQLDumpLoad(String resourceName) throws Exception {
+        if (resourceName != null) {
             SyntaxAnalyzer analyzer = new SyntaxAnalyzer(new FileInputStream(
-                    FileUtils.toFile(getClass().getResource(res))
+                    FileUtils.toFile(getClass().getResource(resourceName))
             ));
 
             for (AbstractSQLCommand command : analyzer) {
@@ -73,9 +71,5 @@ public class BaseTest extends Assert {
                 command.execute();
             }
         }
-    }
-    
-    protected String getInitSQLDumpResourceName() {
-        return null;
     }
 }
