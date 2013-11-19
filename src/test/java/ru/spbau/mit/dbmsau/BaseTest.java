@@ -1,21 +1,21 @@
 package ru.spbau.mit.dbmsau;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
-
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import ru.spbau.mit.dbmsau.command.AbstractSQLCommand;
 import ru.spbau.mit.dbmsau.pages.PageManager;
 import ru.spbau.mit.dbmsau.pages.StubPageManager;
 import ru.spbau.mit.dbmsau.pages.exception.PageManagerInitException;
-import ru.spbau.mit.dbmsau.table.StubTableManager;
+import ru.spbau.mit.dbmsau.syntax.SyntaxAnalyzer;
+import ru.spbau.mit.dbmsau.table.FileTableManager;
+import ru.spbau.mit.dbmsau.table.RecordManager;
 import ru.spbau.mit.dbmsau.table.TableManager;
+
+import java.io.FileInputStream;
 
 public class BaseTest extends Assert {
 
@@ -31,6 +31,7 @@ public class BaseTest extends Assert {
         Context context = new Context(tempFolder.getRoot().getPath());
         context.setPageManager(buildPageManager(context));
         context.setTableManager(buildTableManager(context));
+        context.setRecordManager(new RecordManager(context));
 
         try {
             context.init();
@@ -46,7 +47,7 @@ public class BaseTest extends Assert {
     }
 
     protected TableManager buildTableManager(Context context) {
-        return new StubTableManager(context);
+        return new FileTableManager(context);
     }
 
 
@@ -55,30 +56,26 @@ public class BaseTest extends Assert {
         setUpContext();
     }
 
-    protected void setUpContext() {
+    protected void setUpContext() throws Exception {
         context = buildContext();
+        initSQLDumpLoad();
     }
+    
+    protected void initSQLDumpLoad() throws Exception {
+        String res = getInitSQLDumpResourceName();
+        if (res != null) {
+            SyntaxAnalyzer analyzer = new SyntaxAnalyzer(new FileInputStream(
+                    FileUtils.toFile(getClass().getResource(res))
+            ));
 
-    protected void copyFile(File sourceFile, File destFile) throws IOException {
-        if(!destFile.exists()) {
-            destFile.createNewFile();
-        }
-
-        FileChannel source = null;
-        FileChannel destination = null;
-
-        try {
-            source = new FileInputStream(sourceFile).getChannel();
-            destination = new FileOutputStream(destFile).getChannel();
-            destination.transferFrom(source, 0, source.size());
-        }
-        finally {
-            if(source != null) {
-                source.close();
-            }
-            if(destination != null) {
-                destination.close();
+            for (AbstractSQLCommand command : analyzer) {
+                command.setContext(context);
+                command.execute();
             }
         }
+    }
+    
+    protected String getInitSQLDumpResourceName() {
+        return null;
     }
 }

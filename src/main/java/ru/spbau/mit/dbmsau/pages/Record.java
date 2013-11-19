@@ -9,11 +9,11 @@ public class Record {
         this.offset = offset;
     }
 
-    public Integer getIntegerValue(Integer fieldNumber) {
-         return page.getByteBuffer().getInt(offset);
+    public Integer getIntegerValue(int recordOffset) {
+         return page.getByteBuffer().getInt(offset + recordOffset);
     }
 
-    public void setIntegerValue(Integer fieldNumber, Integer value) {
-         page.getByteBuffer().putInt(offset, value);
+    public void setIntegerValue(int recordOffset, Integer value) {
+         page.getByteBuffer().putInt(offset + recordOffset, value);
     }
 }

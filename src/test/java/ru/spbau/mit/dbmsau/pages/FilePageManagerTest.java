@@ -41,7 +41,7 @@ public class FilePageManagerTest extends BaseTest {
     }
 
     @Test
-    public void testAll() {
+    public void testAll() throws Exception {
         setUpContext();
 
         int[] ids = new int[4000];

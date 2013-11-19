@@ -50,4 +50,8 @@ public class Type {
     public Integer getType() {
         return type;
     }
+
+    public int getSize() {
+        return 4;
+    }
 }

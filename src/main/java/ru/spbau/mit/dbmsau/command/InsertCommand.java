@@ -1,6 +1,8 @@
 package ru.spbau.mit.dbmsau.command;
 
 import ru.spbau.mit.dbmsau.command.exception.CommandExecutionException;
+import ru.spbau.mit.dbmsau.table.Table;
+import ru.spbau.mit.dbmsau.table.exception.RecordManagerException;
 
 import java.util.List;
 
@@ -29,6 +31,18 @@ public class InsertCommand extends AbstractSQLCommand {
 
     @Override
     public SQLCommandResult execute() throws CommandExecutionException {
+        Table table = getContext().getTableManager().getTable(getTableName());
+
+        if (table == null) {
+            throw new CommandExecutionException("No such table `" +  getTableName() + "`");
+        }
+
+        try {
+            getContext().getRecordManager().insert(table, getColumns(), getValues());
+        } catch (RecordManagerException e) {
+            throw new CommandExecutionException("RME: " + e.getMessage());
+        }
+
         return new SQLCommandResult();
     }
 }

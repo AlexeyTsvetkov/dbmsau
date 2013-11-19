@@ -66,6 +66,12 @@ public class PagesList {
         return result;
     }
 
+    public Page popPage() {
+        Integer result = pop();
+
+        return result == null ? null : context.getPageManager().getPageById(result);
+    }
+
     public void put(Integer newPageId) {
         DirectoryPage page = getHeadPage();
 

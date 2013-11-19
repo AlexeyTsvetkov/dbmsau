@@ -67,6 +67,10 @@ public class RecordsPage extends Page implements Iterable< Record > {
          return getFreeSlotsCount().equals(getMaxRecordsCount());
     }
 
+    public boolean isFull() {
+        return getFreeSlotsCount().equals(0);
+    }
+
     public Record getClearRecord() {
         int slotIndex = 0;
         while (slotIndex < getMaxRecordsCount() && isSlotUsed(slotIndex)) {
