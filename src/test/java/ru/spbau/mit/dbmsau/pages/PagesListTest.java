@@ -46,6 +46,10 @@ public class PagesListTest extends BaseTest {
         assertNull(list.peek());
         assertNull(list.pop());
 
+        Iterator<Page> it = list.iterator();
+
+        assertFalse(it.hasNext());
+
         for (int i = 1000; i < 5000; i++) {
             list.put(i);
         }
@@ -71,5 +75,8 @@ public class PagesListTest extends BaseTest {
 
             assertThat(next.getId(), is(i));
         }
+
+        assertFalse(it.hasNext());
+        assertFalse(it.hasNext());
     }
 }

@@ -155,8 +155,12 @@ public class PagesList implements Iterable<Page> {
         }
 
         private void walkUntilNext() {
-            while (currentSlot >= currentPage.getMaxRecordsCount() || !currentPage.isSlotUsed(currentSlot)) {
-                if (currentSlot >= currentPage.getMaxRecordsCount()) {
+            if (currentPage == null) {
+                return;
+            }
+
+            while (currentSlot == null || currentSlot >= currentPage.getMaxRecordsCount() || !currentPage.isSlotUsed(currentSlot)) {
+                if (currentSlot == null|| currentSlot >= currentPage.getMaxRecordsCount()) {
                     currentPage = getNextPage(currentPage);
 
                     if (currentPage == null) {
