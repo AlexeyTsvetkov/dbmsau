@@ -53,6 +53,8 @@ public class FilePageManagerTest extends BaseTest {
             ids[i] = p.getId();
         }
 
+        setUpContext();
+
         for (int i = 0; i < 4000; i++) {
             Page p = context.getPageManager().getPageById(ids[i]);
             assertThat(p.getByteBuffer().getInt(0), is(i));
