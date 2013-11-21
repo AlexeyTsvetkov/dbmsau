@@ -17,6 +17,7 @@ public class RecordManagerSelectTest extends BaseTest {
         };
 
         compareTestContent(shouldBe);
+        compareTestContent(shouldBe);
     }
 
     @Test
@@ -38,6 +39,7 @@ public class RecordManagerSelectTest extends BaseTest {
             context.getRecordManager().insert(context.getTableManager().getTable("test"), columns, values);
         }
 
+        compareTestContent(shouldBe);
         compareTestContent(shouldBe);
     }
 
