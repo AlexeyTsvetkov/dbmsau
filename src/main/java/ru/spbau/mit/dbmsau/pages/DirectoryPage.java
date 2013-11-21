@@ -22,4 +22,8 @@ public class DirectoryPage extends RecordsPage {
     public void setNextDirectoryPageId(Integer pageId) {
         getRecordFromSlot(0).setIntegerValue(0, pageId);
     }
+
+    public Integer getPageIdFromSlot(int slotIndex) {
+        return getRecordFromSlot(slotIndex).getIntegerValue(0);
+    }
 }

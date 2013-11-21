@@ -3,8 +3,9 @@ package ru.spbau.mit.dbmsau.pages;
 import ru.spbau.mit.dbmsau.Context;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
-public class PagesList {
+public class PagesList implements Iterable<Page> {
     private Integer headPageId;
     private Context context;
 
@@ -36,7 +37,7 @@ public class PagesList {
             return null;
         }
 
-        return headPage.getRecordFromSlot(slotIndex).getIntegerValue(0);
+        return headPage.getPageIdFromSlot(slotIndex);
     }
 
     public Integer pop() {
@@ -76,10 +77,10 @@ public class PagesList {
         DirectoryPage page = getHeadPage();
 
         while (page.isDirectoryFull()) {
-            Integer nextPageId = page.nextDirectoryPageId();
+            DirectoryPage nextPage = getNextPage(page);
 
-            if (!nextPageId.equals(Page.NULL_PAGE_ID)) {
-                page = new DirectoryPage(context.getPageManager().getPageById(nextPageId));
+            if (nextPage != null) {
+                page = nextPage;
             } else {
                 DirectoryPage oldPage = page;
                 Page allocatedPage = context.getPageManager().allocatePage();
@@ -97,8 +98,27 @@ public class PagesList {
         return headPageId;
     }
 
+    @Override
+    public Iterator<Page> iterator() {
+        return new PagesIterator();
+    }
+
     private DirectoryPage getHeadPage() {
-        return new DirectoryPage(context.getPageManager().getPageById(headPageId));
+        return buildDirectoryPage(headPageId);
+    }
+
+    private DirectoryPage buildDirectoryPage(int pageId) {
+        return new DirectoryPage(context.getPageManager().getPageById(pageId));
+    }
+
+    private DirectoryPage getNextPage(DirectoryPage page) {
+        Integer nextPageId = page.nextDirectoryPageId();
+
+        if (!nextPageId.equals(Page.NULL_PAGE_ID)) {
+            return buildDirectoryPage(nextPageId);
+        } else {
+            return null;
+        }
     }
 
     private Integer firstUsedSlotIndex(DirectoryPage page) {
@@ -123,5 +143,48 @@ public class PagesList {
         context.getPageManager().savePage(directoryPage);
 
         return directoryPage;
+    }
+
+    private class PagesIterator implements Iterator<Page> {
+        private DirectoryPage currentPage;
+        private Integer currentSlot;
+
+        private PagesIterator() {
+            currentPage = getHeadPage();
+            currentSlot = firstUsedSlotIndex(currentPage);
+        }
+
+        private void walkUntilNext() {
+            while (currentSlot >= currentPage.getMaxRecordsCount() || !currentPage.isSlotUsed(currentSlot)) {
+                if (currentSlot >= currentPage.getMaxRecordsCount()) {
+                    currentPage = getNextPage(currentPage);
+
+                    if (currentPage == null) {
+                        return;
+                    }
+
+                    currentSlot = firstUsedSlotIndex(currentPage);
+                } else {
+                    currentSlot++;
+                }
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            walkUntilNext();
+            return  currentPage != null && currentSlot != null;
+        }
+
+        @Override
+        public Page next() {
+            walkUntilNext();
+            return context.getPageManager().getPageById(currentPage.getPageIdFromSlot(currentSlot++));
+        }
+
+        @Override
+        public void remove() {
+
+        }
     }
 }
