@@ -13,7 +13,7 @@ public class RecordSet implements Iterable<TableRecord>, Iterator<TableRecord> {
     private PagesList fullPages, notFullPages;
 
     private Queue<PagesList> pagesLists = new LinkedList<>();
-    private PagesList currentList;
+    private Iterator<Page> currentListIterator;
     private Iterator<Record> currentPageIterator = null;
 
     public RecordSet(Table table, PagesList fullPages, PagesList notFullPages) {
@@ -29,25 +29,23 @@ public class RecordSet implements Iterable<TableRecord>, Iterator<TableRecord> {
         pagesLists.add(fullPages);
         pagesLists.add(notFullPages);
 
-        currentList = pagesLists.poll();
+        currentListIterator = pagesLists.poll().iterator();
         currentPageIterator = null;
         return this;
     }
 
     private void moveUntilNext() {
         while (currentPageIterator == null || !currentPageIterator.hasNext()) {
-            Page next = currentList.popPage();
-
-            if (next == null) {
+            if (!currentListIterator.hasNext()) {
                 if (pagesLists.size() == 0) {
                     return;
                 } else {
-                    currentList = pagesLists.poll();
+                    currentListIterator = pagesLists.poll().iterator();
                     continue;
                 }
+            } else {
+                 currentPageIterator = new TableRecordsPage(table, currentListIterator.next()).iterator();
             }
-
-            currentPageIterator = new TableRecordsPage(table, next).iterator();
         }
     }
 
