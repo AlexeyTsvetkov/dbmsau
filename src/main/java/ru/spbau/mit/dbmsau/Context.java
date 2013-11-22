@@ -75,7 +75,7 @@ public class Context {
         getRecordManager().init();
     }
 
-    public void onQuit() {
-
+    public void onQuit() throws Exception {
+        getPageManager().onQuit();
     }
 }

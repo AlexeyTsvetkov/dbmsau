@@ -118,4 +118,19 @@ public class FilePageManager extends PageManager {
 
         return getPageById(pageId);
     }
+
+    @Override
+    public void onQuit() throws PageManagerException {
+        super.onQuit();
+
+        for (Page p : cache.values()) {
+            savePage(p);
+        }
+
+        try {
+            dataFile.close();
+        } catch (IOException e) {
+            throw new PageManagerException("File can't be closed: " + e.getMessage());
+        }
+    }
 }

@@ -2,6 +2,7 @@ package ru.spbau.mit.dbmsau.pages;
 
 import ru.spbau.mit.dbmsau.Context;
 import ru.spbau.mit.dbmsau.ContextContainer;
+import ru.spbau.mit.dbmsau.pages.exception.PageManagerException;
 import ru.spbau.mit.dbmsau.pages.exception.PageManagerInitException;
 
 abstract public class PageManager extends ContextContainer {
@@ -14,6 +15,10 @@ abstract public class PageManager extends ContextContainer {
 
     public PageManager init() throws PageManagerInitException {
         return this;
+    }
+
+    public void onQuit() throws PageManagerException {
+
     }
 
     abstract public Page getPageById(Integer id);

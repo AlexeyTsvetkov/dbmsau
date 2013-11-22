@@ -41,11 +41,11 @@ public class App
                     System.out.println("is not ok");
                 }
             }
+
+            context.onQuit();
         } catch (Throwable e) {
             System.err.println(e.getMessage());
             System.exit(1);
         }
-
-        context.onQuit();
     }
 }
