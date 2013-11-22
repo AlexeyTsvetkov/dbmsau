@@ -45,5 +45,7 @@ public class App
             System.err.println(e.getMessage());
             System.exit(1);
         }
+
+        context.onQuit();
     }
 }

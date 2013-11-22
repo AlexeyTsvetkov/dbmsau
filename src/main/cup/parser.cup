@@ -37,6 +37,7 @@ init with {:
     errors = new LinkedList<>();
 :};
 
+terminal TerminalNode QUIT;
 terminal TerminalNode CREATE,TABLE,INSERT,INTO,VALUES,SELECT,FROM;
 terminal TerminalNode LEFTPAR,RIGHTPAR,LEFTBRACKET,RIGHTBRACKET;
 terminal TerminalNode OR,DIV,MOD,AND,MAIN,COMMA,EQUALS,COLON,NOT,NOTEQUAL,LESS,LESSOREQUAL,MORE,MOREOREQUAL,PLUS,MINUS,ASTERISK,DIVIDE,DOT;
@@ -76,6 +77,8 @@ statement ::= create_table_statement:e1 {: RESULT = e1; :}
               insert_statement:e1 {: RESULT = e1; :}
              |
               select_statement:e1 {: RESULT = e1; :}
+             |
+              QUIT:e1 {: RESULT = null; :}
              ;
 
 select_statement ::= SELECT ASTERISK FROM IDENT:tableFrom

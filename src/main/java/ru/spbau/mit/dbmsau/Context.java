@@ -74,4 +74,8 @@ public class Context {
         getTableManager().init();
         getRecordManager().init();
     }
+
+    public void onQuit() {
+
+    }
 }

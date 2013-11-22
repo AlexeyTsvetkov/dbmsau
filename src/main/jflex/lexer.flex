@@ -55,6 +55,7 @@ DecDoubleLiteral = (0 | [1-9][0-9]*)  "." [0-9]+
  /* keywords */
 <YYINITIAL> {
 "CREATE"         { return symbol(LexemeType.CREATE); }
+"QUIT"           { return symbol(LexemeType.QUIT); }
 "SELECT"         { return symbol(LexemeType.SELECT); }
 "FROM"           { return symbol(LexemeType.FROM); }
 "TABLE"          { return symbol(LexemeType.TABLE); }
