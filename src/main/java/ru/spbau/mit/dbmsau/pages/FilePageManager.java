@@ -70,7 +70,7 @@ public class FilePageManager extends PageManager {
             return cache.get(id);
         }
 
-        if(cache.size() > MAX_PAGES_IN_CACHE) {
+        if(cache.size() >= MAX_PAGES_IN_CACHE) {
             this.shrinkCache(MAX_PAGES_IN_CACHE - 1);
         }
 
