@@ -61,8 +61,8 @@ public class FilePageManager extends PageManager {
         emptyPagesList.initList();
     }
 
-    private Long getOffsetByPageId(int id) {
-        return Long.valueOf(id) * Long.valueOf(PAGE_SIZE);
+    private long getOffsetByPageId(int id) {
+        return ((long)id)* ((long)PAGE_SIZE);
     }
 
     protected Page doGetPageById(int id) {
