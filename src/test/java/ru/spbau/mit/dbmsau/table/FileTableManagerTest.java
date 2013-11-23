@@ -24,6 +24,7 @@ public class FileTableManagerTest extends BaseTest {
         Table table = new Table(TEST_TABLE_NAME, columns);
 
         context.getTableManager().createNewTable(table);
+        checkBusyPages();
     }
 
     @Test

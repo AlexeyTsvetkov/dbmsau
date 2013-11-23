@@ -6,7 +6,7 @@ public class RecordsPage extends Page implements Iterable< Record > {
     private Integer recordsLength;
 
     public RecordsPage(Page page, Integer recordsLength) {
-        super(page.getId(), page.getData());
+        super(page);
         this.recordsLength = recordsLength;
     }
 

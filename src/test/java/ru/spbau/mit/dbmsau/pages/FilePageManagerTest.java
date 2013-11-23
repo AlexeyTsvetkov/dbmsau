@@ -22,7 +22,7 @@ public class FilePageManagerTest extends BaseTest {
 
         newPageManager.init();
 
-        ByteBuffer buffer = newPageManager.getPageById(0).getByteBuffer();
+        ByteBuffer buffer = newPageManager.getPageById(0, true).getByteBuffer();
 
         assertThat(buffer.getShort(0), is(Integer.valueOf(-1).shortValue()));
     }
@@ -49,17 +49,21 @@ public class FilePageManagerTest extends BaseTest {
         for (int i = 0; i < 4000; i++) {
             Page p = context.getPageManager().allocatePage();
             p.getByteBuffer().putInt(0, i);
-            context.getPageManager().savePage(p);
+            context.getPageManager().releasePage(p);
             ids[i] = p.getId();
         }
+
+        checkBusyPages();
 
         setUpContext();
 
         for (int i = 0; i < 4000; i++) {
-            Page p = context.getPageManager().getPageById(ids[i]);
+            Page p = context.getPageManager().getPageById(ids[i], true);
             assertThat(p.getByteBuffer().getInt(0), is(i));
             context.getPageManager().freePage(p.getId());
         }
+
+        checkBusyPages();
     }
 
     @Override

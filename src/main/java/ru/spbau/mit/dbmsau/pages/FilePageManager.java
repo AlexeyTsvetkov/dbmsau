@@ -65,7 +65,7 @@ public class FilePageManager extends PageManager {
         return Long.valueOf(id) * Long.valueOf(PAGE_SIZE);
     }
 
-    public Page getPageById(Integer id) {
+    protected Page doGetPageById(Integer id) {
         if (cache.containsKey(id)) {
             return cache.get(id);
         }
@@ -94,8 +94,11 @@ public class FilePageManager extends PageManager {
             if(this.cache.containsKey(pageId)) {
                 this.cache.remove(pageId);
             }
-
-            this.savePage(firstInFirstOut);
+            try {
+                this.savePage(firstInFirstOut);
+            } catch (IOException e) {
+                throw new PageManagerException("Saving error: " + e.getMessage());
+            }
         }
     }
 
@@ -109,29 +112,19 @@ public class FilePageManager extends PageManager {
             throw new PageManagerException(e.getMessage());
         }
 
-        Page page = new Page(id, data);
-
-        return page;
+        return new Page(id, data);
     }
 
-    public void savePage(Page page) {
-        try {
-            dataFile.seek(getOffsetByPageId(page.getId()));
-            dataFile.write(page.getData(), 0, PAGE_SIZE);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void freePage(Integer pageId) {
+    protected void doFreePage(Integer pageId) {
         if (pageId.equals(EMPTY_PAGES_LIST_HEAD_PAGE_ID)) {
             throw new Error("freeing of system page");
         }
+
         cache.remove(pageId);
         emptyPagesList.put(pageId);
     }
 
-    public Page allocatePage() {
+    public Integer doAllocatePage() {
         Integer pageId = emptyPagesList.pop();
 
         if (pageId == null) {
@@ -143,27 +136,32 @@ public class FilePageManager extends PageManager {
                     emptyPagesList.put(nextPageId + i);
                 }
 
-                return allocatePage();
+                return doAllocatePage();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-        return getPageById(pageId);
+        return pageId;
+    }
+
+    private void savePage(Page page) throws IOException {
+        dataFile.seek(getOffsetByPageId(page.getId()));
+        dataFile.write(page.getByteBuffer().array(), 0, PAGE_SIZE);
     }
 
     @Override
     public void onQuit() throws PageManagerException {
         super.onQuit();
 
-        for (Page p : cache.values()) {
-            savePage(p);
-        }
-
         try {
+            for (Page p : cache.values()) {
+                savePage(p);
+            }
+
             dataFile.close();
         } catch (IOException e) {
-            throw new PageManagerException("File can't be closed: " + e.getMessage());
+            throw new PageManagerException("Database saving failed: " + e.getMessage());
         }
     }
 }

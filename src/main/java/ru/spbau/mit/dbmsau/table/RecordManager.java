@@ -30,7 +30,7 @@ public class RecordManager extends ContextContainer {
 
         PagesList notFullPagesList = buildPagesListByHeadPageId(table.getNotFullPagesListHeadPageId());
 
-        Page pageToInsert = notFullPagesList.popPage();
+        Page pageToInsert = notFullPagesList.popPage(true);
 
         if (pageToInsert == null) {
             pageToInsert = context.getPageManager().allocatePage();
@@ -43,7 +43,7 @@ public class RecordManager extends ContextContainer {
             newRecord.setValue(columns.get(i), values.get(i));
         }
 
-        context.getPageManager().savePage(recordsPage);
+        context.getPageManager().releasePage(recordsPage);
 
         if (!recordsPage.isFull()) {
             notFullPagesList.put(recordsPage.getId());

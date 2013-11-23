@@ -24,7 +24,7 @@ public class RecordManagerInsertTest extends BaseTest {
 
         context.getRecordManager().insert(table, columns, values);
 
-        TableRecordsPage p = new TableRecordsPage(table, context.getPageManager().getPageById(3));
+        TableRecordsPage p = new TableRecordsPage(table, context.getPageManager().getPageById(3, true));
 
         assertThat(p.getByteBuffer().getInt(0), is(idValue));
         assertThat(p.getByteBuffer().getInt(4), is(nameValue));
@@ -45,10 +45,14 @@ public class RecordManagerInsertTest extends BaseTest {
 
         context.getRecordManager().insert(table, columns, values);
 
-        p = new TableRecordsPage(table, context.getPageManager().getPageById(4));
+        context.getPageManager().releasePage(p);
+
+        p = new TableRecordsPage(table, context.getPageManager().getPageById(4, false));
 
         int i = p.getMaxRecordsCount()-1;
         assertThat(p.getByteBuffer().getInt(0), is(i-1));
         assertThat(p.getByteBuffer().getInt(4), is(-(i-1)));
+
+        checkBusyPages();
     }
 }

@@ -18,24 +18,42 @@ public class PagesListTest extends BaseTest {
     public void testList() throws Exception {
         PagesList list = new PagesList(HEAD_PAGE_ID, context);
         list.initList();
+        checkBusyPages();
 
         assertNull(list.peek());
+        checkBusyPages();
         assertNull(list.pop());
+        checkBusyPages();
 
         list.put(1000);
+        checkBusyPages();
         assertThat(list.pop(), is(1000));
+        checkBusyPages();
 
         for (int i = 1000; i < 5000; i++) {
             list.put(i);
+            checkBusyPages();
         }
 
         for (int i = 1000; i < 5000; i++) {
-            assertThat(list.peek(), is(i));
+            if (i == 1990) {
+                assertThat(list.peek(), is(i));
+            } else {
+                assertThat(list.peek(), is(i));
+                checkBusyPages();
+            }
             assertThat(list.pop(), is(i));
+            checkBusyPages();
         }
 
+        checkBusyPages();
+
         assertNull(list.peek());
+        checkBusyPages();
         assertNull(list.pop());
+        checkBusyPages();
+
+        checkBusyPages();
     }
 
     @Test
@@ -64,6 +82,8 @@ public class PagesListTest extends BaseTest {
 
         assertNull(list.peek());
         assertNull(list.pop());
+
+        checkBusyPages();
     }
 
     private void iterateList(PagesList list) {
@@ -78,5 +98,7 @@ public class PagesListTest extends BaseTest {
 
         assertFalse(it.hasNext());
         assertFalse(it.hasNext());
+
+        checkBusyPages();
     }
 }

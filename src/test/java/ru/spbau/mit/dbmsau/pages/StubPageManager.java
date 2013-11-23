@@ -1,9 +1,7 @@
 package ru.spbau.mit.dbmsau.pages;
 
 import ru.spbau.mit.dbmsau.Context;
-import ru.spbau.mit.dbmsau.pages.exception.PageManagerInitException;
 
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -36,25 +34,20 @@ public class StubPageManager extends PageManager {
     }
 
     @Override
-    public Page getPageById(Integer id) {
+    protected Page doGetPageById(Integer id) {
          return allPages.get(id);
     }
 
     @Override
-    public void savePage(Page page) {
-        allPages.put(page.getId(), page);
-    }
-
-    @Override
-    public void freePage(Integer pageId) {
+    protected void doFreePage(Integer pageId) {
         freePages.add(pageId);
     }
 
     @Override
-    public Page allocatePage() {
+    public Integer doAllocatePage() {
         Integer id = freePages.iterator().next();
         freePages.remove(id);
 
-        return getPageById(id);
+        return id;
     }
 }

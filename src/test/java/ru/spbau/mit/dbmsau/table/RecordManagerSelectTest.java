@@ -57,5 +57,7 @@ public class RecordManagerSelectTest extends BaseTest {
         }
 
         assertFalse(recordSet.hasNext());
+
+        checkBusyPages();
     }
 }

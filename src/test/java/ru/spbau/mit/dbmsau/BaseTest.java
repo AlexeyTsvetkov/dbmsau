@@ -1,6 +1,7 @@
 package ru.spbau.mit.dbmsau;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -56,7 +57,15 @@ public class BaseTest extends Assert {
         setUpContext();
     }
 
+    protected void checkBusyPages() {
+        assertFalse(context.getPageManager().isThereBusyPages());
+    }
+
     protected void setUpContext() throws Exception {
+        if (context != null) {
+            context.onQuit();
+        }
+
         context = buildContext();
     }
     

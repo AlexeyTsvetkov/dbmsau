@@ -10,9 +10,9 @@ public class PagesList implements Iterable<Page> {
     private Context context;
 
     static public PagesList createNewList(Context context) {
-        Page page = context.getPageManager().allocatePage();
+        int pageId = context.getPageManager().doAllocatePage();
 
-        PagesList list = new PagesList(page.getId(), context);
+        PagesList list = new PagesList(pageId, context);
 
         list.initList();
 
@@ -25,11 +25,13 @@ public class PagesList implements Iterable<Page> {
     }
 
     public void initList() {
-        initNewLastPage(context.getPageManager().getPageById(headPageId));
+        context.getPageManager().releasePage(
+                initNewLastPage(context.getPageManager().getPageById(headPageId, true))
+        );
     }
 
     public Integer peek() {
-        DirectoryPage headPage = getHeadPage();
+        DirectoryPage headPage = getHeadPage(false);
 
         Integer slotIndex = firstUsedSlotIndex(headPage);
 
@@ -41,11 +43,12 @@ public class PagesList implements Iterable<Page> {
     }
 
     public Integer pop() {
-        DirectoryPage headPage = getHeadPage();
+        DirectoryPage headPage = getHeadPage(true);
         Integer slotIndex = firstUsedSlotIndex(headPage);
 
         if (slotIndex == null) {
-             return null;
+            context.getPageManager().releasePage(headPage);
+            return null;
         }
 
         Integer result = peek();
@@ -55,43 +58,48 @@ public class PagesList implements Iterable<Page> {
         if (headPage.isDirectoryEmpty()) {
             Integer nextPageId = headPage.nextDirectoryPageId();
             if (!nextPageId.equals(Page.NULL_PAGE_ID)) {
-                Page nextPage = context.getPageManager().getPageById(nextPageId);
+                Page nextPage = context.getPageManager().getPageById(nextPageId, true);
                 headPage.assignDataFrom(nextPage);
 
                 context.getPageManager().freePage(nextPageId);
             }
         }
 
-        context.getPageManager().savePage(headPage);
+        context.getPageManager().releasePage(headPage);
 
         return result;
     }
 
-    public Page popPage() {
-        Integer result = pop();
+    public Page popPage(boolean isForWriting) {
+        Integer pageId = pop();
 
-        return result == null ? null : context.getPageManager().getPageById(result);
+        if (pageId == null) {
+            return null;
+        }
+
+        return context.getPageManager().getPageById(pageId, isForWriting);
     }
 
     public void put(Integer newPageId) {
-        DirectoryPage page = getHeadPage();
+        DirectoryPage page = getHeadPage(true);
 
         while (page.isDirectoryFull()) {
-            DirectoryPage nextPage = getNextPage(page);
+            DirectoryPage oldPage = page;
+            DirectoryPage nextPage = getNextPage(page, true);
 
             if (nextPage != null) {
                 page = nextPage;
             } else {
-                DirectoryPage oldPage = page;
                 Page allocatedPage = context.getPageManager().allocatePage();
                 page = initNewLastPage(allocatedPage);
                 oldPage.setNextDirectoryPageId(page.getId());
-                context.getPageManager().savePage(oldPage);
             }
+
+            context.getPageManager().releasePage(oldPage);
         }
 
         page.getClearRecord().setIntegerValue(0, newPageId);
-        context.getPageManager().savePage(page);
+        context.getPageManager().releasePage(page);
     }
 
     public Integer getHeadPageId() {
@@ -103,19 +111,19 @@ public class PagesList implements Iterable<Page> {
         return new PagesIterator();
     }
 
-    private DirectoryPage getHeadPage() {
-        return buildDirectoryPage(headPageId);
+    private DirectoryPage getHeadPage(boolean isForWriting) {
+        return buildDirectoryPage(headPageId, isForWriting);
     }
 
-    private DirectoryPage buildDirectoryPage(int pageId) {
-        return new DirectoryPage(context.getPageManager().getPageById(pageId));
+    private DirectoryPage buildDirectoryPage(int pageId, boolean isForWriting) {
+        return new DirectoryPage(context.getPageManager().getPageById(pageId, isForWriting));
     }
 
-    private DirectoryPage getNextPage(DirectoryPage page) {
+    private DirectoryPage getNextPage(DirectoryPage page, boolean isForWriting) {
         Integer nextPageId = page.nextDirectoryPageId();
 
         if (!nextPageId.equals(Page.NULL_PAGE_ID)) {
-            return buildDirectoryPage(nextPageId);
+            return buildDirectoryPage(nextPageId, isForWriting);
         } else {
             return null;
         }
@@ -135,12 +143,10 @@ public class PagesList implements Iterable<Page> {
         byte[] cleanData = new byte[PageManager.PAGE_SIZE];
         Arrays.fill(cleanData, (byte) 0);
 
-        page.setData(cleanData);
+        page.setBytes(cleanData);
 
         DirectoryPage directoryPage = new DirectoryPage(page);
         directoryPage.getClearRecord().setIntegerValue(0, Page.NULL_PAGE_ID);
-
-        context.getPageManager().savePage(directoryPage);
 
         return directoryPage;
     }
@@ -150,7 +156,7 @@ public class PagesList implements Iterable<Page> {
         private Integer currentSlot;
 
         private PagesIterator() {
-            currentPage = getHeadPage();
+            currentPage = getHeadPage(false);
             currentSlot = firstUsedSlotIndex(currentPage);
         }
 
@@ -161,7 +167,7 @@ public class PagesList implements Iterable<Page> {
 
             while (currentSlot == null || currentSlot >= currentPage.getMaxRecordsCount() || !currentPage.isSlotUsed(currentSlot)) {
                 if (currentSlot == null|| currentSlot >= currentPage.getMaxRecordsCount()) {
-                    currentPage = getNextPage(currentPage);
+                    currentPage = getNextPage(currentPage, false);
 
                     if (currentPage == null) {
                         return;
@@ -183,7 +189,7 @@ public class PagesList implements Iterable<Page> {
         @Override
         public Page next() {
             walkUntilNext();
-            return context.getPageManager().getPageById(currentPage.getPageIdFromSlot(currentSlot++));
+            return context.getPageManager().getPageById(currentPage.getPageIdFromSlot(currentSlot++), false);
         }
 
         @Override
