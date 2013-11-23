@@ -10,15 +10,19 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
+import java.util.LinkedList;
 
 public class FilePageManager extends PageManager {
     private static final String dataFilename = "data.db";
     private static final Integer EMPTY_PAGES_LIST_HEAD_PAGE_ID = 0;
     private static final Integer RESERVE_PAGES_COUNT = 50;
+    private static final Integer MAX_PAGES_IN_CACHE = 50;
 
     private RandomAccessFile dataFile;
     private Map< Integer, Page > cache = new HashMap<>();
     private PagesList emptyPagesList;
+    private Queue< Page > usageOrder = new LinkedList<>();
 
     public FilePageManager(Context context) {
         super(context);
@@ -66,6 +70,36 @@ public class FilePageManager extends PageManager {
             return cache.get(id);
         }
 
+        if(cache.size() > MAX_PAGES_IN_CACHE) {
+            this.shrinkCache(MAX_PAGES_IN_CACHE - 1);
+        }
+
+        Page page = readPageFromFile(id);
+
+        this.usageOrder.add(page);
+        this.cache.put(id, page);
+
+        return page;
+    }
+
+    private void shrinkCache(int desiredSize) {
+        if (usageOrder.size() == 0) {
+            return;
+        }
+
+        while(this.cache.size() > desiredSize) {
+            Page firstInFirstOut = usageOrder.poll();
+
+            Integer pageId = firstInFirstOut.getId();
+            if(this.cache.containsKey(pageId)) {
+                this.cache.remove(pageId);
+            }
+
+            this.savePage(firstInFirstOut);
+        }
+    }
+
+    private Page readPageFromFile(Integer id) {
         byte[] data = new byte[PAGE_SIZE];
 
         try {
@@ -76,7 +110,6 @@ public class FilePageManager extends PageManager {
         }
 
         Page page = new Page(id, data);
-        cache.put(id, page);
 
         return page;
     }
