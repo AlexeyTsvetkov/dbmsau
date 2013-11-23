@@ -66,6 +66,10 @@ abstract public class PageManager extends ContextContainer {
         return busyPagesIds.size() > 0;
     }
 
+    protected boolean isPageBusy(int id) {
+        return busyPagesIds.contains(id);
+    }
+
     abstract protected Page doGetPageById(Integer id);
 
     abstract protected void doFreePage(Integer pageId);

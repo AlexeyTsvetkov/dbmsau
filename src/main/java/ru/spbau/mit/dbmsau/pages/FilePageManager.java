@@ -91,6 +91,12 @@ public class FilePageManager extends PageManager {
             Page firstInFirstOut = usageOrder.poll();
 
             Integer pageId = firstInFirstOut.getId();
+
+            if (isPageBusy(pageId)) {
+                usageOrder.add(firstInFirstOut);
+                continue;
+            }
+
             if(this.cache.containsKey(pageId)) {
                 this.cache.remove(pageId);
             }
@@ -146,8 +152,14 @@ public class FilePageManager extends PageManager {
     }
 
     private void savePage(Page page) throws IOException {
+        if (!page.isDirty()) {
+            return;
+        }
+
+        page.markAsNotDirty();
+
         dataFile.seek(getOffsetByPageId(page.getId()));
-        dataFile.write(page.getByteBuffer().array(), 0, PAGE_SIZE);
+        dataFile.write(page.getBytes(), 0, PAGE_SIZE);
     }
 
     @Override

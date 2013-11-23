@@ -25,9 +25,9 @@ public class FilePageManagerTest extends BaseTest {
 
         newPageManager.init();
 
-        ByteBuffer buffer = newPageManager.getPageById(0, true).getByteBuffer();
+        Page.PageData buffer = newPageManager.getPageById(0, true).getByteBuffer();
 
-        assertThat(buffer.getShort(0), is(Integer.valueOf(-1).shortValue()));
+        assertThat(buffer.get(0), is(Integer.valueOf(-1).byteValue()));
     }
 
     @Test
@@ -57,7 +57,7 @@ public class FilePageManagerTest extends BaseTest {
         assertThat(
                 cache.size(),
                 is(Matchers.lessThanOrEqualTo(
-                        (Integer)f.get(null)
+                        (Integer) f.get(null)
                 ))
         );
     }
