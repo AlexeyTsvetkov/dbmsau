@@ -8,22 +8,22 @@ public class DirectoryPage extends RecordsPage {
     }
 
     public Boolean isDirectoryEmpty() {
-        return getMaxRecordsCount().equals(getFreeSlotsCount()+1);
+        return getMaxRecordsCount() == getFreeSlotsCount()+1;
     }
 
     public Boolean isDirectoryFull() {
-        return getFreeSlotsCount().equals(0);
+        return getFreeSlotsCount() == 0;
     }
 
-    public Integer nextDirectoryPageId() {
+    public int nextDirectoryPageId() {
         return getRecordFromSlot(0).getIntegerValue(0);
     }
 
-    public void setNextDirectoryPageId(Integer pageId) {
+    public void setNextDirectoryPageId(int pageId) {
         getRecordFromSlot(0).setIntegerValue(0, pageId);
     }
 
-    public Integer getPageIdFromSlot(int slotIndex) {
+    public int getPageIdFromSlot(int slotIndex) {
         return getRecordFromSlot(slotIndex).getIntegerValue(0);
     }
 }

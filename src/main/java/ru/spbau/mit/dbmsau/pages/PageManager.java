@@ -9,8 +9,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 abstract public class PageManager extends ContextContainer {
-    public static final Integer PAGE_SIZE = 4 * 1024;
-    protected static final Integer EMPTY_PAGES_LIST_HEAD_PAGE_ID = 0;
+    public static final int PAGE_SIZE = 4 * 1024;
+    protected static final int EMPTY_PAGES_LIST_HEAD_PAGE_ID = 0;
 
     private final Set<Integer> busyPagesIds = new HashSet<>();
 
@@ -42,7 +42,7 @@ abstract public class PageManager extends ContextContainer {
 
     }
 
-    public Page getPageById(Integer id, boolean isForWriting) {
+    public Page getPageById(int id, boolean isForWriting) {
         Page result = doGetPageById(id);
 
         if (isForWriting) {
@@ -52,13 +52,13 @@ abstract public class PageManager extends ContextContainer {
         return result;
     }
 
-    public void freePage(Integer pageId) {
+    public void freePage(int pageId) {
         doFreePage(pageId);
         releasePage(pageId);
     }
 
     public Page allocatePage() {
-        Integer id = doAllocatePage();
+        int id = doAllocatePage();
         return getPageById(id, true);
     }
 
@@ -70,9 +70,9 @@ abstract public class PageManager extends ContextContainer {
         return busyPagesIds.contains(id);
     }
 
-    abstract protected Page doGetPageById(Integer id);
+    abstract protected Page doGetPageById(int id);
 
-    abstract protected void doFreePage(Integer pageId);
+    abstract protected void doFreePage(int pageId);
 
-    public abstract Integer doAllocatePage();
+    public abstract int doAllocatePage();
 }

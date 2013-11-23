@@ -11,7 +11,7 @@ public class TableRecord {
         this.table = table;
     }
 
-    public void setIntegerValue(String column, Integer value) {
+    public void setIntegerValue(String column, int value) {
         record.setIntegerValue(table.getColumnOffsetByName(column), value);
     }
 
@@ -20,6 +20,6 @@ public class TableRecord {
     }
 
     public String getIntegerValue(String column) {
-        return record.getIntegerValue(table.getColumnOffsetByName(column)).toString();
+        return Integer.valueOf(record.getIntegerValue(table.getColumnOffsetByName(column))).toString();
     }
 }

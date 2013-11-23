@@ -3,16 +3,16 @@ package ru.spbau.mit.dbmsau.pages;
 import java.nio.ByteBuffer;
 
 public class Page {
-    public static final Integer NULL_PAGE_ID = -1;
+    public static final int NULL_PAGE_ID = -1;
 
-    private Integer id;
+    private int id;
     private PageData data;
 
-    public Page(Integer id) {
+    public Page(int id) {
         this.id = id;
     }
 
-    public Page(Integer id, byte[] bytes) {
+    public Page(int id, byte[] bytes) {
         this(id);
         data = new PageData(bytes);
     }
@@ -26,7 +26,7 @@ public class Page {
         this.data.setBytes(bytes);
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 

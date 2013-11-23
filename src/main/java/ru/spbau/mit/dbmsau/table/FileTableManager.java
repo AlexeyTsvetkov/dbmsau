@@ -57,23 +57,19 @@ public class FileTableManager extends TableManager {
         try {
             Scanner is = new Scanner(new FileInputStream(file));
             String name = is.nextLine();
-            Integer fullPageListHeadPageId = is.nextInt();
-            Integer notFullPageListHeadPageId = is.nextInt();
-            Integer columnsAmount = is.nextInt();
+            int fullPageListHeadPageId = is.nextInt();
+            int notFullPageListHeadPageId = is.nextInt();
+            int columnsAmount = is.nextInt();
             is.nextLine();
 
             ArrayList<Column> columns = new ArrayList<>();
 
             for (int i = 0; i < columnsAmount; i++) {
                 String columnName = is.nextLine();
-                Integer type = is.nextInt();
-                Integer length = is.nextInt();
+                int type = is.nextInt();
+                int length = is.nextInt();
 
                 is.nextLine();
-
-                if (length == -1) {
-                    length = null;
-                }
 
                 columns.add(new Column(columnName, new Type(type, length)));
             }
@@ -92,12 +88,12 @@ public class FileTableManager extends TableManager {
         ));
 
         os.println(table.getName());
-        os.println(table.getFullPagesListHeadPageId().toString() + " " + table.getNotFullPagesListHeadPageId());
+        os.println(Integer.valueOf(table.getFullPagesListHeadPageId()).toString() + " " + table.getNotFullPagesListHeadPageId());
         os.println(table.getColumns().size());
 
         for (Column column : table.getColumns()) {
             os.println(column.getName());
-            os.print(column.getType().getType().toString() + " ");
+            os.print(Integer.valueOf(column.getType().getType()).toString() + " ");
 
             if (column.getType().getLength() != null) {
                 os.print(column.getType().getLength());

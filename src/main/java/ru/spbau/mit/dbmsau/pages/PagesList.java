@@ -6,7 +6,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 public class PagesList implements Iterable<Page> {
-    private Integer headPageId;
+    private static final int SLOT_NOT_FOUND = -1;
+    private int headPageId;
     private Context context;
 
     static public PagesList createNewList(Context context) {
@@ -19,7 +20,7 @@ public class PagesList implements Iterable<Page> {
         return list;
     }
 
-    public PagesList(Integer headPageId, Context context) {
+    public PagesList(int headPageId, Context context) {
         this.headPageId = headPageId;
         this.context = context;
     }
@@ -33,9 +34,9 @@ public class PagesList implements Iterable<Page> {
     public Integer peek() {
         DirectoryPage headPage = getHeadPage(false);
 
-        Integer slotIndex = firstUsedSlotIndex(headPage);
+        int slotIndex = firstUsedSlotIndex(headPage);
 
-        if (slotIndex == null) {
+        if (slotIndex == SLOT_NOT_FOUND) {
             return null;
         }
 
@@ -44,9 +45,9 @@ public class PagesList implements Iterable<Page> {
 
     public Integer pop() {
         DirectoryPage headPage = getHeadPage(true);
-        Integer slotIndex = firstUsedSlotIndex(headPage);
+        int slotIndex = firstUsedSlotIndex(headPage);
 
-        if (slotIndex == null) {
+        if (slotIndex == SLOT_NOT_FOUND) {
             context.getPageManager().releasePage(headPage);
             return null;
         }
@@ -56,8 +57,8 @@ public class PagesList implements Iterable<Page> {
         headPage.freeRecord(slotIndex);
 
         if (headPage.isDirectoryEmpty()) {
-            Integer nextPageId = headPage.nextDirectoryPageId();
-            if (!nextPageId.equals(Page.NULL_PAGE_ID)) {
+            int nextPageId = headPage.nextDirectoryPageId();
+            if (nextPageId != Page.NULL_PAGE_ID) {
                 Page nextPage = context.getPageManager().getPageById(nextPageId, true);
                 headPage.assignDataFrom(nextPage);
 
@@ -80,7 +81,7 @@ public class PagesList implements Iterable<Page> {
         return context.getPageManager().getPageById(pageId, isForWriting);
     }
 
-    public void put(Integer newPageId) {
+    public void put(int newPageId) {
         DirectoryPage page = getHeadPage(true);
 
         while (page.isDirectoryFull()) {
@@ -102,7 +103,7 @@ public class PagesList implements Iterable<Page> {
         context.getPageManager().releasePage(page);
     }
 
-    public Integer getHeadPageId() {
+    public int getHeadPageId() {
         return headPageId;
     }
 
@@ -120,23 +121,23 @@ public class PagesList implements Iterable<Page> {
     }
 
     private DirectoryPage getNextPage(DirectoryPage page, boolean isForWriting) {
-        Integer nextPageId = page.nextDirectoryPageId();
+        int nextPageId = page.nextDirectoryPageId();
 
-        if (!nextPageId.equals(Page.NULL_PAGE_ID)) {
+        if (nextPageId != Page.NULL_PAGE_ID) {
             return buildDirectoryPage(nextPageId, isForWriting);
         } else {
             return null;
         }
     }
 
-    private Integer firstUsedSlotIndex(DirectoryPage page) {
+    private int firstUsedSlotIndex(DirectoryPage page) {
         for (int i = 1; i < page.getMaxRecordsCount(); i++) {
             if (page.isSlotUsed(i)) {
                 return i;
             }
         }
 
-        return null;
+        return -1;
     }
 
     private DirectoryPage initNewLastPage(Page page) {
@@ -153,7 +154,7 @@ public class PagesList implements Iterable<Page> {
 
     private class PagesIterator implements Iterator<Page> {
         private DirectoryPage currentPage;
-        private Integer currentSlot;
+        private int currentSlot;
 
         private PagesIterator() {
             currentPage = getHeadPage(false);
@@ -165,8 +166,8 @@ public class PagesList implements Iterable<Page> {
                 return;
             }
 
-            while (currentSlot == null || currentSlot >= currentPage.getMaxRecordsCount() || !currentPage.isSlotUsed(currentSlot)) {
-                if (currentSlot == null|| currentSlot >= currentPage.getMaxRecordsCount()) {
+            while (currentSlot == SLOT_NOT_FOUND || currentSlot >= currentPage.getMaxRecordsCount() || !currentPage.isSlotUsed(currentSlot)) {
+                if (currentSlot == SLOT_NOT_FOUND || currentSlot >= currentPage.getMaxRecordsCount()) {
                     currentPage = getNextPage(currentPage, false);
 
                     if (currentPage == null) {
@@ -183,7 +184,7 @@ public class PagesList implements Iterable<Page> {
         @Override
         public boolean hasNext() {
             walkUntilNext();
-            return  currentPage != null && currentSlot != null;
+            return  currentPage != null && currentSlot != SLOT_NOT_FOUND;
         }
 
         @Override

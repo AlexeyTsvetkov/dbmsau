@@ -6,8 +6,8 @@ import java.util.HashMap;
 public class Table {
     private String name;
     private ArrayList< Column > columns;
-    private Integer fullPagesListHeadPageId;
-    private Integer notFullPagesListHeadPageId;
+    private int fullPagesListHeadPageId;
+    private int notFullPagesListHeadPageId;
 
     private HashMap< String, Integer > columnsMap = new HashMap<>();
     private int[] columnsOffsets;
@@ -20,7 +20,7 @@ public class Table {
         initColumns();
     }
 
-    public Table(String name, ArrayList<Column> columns, Integer fullPageListHeadPageId, Integer notFullPageListHeadPageId) {
+    public Table(String name, ArrayList<Column> columns, int fullPageListHeadPageId, int notFullPageListHeadPageId) {
         this(name, columns);
         this.fullPagesListHeadPageId = fullPageListHeadPageId;
         this.notFullPagesListHeadPageId = notFullPageListHeadPageId;
@@ -76,19 +76,19 @@ public class Table {
         return getColumnOffset(getColumnNumberByName(name));
     }
 
-    public Integer getFullPagesListHeadPageId() {
+    public int getFullPagesListHeadPageId() {
         return fullPagesListHeadPageId;
     }
 
-    public Integer getNotFullPagesListHeadPageId() {
+    public int getNotFullPagesListHeadPageId() {
         return notFullPagesListHeadPageId;
     }
 
-    public void setFullPagesListHeadPageId(Integer fullPagesListHeadPageId) {
+    public void setFullPagesListHeadPageId(int fullPagesListHeadPageId) {
         this.fullPagesListHeadPageId = fullPagesListHeadPageId;
     }
 
-    public void setNotFullPagesListHeadPageId(Integer notFullPagesListHeadPageId) {
+    public void setNotFullPagesListHeadPageId(int notFullPagesListHeadPageId) {
         this.notFullPagesListHeadPageId = notFullPagesListHeadPageId;
     }
 }

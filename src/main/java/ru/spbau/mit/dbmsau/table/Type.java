@@ -9,10 +9,13 @@ public class Type {
 
     private static final String[] identifiers = new String[]{ TYPE_IDENTIFIER_INTEGER, TYPE_IDENTIFIER_VARCHAR };
 
-    private Integer type;
+    private int type;
     private Integer length;
 
-    public Type(Integer type, Integer length) {
+    public Type(int type, Integer length) {
+        if (length != null && length.equals(-1)) {
+            length = null;
+        }
         this.type = type;
         this.length = length;
     }
@@ -47,7 +50,7 @@ public class Type {
         return getIdentifier() + "(" + length.toString() + ")";
     }
 
-    public Integer getType() {
+    public int getType() {
         return type;
     }
 

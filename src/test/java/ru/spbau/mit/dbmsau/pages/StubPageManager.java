@@ -34,17 +34,17 @@ public class StubPageManager extends PageManager {
     }
 
     @Override
-    protected Page doGetPageById(Integer id) {
+    protected Page doGetPageById(int id) {
          return allPages.get(id);
     }
 
     @Override
-    protected void doFreePage(Integer pageId) {
+    protected void doFreePage(int pageId) {
         freePages.add(pageId);
     }
 
     @Override
-    public Integer doAllocatePage() {
+    public int doAllocatePage() {
         Integer id = freePages.iterator().next();
         freePages.remove(id);
 

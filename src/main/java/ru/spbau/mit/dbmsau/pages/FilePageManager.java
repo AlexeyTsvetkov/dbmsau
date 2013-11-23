@@ -15,9 +15,9 @@ import java.util.LinkedList;
 
 public class FilePageManager extends PageManager {
     private static final String dataFilename = "data.db";
-    private static final Integer EMPTY_PAGES_LIST_HEAD_PAGE_ID = 0;
-    private static final Integer RESERVE_PAGES_COUNT = 50;
-    private static final Integer MAX_PAGES_IN_CACHE = 50;
+    private static final int EMPTY_PAGES_LIST_HEAD_PAGE_ID = 0;
+    private static final int RESERVE_PAGES_COUNT = 50;
+    private static final int MAX_PAGES_IN_CACHE = 50;
 
     private RandomAccessFile dataFile;
     private Map< Integer, Page > cache = new HashMap<>();
@@ -61,11 +61,11 @@ public class FilePageManager extends PageManager {
         emptyPagesList.initList();
     }
 
-    private Long getOffsetByPageId(Integer id) {
+    private Long getOffsetByPageId(int id) {
         return Long.valueOf(id) * Long.valueOf(PAGE_SIZE);
     }
 
-    protected Page doGetPageById(Integer id) {
+    protected Page doGetPageById(int id) {
         if (cache.containsKey(id)) {
             return cache.get(id);
         }
@@ -90,7 +90,7 @@ public class FilePageManager extends PageManager {
         while(this.cache.size() > desiredSize) {
             Page firstInFirstOut = usageOrder.poll();
 
-            Integer pageId = firstInFirstOut.getId();
+            int pageId = firstInFirstOut.getId();
 
             if (isPageBusy(pageId)) {
                 usageOrder.add(firstInFirstOut);
@@ -108,7 +108,7 @@ public class FilePageManager extends PageManager {
         }
     }
 
-    private Page readPageFromFile(Integer id) {
+    private Page readPageFromFile(int id) {
         byte[] data = new byte[PAGE_SIZE];
 
         try {
@@ -121,8 +121,8 @@ public class FilePageManager extends PageManager {
         return new Page(id, data);
     }
 
-    protected void doFreePage(Integer pageId) {
-        if (pageId.equals(EMPTY_PAGES_LIST_HEAD_PAGE_ID)) {
+    protected void doFreePage(int pageId) {
+        if (pageId == EMPTY_PAGES_LIST_HEAD_PAGE_ID) {
             throw new Error("freeing of system page");
         }
 
@@ -130,12 +130,12 @@ public class FilePageManager extends PageManager {
         emptyPagesList.put(pageId);
     }
 
-    public Integer doAllocatePage() {
+    public int doAllocatePage() {
         Integer pageId = emptyPagesList.pop();
 
         if (pageId == null) {
             try {
-                Integer nextPageId = Long.valueOf(dataFile.length() / PAGE_SIZE).intValue();
+                int nextPageId = Long.valueOf(dataFile.length() / PAGE_SIZE).intValue();
                 dataFile.setLength(dataFile.length() + PAGE_SIZE * RESERVE_PAGES_COUNT);
 
                 for (int i = 0; i < RESERVE_PAGES_COUNT; i++) {
