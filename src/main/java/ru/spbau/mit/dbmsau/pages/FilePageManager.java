@@ -135,7 +135,7 @@ public class FilePageManager extends PageManager {
 
         if (pageId == null) {
             try {
-                int nextPageId = Long.valueOf(dataFile.length() / PAGE_SIZE).intValue();
+                int nextPageId = (int)(dataFile.length() / (long)PAGE_SIZE);
                 dataFile.setLength(dataFile.length() + PAGE_SIZE * RESERVE_PAGES_COUNT);
 
                 for (int i = 0; i < RESERVE_PAGES_COUNT; i++) {
