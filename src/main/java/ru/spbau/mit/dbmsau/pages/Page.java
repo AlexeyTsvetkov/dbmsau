@@ -93,5 +93,21 @@ public class Page {
             byteBuffer.putInt(byteNumber, v);
             return this;
         }
+
+        public PageData put(int bufferOffset, byte[] src) {
+            markAsDirty();
+
+            byteBuffer.position(bufferOffset);
+            byteBuffer.put(src);
+
+            return this;
+        }
+
+        public PageData get(int bufferOffset, byte[] dst) {
+            byteBuffer.position(bufferOffset);
+            byteBuffer.get(dst);
+
+            return this;
+        }
     }
 }

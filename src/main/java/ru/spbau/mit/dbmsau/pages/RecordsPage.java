@@ -44,12 +44,12 @@ public class RecordsPage extends Page implements Iterable< Record > {
         }
     }
 
-    private int getSlotOffset(int slotIndex) {
+    public int getSlotOffset(int slotIndex) {
         return getRecordsLength() * slotIndex;
     }
 
     public Record getRecordFromSlot(int slotIndex) {
-        return new Record(this, getSlotOffset(slotIndex));
+        return new Record(this, slotIndex);
     }
 
     protected int getFreeSlotsCount() {

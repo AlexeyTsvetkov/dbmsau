@@ -30,9 +30,11 @@ public class SQLStatementsVisitor extends ASTNodeVisitor {
         List<Column> columnDescriptions = new LinkedList<>();
 
         for (ColumnDescriptionNode columnDescriptionNode : node.getColumns() ) {
+            Integer typeLength = columnDescriptionNode.getType().getLength();
             Type typeDescription = Type.getType(
                     columnDescriptionNode.getType().getTypeIdentifier(),
-                    columnDescriptionNode.getType().getLength()
+                    typeLength == null ? Type.UNDEFINED_LENGTH : typeLength
+
             );
             columnDescriptions.add(new Column(columnDescriptionNode.getIdentifier(), typeDescription));
         }

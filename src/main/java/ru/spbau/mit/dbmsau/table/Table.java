@@ -50,6 +50,10 @@ public class Table {
         return columns;
     }
 
+    public int getRecordSize() {
+        return recordSize;
+    }
+
     public Integer getColumnNumberByName(String name) {
         return columnsMap.get(name);
     }
@@ -70,6 +74,10 @@ public class Table {
 
     public int getColumnOffset(int number) {
         return columnsOffsets[number];
+    }
+
+    public Type getColumnTypeByNumber(int number) {
+        return columns.get(number).getType();
     }
 
     public int getColumnOffsetByName(String name) {

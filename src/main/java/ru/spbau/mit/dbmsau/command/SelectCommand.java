@@ -68,7 +68,7 @@ public class SelectCommand extends AbstractSQLCommand {
             LinkedList<String> row = new LinkedList<>();
 
             for(int i = 0; i < table.getColumns().size(); i++) {
-                row.add(record.getIntegerValue(table.getColumns().get(i).getName()));
+                row.add(record.getValueAsString(table.getColumns().get(i).getName()));
             }
 
             return joinCSV(row);

@@ -12,7 +12,7 @@ public class TableRecordsPage extends RecordsPage {
     }
 
     private static int getRecordLengthByTable(Table table) {
-        return table.getColumns().size() * 4;
+        return table.getRecordSize();
     }
 
     public TableRecord getClearTableRecord() {
