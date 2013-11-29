@@ -7,7 +7,9 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.spbau.mit.dbmsau.BaseTest;
 import ru.spbau.mit.dbmsau.command.exception.CommandExecutionException;
+import ru.spbau.mit.dbmsau.exception.UserError;
 import ru.spbau.mit.dbmsau.table.RecordManager;
+import ru.spbau.mit.dbmsau.table.exception.SemanticError;
 
 import java.util.ArrayList;
 
@@ -28,7 +30,7 @@ public class InsertCommandTest extends BaseTest {
 
     @Test
     public void testInsertFail() throws Exception {
-        thrown.expect(CommandExecutionException.class);
+        thrown.expect(UserError.class);
         thrown.expectMessage("No such table `test123`");
 
         ArrayList<String> columns = new ArrayList<>();
@@ -37,6 +39,22 @@ public class InsertCommandTest extends BaseTest {
         columns.add("name");values.add("2");
 
         InsertCommand command = new InsertCommand("test123", columns, values);
+        command.setContext(context);
+
+        assertNotNull(command.execute());
+    }
+
+    @Test
+    public void testInsertWrongType() throws Exception {
+        thrown.expect(SemanticError.class);
+        thrown.expectMessage("Semantic Error: `id` should be and integer");
+
+        ArrayList<String> columns = new ArrayList<>();
+        ArrayList<String> values = new ArrayList<>();
+        columns.add("id");values.add("abcde");
+        columns.add("name");values.add("2");
+
+        InsertCommand command = new InsertCommand("test", columns, values);
         command.setContext(context);
 
         assertNotNull(command.execute());

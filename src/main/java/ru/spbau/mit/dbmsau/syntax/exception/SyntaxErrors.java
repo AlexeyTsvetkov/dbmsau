@@ -1,10 +1,12 @@
 package ru.spbau.mit.dbmsau.syntax.exception;
 
 
+import ru.spbau.mit.dbmsau.exception.UserError;
+
 import java.util.LinkedList;
 import java.util.List;
 
-public class SyntaxErrors extends Error {
+public class SyntaxErrors extends UserError {
     private List< String > errors;
 
     public SyntaxErrors(List<String> errors) {

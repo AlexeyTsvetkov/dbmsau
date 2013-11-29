@@ -5,6 +5,7 @@ import ru.spbau.mit.dbmsau.pages.PageManager;
 import ru.spbau.mit.dbmsau.pages.exception.PageManagerInitException;
 import ru.spbau.mit.dbmsau.table.FileTableManager;
 import ru.spbau.mit.dbmsau.table.RecordManager;
+import ru.spbau.mit.dbmsau.table.SemanticValidator;
 import ru.spbau.mit.dbmsau.table.TableManager;
 
 import java.io.File;
@@ -14,6 +15,7 @@ public class Context {
     private PageManager pageManager;
     private TableManager tableManager;
     private RecordManager recordManager;
+    private SemanticValidator semanticValidator;
 
     public static Context loadContextFromPath(String path) {
         Context obj = new Context(path);
@@ -21,6 +23,7 @@ public class Context {
             obj.pageManager = new FilePageManager(obj);
             obj.tableManager = new FileTableManager(obj);
             obj.recordManager = new RecordManager(obj);
+
             obj.init();
         } catch (Exception e) {
             e.printStackTrace();
@@ -31,6 +34,7 @@ public class Context {
 
     public Context(String path) {
         this.path = path;
+        this.semanticValidator = new SemanticValidator();
     }
 
     public String getPath() {
@@ -67,6 +71,10 @@ public class Context {
 
     public void setRecordManager(RecordManager recordManager) {
         this.recordManager = recordManager;
+    }
+
+    public SemanticValidator getSemanticValidator() {
+        return semanticValidator;
     }
 
     public void init() throws PageManagerInitException {

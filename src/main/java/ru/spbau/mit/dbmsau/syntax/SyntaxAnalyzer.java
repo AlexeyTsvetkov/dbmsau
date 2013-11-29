@@ -15,7 +15,10 @@ public class SyntaxAnalyzer implements Iterable< AbstractSQLCommand >, Iterator<
     private ASTNode nextStatementNode = null;
     private SQLStatementsVisitor visitor = new SQLStatementsVisitor();
 
+    private InputStream currentInputStream;
+
     public SyntaxAnalyzer(InputStream is) {
+        currentInputStream = is;
         setParserByLexer(buildLexer(is));
     }
 
@@ -51,16 +54,20 @@ public class SyntaxAnalyzer implements Iterable< AbstractSQLCommand >, Iterator<
         try {
             result = parser.parse().value;
         } catch (LexicalError e) {
-            throw new SyntaxErrors(e.getMessage());
+            parser.getErrors().add(e.getMessage());
         } catch (SyntaxFatalError e) {
-            throw new SyntaxErrors(parser.getErrors());
+
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
 
         if (parser.getErrors().size() > 0) {
-            throw new SyntaxErrors(parser.getErrors());
+            SyntaxErrors errors = new SyntaxErrors(parser.getErrors());
+            if (currentInputStream != null) {
+                setParserByLexer(buildLexer(currentInputStream));
+            }
+            throw errors;
         }
 
         return result;

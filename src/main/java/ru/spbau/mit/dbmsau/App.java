@@ -2,6 +2,7 @@ package ru.spbau.mit.dbmsau;
 
 import ru.spbau.mit.dbmsau.command.AbstractSQLCommand;
 import ru.spbau.mit.dbmsau.command.SQLCommandResult;
+import ru.spbau.mit.dbmsau.exception.UserError;
 import ru.spbau.mit.dbmsau.syntax.SyntaxAnalyzer;
 
 /**
@@ -23,10 +24,25 @@ public class App
         SyntaxAnalyzer analyzer = new SyntaxAnalyzer(System.in);
 
         try {
-            for (AbstractSQLCommand command : analyzer) {
-                command.setContext(context);
+            while (true) {
+                System.out.print('>');
 
-                SQLCommandResult result = command.execute();
+                SQLCommandResult result = null;
+
+                try {
+                    if (!analyzer.hasNext()) {
+                        break;
+                    }
+
+                    AbstractSQLCommand command = analyzer.next();
+
+                    command.setContext(context);
+
+                    result = command.execute();
+                } catch (UserError error) {
+                    System.out.println(error.getMessage());
+                    continue;
+                }
 
                 if (result.isOk())  {
 

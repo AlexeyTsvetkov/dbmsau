@@ -18,15 +18,6 @@ public class RecordManager extends ContextContainer {
     }
 
     public void insert(Table table, List<String> columns, List<String> values) throws RecordManagerException {
-        if (columns.size() != values.size()) {
-            throw new RecordManagerException("Columns and values size are not equal");
-        }
-
-        for (String column : columns) {
-            if (!table.hasColumn(column)) {
-                throw new RecordManagerException("No such column `" +  column + "`");
-            }
-        }
 
         PagesList notFullPagesList = buildPagesListByHeadPageId(table.getNotFullPagesListHeadPageId());
 

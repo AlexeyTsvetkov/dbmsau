@@ -2,6 +2,7 @@ package ru.spbau.mit.dbmsau.command;
 
 import ru.spbau.mit.dbmsau.Context;
 import ru.spbau.mit.dbmsau.command.exception.CommandExecutionException;
+import ru.spbau.mit.dbmsau.exception.UserError;
 import ru.spbau.mit.dbmsau.table.Table;
 
 abstract public class AbstractSQLCommand {
@@ -15,11 +16,11 @@ abstract public class AbstractSQLCommand {
         this.context = context;
     }
 
-    protected Table getTable(String name) throws CommandExecutionException {
+    protected Table getTable(String name) {
         Table table = getContext().getTableManager().getTable(name);
 
         if (table == null) {
-            throw new CommandExecutionException("No such table `" +  name + "`");
+            throw new UserError("No such table `" +  name + "`");
         }
 
         return table;
