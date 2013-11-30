@@ -13,6 +13,8 @@ public class Type {
 
     private static final String[] identifiers = new String[]{ TYPE_IDENTIFIER_INTEGER, TYPE_IDENTIFIER_VARCHAR };
 
+    private static final Type INTEGER_TYPE = new Type(TYPE_INTEGER, UNDEFINED_LENGTH);
+
     private int type;
     private int length;
     private int size;
@@ -31,11 +33,15 @@ public class Type {
     public static Type getType(String identifier, int length) {
         switch (identifier.toLowerCase()) {
             case TYPE_IDENTIFIER_INTEGER:
-                return new Type(TYPE_INTEGER, UNDEFINED_LENGTH);
+                return getIntegerType();
             case TYPE_IDENTIFIER_VARCHAR:
                 return new Type(TYPE_VARCHAR, length);
         }
         return null;
+    }
+
+    public static Type getIntegerType() {
+        return INTEGER_TYPE;
     }
 
     public static Type getType(String identifier) {
