@@ -43,8 +43,34 @@ public class PagesList implements Iterable<Page> {
         return headPage.getPageIdFromSlot(slotIndex);
     }
 
+    private boolean deleteElement(int pageId, int slotIndex) {
+        DirectoryPage page = buildDirectoryPage(pageId, true);
+
+        page.freeRecord(slotIndex);
+
+        boolean wasPagesShifted = false;
+
+        while (page.isDirectoryEmpty()) {
+            wasPagesShifted = true;
+            int nextPageId = page.nextDirectoryPageId();
+            if (nextPageId != Page.NULL_PAGE_ID) {
+                Page nextPage = context.getPageManager().getPageById(nextPageId, true);
+                page.assignDataFrom(nextPage);
+
+                context.getPageManager().freePage(nextPageId);
+            } else {
+                context.getPageManager().releasePage(page);
+                return wasPagesShifted;
+            }
+        }
+
+        context.getPageManager().releasePage(page);
+
+        return wasPagesShifted;
+    }
+
     public Integer pop() {
-        DirectoryPage headPage = getHeadPage(true);
+        DirectoryPage headPage = getHeadPage(false);
         int slotIndex = firstUsedSlotIndex(headPage);
 
         if (slotIndex == SLOT_NOT_FOUND) {
@@ -54,19 +80,7 @@ public class PagesList implements Iterable<Page> {
 
         Integer result = peek();
 
-        headPage.freeRecord(slotIndex);
-
-        if (headPage.isDirectoryEmpty()) {
-            int nextPageId = headPage.nextDirectoryPageId();
-            if (nextPageId != Page.NULL_PAGE_ID) {
-                Page nextPage = context.getPageManager().getPageById(nextPageId, true);
-                headPage.assignDataFrom(nextPage);
-
-                context.getPageManager().freePage(nextPageId);
-            }
-        }
-
-        context.getPageManager().releasePage(headPage);
+        deleteElement(getHeadPageId(), slotIndex);
 
         return result;
     }
@@ -195,7 +209,10 @@ public class PagesList implements Iterable<Page> {
 
         @Override
         public void remove() {
-
+            //deleteElement returns true when pages swapped
+            if (deleteElement(currentPage.getId(), currentSlot-1)) {
+                currentSlot = firstUsedSlotIndex(currentPage);
+            }
         }
     }
 }

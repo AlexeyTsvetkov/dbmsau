@@ -26,6 +26,12 @@ public class Page {
         this.data.setBytes(bytes);
     }
 
+
+    public void clearData() {
+        byte[] bytes = new byte[PageManager.PAGE_SIZE];
+        this.data.setBytes(bytes);
+    }
+
     public int getId() {
         return id;
     }

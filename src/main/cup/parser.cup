@@ -38,7 +38,7 @@ init with {:
 :};
 
 terminal TerminalNode QUIT;
-terminal TerminalNode CREATE,TABLE,INSERT,INTO,VALUES,SELECT,FROM;
+terminal TerminalNode CREATE,TABLE,INSERT,INTO,VALUES,SELECT,FROM,DELETE;
 terminal TerminalNode LEFTPAR,RIGHTPAR,LEFTBRACKET,RIGHTBRACKET;
 terminal TerminalNode OR,DIV,MOD,AND,MAIN,COMMA,EQUALS,COLON,NOT,NOTEQUAL,LESS,LESSOREQUAL,MORE,MOREOREQUAL,PLUS,MINUS,ASTERISK,DIVIDE,DOT;
 terminal TerminalNode INTEGER_LITERAL;
@@ -56,6 +56,7 @@ non terminal InsertStatementNode          insert_statement;
 non terminal LinkedList< TerminalNode >   columns_list;
 
 non terminal SelectStatementNode          select_statement;
+non terminal DeleteStatementNode          delete_statement;
 
 non terminal CreateTableStatementNode     create_table_statement;
 non terminal LinkedList< ColumnDescriptionNode > columns_descriptions_list;
@@ -78,6 +79,8 @@ statement ::= create_table_statement:e1 {: RESULT = e1; :}
              |
               select_statement:e1 {: RESULT = e1; :}
              |
+              delete_statement:e1 {: RESULT = e1; :}
+             |
               QUIT:e1 {: RESULT = null; :}
              ;
 
@@ -89,6 +92,10 @@ insert_statement ::= INSERT INTO IDENT:tableName LEFTPAR columns_list:cList RIGH
                            LEFTPAR:e3 values_list:vList RIGHTPAR:e5
                         {: RESULT = new InsertStatementNode(tableName, cList, vList); :}
                     ;
+
+delete_statement ::= DELETE FROM IDENT:tableName
+                     {: RESULT = new DeleteStatementNode(tableName); :}
+                   ;
 
 columns_list ::= idents_list:e1 {: RESULT = e1; :};
 

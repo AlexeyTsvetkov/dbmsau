@@ -23,6 +23,10 @@ abstract public class ASTNodeVisitor {
     public void visit(SelectStatementNode node) {
         throw new NotImplementedException();
     }
+
+    public void visit(DeleteStatementNode node) {
+        throw new NotImplementedException();
+    }
     
     protected String getTerminalValue(ASTNode node) {
         node.accept(this);

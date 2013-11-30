@@ -86,6 +86,47 @@ public class PagesListTest extends BaseTest {
         checkBusyPages();
     }
 
+    @Test
+    public void testIteratorRemoving() throws Exception {
+        PagesList list = new PagesList(HEAD_PAGE_ID, context);
+        list.initList();
+
+        for (int i = 1000; i < 5000; i++) {
+            list.put(i);
+        }
+
+        Iterator<Page> it = list.iterator();
+
+        for (int i = 1000; i < 5000; i++) {
+            assertTrue(it.hasNext());
+            Page next = it.next();
+
+            assertThat(next.getId(), is(i));
+
+            if (i > 1000 && i < 4000) {
+                it.remove();
+            }
+        }
+
+        it = list.iterator();
+
+        for (int i = 1000; i < 5000; i++) {
+            if (i > 1000 && i < 4000) {
+                continue;
+            }
+            assertTrue(it.hasNext());
+            Page next = it.next();
+
+            assertThat(next.getId(), is(i));
+        }
+
+        assertFalse(it.hasNext());
+        assertFalse(it.hasNext());
+
+        checkBusyPages();
+    }
+
+
     private void iterateList(PagesList list) {
         Iterator<Page> it = list.iterator();
 

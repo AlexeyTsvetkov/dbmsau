@@ -60,4 +60,12 @@ public class Record {
 
         return new String(content);
     }
+
+    public int getPageId() {
+        return page.getId();
+    }
+
+    public int getSlotIndex() {
+        return slotIndex;
+    }
 }

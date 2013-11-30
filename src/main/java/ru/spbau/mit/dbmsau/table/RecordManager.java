@@ -6,6 +6,7 @@ import ru.spbau.mit.dbmsau.pages.Page;
 import ru.spbau.mit.dbmsau.pages.PagesList;
 import ru.spbau.mit.dbmsau.table.exception.RecordManagerException;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class RecordManager extends ContextContainer {
@@ -47,8 +48,20 @@ public class RecordManager extends ContextContainer {
         return new RecordSet(
                 table,
                 buildPagesListByHeadPageId(table.getFullPagesListHeadPageId()),
-                buildPagesListByHeadPageId(table.getNotFullPagesListHeadPageId())
+                buildPagesListByHeadPageId(table.getNotFullPagesListHeadPageId()),
+                context
         );
+    }
+
+    public void delete(Table table) {
+        RecordSet recordSet = select(table);
+
+        Iterator<TableRecord> iterator = recordSet.iterator();
+
+        while (iterator.hasNext()) {
+            iterator.next();
+            iterator.remove();
+        }
     }
 
     private PagesList buildPagesListByHeadPageId(int headPageId) {

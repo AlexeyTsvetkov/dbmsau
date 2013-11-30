@@ -2,12 +2,10 @@ package ru.spbau.mit.dbmsau.table;
 
 import static org.hamcrest.CoreMatchers.*;
 import org.junit.Test;
-import ru.spbau.mit.dbmsau.BaseTest;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
-public class RecordManagerSelectTest extends BaseTest {
+public class RecordManagerSelectTest extends TestTableTest {
     @Test
     public void testSelect() throws Exception {
         initSQLDumpLoad("create_insert_test.sql");
@@ -41,23 +39,5 @@ public class RecordManagerSelectTest extends BaseTest {
 
         compareTestContent(shouldBe);
         compareTestContent(shouldBe);
-    }
-
-    private void compareTestContent(String[][] shouldBe) {
-
-        Iterator<TableRecord> recordSet = context.getRecordManager().select(context.getTableManager().getTable("test")).iterator();
-
-        for (String[] a: shouldBe) {
-            assertTrue(recordSet.hasNext());
-
-            TableRecord next = recordSet.next();
-
-            assertThat(next.getValueAsString("id"), is(a[0]));
-            assertThat(next.getValueAsString("name"), is(a[1]));
-        }
-
-        assertFalse(recordSet.hasNext());
-
-        checkBusyPages();
     }
 }

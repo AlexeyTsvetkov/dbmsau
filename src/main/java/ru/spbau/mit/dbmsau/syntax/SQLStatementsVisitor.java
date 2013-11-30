@@ -1,10 +1,7 @@
 package ru.spbau.mit.dbmsau.syntax;
 
-import ru.spbau.mit.dbmsau.command.AbstractSQLCommand;
-import ru.spbau.mit.dbmsau.command.InsertCommand;
-import ru.spbau.mit.dbmsau.command.SelectCommand;
+import ru.spbau.mit.dbmsau.command.*;
 import ru.spbau.mit.dbmsau.table.Column;
-import ru.spbau.mit.dbmsau.command.CreateTableCommand;
 import ru.spbau.mit.dbmsau.table.Type;
 import ru.spbau.mit.dbmsau.syntax.ast.*;
 
@@ -55,5 +52,10 @@ public class SQLStatementsVisitor extends ASTNodeVisitor {
     @Override
     public void visit(SelectStatementNode node) {
         setLastCommand(new SelectCommand(node.getTableFrom().getLexemeValue()));
+    }
+
+    @Override
+    public void visit(DeleteStatementNode node) {
+        setLastCommand(new DeleteCommand(node.getTableName().getLexemeValue()));
     }
 }

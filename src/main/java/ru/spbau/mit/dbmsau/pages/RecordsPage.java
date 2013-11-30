@@ -71,6 +71,10 @@ public class RecordsPage extends Page implements Iterable< Record > {
         return getFreeSlotsCount() == 0;
     }
 
+    public boolean isAlmostFull() {
+        return getFreeSlotsCount() == 1;
+    }
+
     public Record getClearRecord() {
         int slotIndex = 0;
         while (slotIndex < getMaxRecordsCount() && isSlotUsed(slotIndex)) {
@@ -112,7 +116,7 @@ public class RecordsPage extends Page implements Iterable< Record > {
 
         @Override
         public void remove() {
-
+            setSlotStatus(counter - 1, false);
         }
     }
 }

@@ -59,7 +59,10 @@ abstract public class PageManager extends ContextContainer {
 
     public Page allocatePage() {
         int id = doAllocatePage();
-        return getPageById(id, true);
+        Page page = getPageById(id, true);
+        page.clearData();
+
+        return page;
     }
 
     public boolean isThereBusyPages() {
