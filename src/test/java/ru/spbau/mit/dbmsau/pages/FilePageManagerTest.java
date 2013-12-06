@@ -10,7 +10,6 @@ import ru.spbau.mit.dbmsau.Context;
 import ru.spbau.mit.dbmsau.pages.exception.PageManagerInitException;
 
 import java.lang.reflect.Field;
-import java.nio.ByteBuffer;
 import java.util.Map;
 
 public class FilePageManagerTest extends BaseTest {
@@ -25,7 +24,7 @@ public class FilePageManagerTest extends BaseTest {
 
         newPageManager.init();
 
-        Page.PageData buffer = newPageManager.getPageById(0, true).getByteBuffer();
+        DataHolder buffer = newPageManager.getPageById(0, true).getByteBuffer();
 
         assertThat(buffer.get(0), is(Integer.valueOf(-1).byteValue()));
     }

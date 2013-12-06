@@ -9,7 +9,7 @@ public class Record {
         this.slotIndex = slotIndex;
     }
 
-    private Page.PageData getPageByteBuffer() {
+    private DataHolder getPageByteBuffer() {
         return page.getByteBuffer();
     }
 
@@ -26,39 +26,12 @@ public class Record {
     }
 
     public void setStringValue(int valueOffset, String value, int maxLength) {
-        if (value.length() > maxLength) {
-            value = value.substring(0, maxLength);
-        }
-
-        getPageByteBuffer().put(getRecordOffset() + valueOffset, value.getBytes());
-
-        if (value.length() < maxLength) {
-            getPageByteBuffer().put(getRecordOffset() + valueOffset + value.length(), (byte) 0);
-        }
-
+        getPageByteBuffer().putString(getRecordOffset() + valueOffset, value, maxLength);
     }
 
     public String getStringValue(int valueOffset, int maxLength) {
         int beginOffset = getRecordOffset() + valueOffset;
-        int maxOffset = beginOffset + maxLength;
-
-        int end = beginOffset;
-
-        while (end < maxOffset) {
-            if (getPageByteBuffer().get(end) == 0) {
-                break;
-            }
-
-            end++;
-        }
-
-        //string within [beginOffset,end) interval
-
-        byte[] content = new byte[end - beginOffset];
-
-        getPageByteBuffer().get(beginOffset, content);
-
-        return new String(content);
+        return getPageByteBuffer().getString(beginOffset, maxLength);
     }
 
     public int getPageId() {
