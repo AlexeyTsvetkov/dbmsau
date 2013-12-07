@@ -1,5 +1,7 @@
 package ru.spbau.mit.dbmsau;
 
+import ru.spbau.mit.dbmsau.index.FileIndexManager;
+import ru.spbau.mit.dbmsau.index.IndexManager;
 import ru.spbau.mit.dbmsau.pages.FilePageManager;
 import ru.spbau.mit.dbmsau.pages.PageManager;
 import ru.spbau.mit.dbmsau.pages.exception.PageManagerInitException;
@@ -15,6 +17,7 @@ public class Context {
     private PageManager pageManager;
     private TableManager tableManager;
     private RecordManager recordManager;
+    private IndexManager indexManager;
     private SemanticValidator semanticValidator;
 
     public static Context loadContextFromPath(String path) {
@@ -23,6 +26,7 @@ public class Context {
             obj.pageManager = new FilePageManager(obj);
             obj.tableManager = new FileTableManager(obj);
             obj.recordManager = new RecordManager(obj);
+            obj.indexManager = new FileIndexManager(obj);
 
             obj.init();
         } catch (Exception e) {
@@ -73,6 +77,14 @@ public class Context {
         this.recordManager = recordManager;
     }
 
+    public IndexManager getIndexManager() {
+        return indexManager;
+    }
+
+    public void setIndexManager(IndexManager indexManager) {
+        this.indexManager = indexManager;
+    }
+
     public SemanticValidator getSemanticValidator() {
         return semanticValidator;
     }
@@ -81,6 +93,7 @@ public class Context {
         getPageManager().init();
         getTableManager().init();
         getRecordManager().init();
+        getIndexManager().init();
     }
 
     public void onQuit() throws Exception {

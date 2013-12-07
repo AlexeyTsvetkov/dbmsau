@@ -8,6 +8,7 @@ import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import ru.spbau.mit.dbmsau.command.AbstractSQLCommand;
+import ru.spbau.mit.dbmsau.index.FileIndexManager;
 import ru.spbau.mit.dbmsau.pages.PageManager;
 import ru.spbau.mit.dbmsau.pages.StubPageManager;
 import ru.spbau.mit.dbmsau.pages.exception.PageManagerInitException;
@@ -16,6 +17,7 @@ import ru.spbau.mit.dbmsau.table.FileTableManager;
 import ru.spbau.mit.dbmsau.table.RecordManager;
 import ru.spbau.mit.dbmsau.table.TableManager;
 
+import java.io.File;
 import java.io.FileInputStream;
 
 public class BaseTest extends Assert {
@@ -33,6 +35,7 @@ public class BaseTest extends Assert {
         context.setPageManager(buildPageManager(context));
         context.setTableManager(buildTableManager(context));
         context.setRecordManager(new RecordManager(context));
+        context.setIndexManager(new FileIndexManager(context));
 
         try {
             context.init();
@@ -68,11 +71,15 @@ public class BaseTest extends Assert {
 
         context = buildContext();
     }
+
+    protected File getResourceFileByName(String resourceName) {
+        return FileUtils.toFile(getClass().getResource(resourceName));
+    }
     
     protected void initSQLDumpLoad(String resourceName) throws Exception {
         if (resourceName != null) {
             SyntaxAnalyzer analyzer = new SyntaxAnalyzer(new FileInputStream(
-                    FileUtils.toFile(getClass().getResource(resourceName))
+                    getResourceFileByName(resourceName)
             ));
 
             for (AbstractSQLCommand command : analyzer) {

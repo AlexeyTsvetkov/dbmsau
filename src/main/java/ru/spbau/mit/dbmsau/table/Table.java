@@ -2,6 +2,7 @@ package ru.spbau.mit.dbmsau.table;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Table {
     private String name;
@@ -86,6 +87,17 @@ public class Table {
 
     public int getFullPagesListHeadPageId() {
         return fullPagesListHeadPageId;
+    }
+
+    public int[] getColumnNumbersByNames(List<String> columns) {
+        int[] columnNumbers = new int[columns.size()];
+        int i = 0;
+
+        for (String name : columns) {
+            columnNumbers[i++] = getColumnNumberByName(name);
+        }
+
+        return columnNumbers;
     }
 
     public int getNotFullPagesListHeadPageId() {
