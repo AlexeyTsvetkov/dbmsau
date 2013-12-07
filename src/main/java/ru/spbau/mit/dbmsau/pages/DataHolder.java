@@ -99,4 +99,9 @@ public class DataHolder {
 
         return this;
     }
+
+    public byte[] getBytes()
+    {
+        return bytes;
+    }
 }

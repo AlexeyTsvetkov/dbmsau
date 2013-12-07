@@ -1,10 +1,18 @@
 package ru.spbau.mit.dbmsau.index.btree;
 
+import ru.spbau.mit.dbmsau.pages.Page;
+
 import java.util.ArrayList;
 
 public class LeafNode extends Node{
-    public LeafNode(int nodeId, BTree bTree, int order) {
-        super(nodeId, true, bTree, order);
+    public LeafNode(int nodeId, NodeData nodeData, BTree bTree) {
+        super(nodeId, nodeData, bTree);
+    }
+
+    public static LeafNode getNewLeafNode(Page page, int keySize, int valSize, BTree bTree)
+    {
+        NodeData nodeData = NodeData.getNewData(true, page, keySize, valSize);
+        return new LeafNode(page.getId(), nodeData, bTree);
     }
 
     public Node put(TreeTuple key, TreeTuple value)
@@ -15,7 +23,7 @@ public class LeafNode extends Node{
         int insertIndex = bTree.findInsertIndex(this, key);
 
         // If the key already exists, then just replace.
-        if(insertIndex < nodeData.amountOfKeys && nodeData.getKey(insertIndex).equals(key))
+        if(insertIndex < nodeData.getAmountOfKeys() && nodeData.getKey(insertIndex).equals(key))
         {
             nodeData.setValue(insertIndex, value);
         }
@@ -26,25 +34,29 @@ public class LeafNode extends Node{
             nodeData.addValue(insertIndex, value);
 
             // Do we need to split?
-            if(nodeData.amountOfKeys > order)
+            if(nodeData.getAmountOfKeys() > nodeData.getOrder())
             {
                 newLeaf = bTree.getNewNode(true);
 
-                for(int i = nodeData.amountOfKeys/2; i< nodeData.amountOfKeys; i++)
+                for(int i = nodeData.getAmountOfKeys()/2; i< nodeData.getAmountOfKeys(); i++)
                 {
-                    newLeaf.nodeData.addKey(nodeData.getKey(i));
                     newLeaf.nodeData.addValue(nodeData.getValue(i));
+                    newLeaf.nodeData.addKey(nodeData.getKey(i));
                 }
 
-                nodeData.resize(nodeData.amountOfKeys / 2);
+                nodeData.resize(nodeData.getAmountOfKeys() / 2);
 
-                newLeaf.nodeData.nextNodeId = nodeData.nextNodeId;
-                newLeaf.nodeData.prevNodeId = this.nodeId;
-                if(nodeData.nextNodeId != NodeData.NO_NODE_ID)
+                newLeaf.nodeData.setNextNodeId(nodeData.getNextNodeId());
+                newLeaf.nodeData.setPrevNodeId(this.nodeId);
+
+                if(nodeData.getNextNodeId() != NodeData.NO_NODE_ID)
                 {
-                    bTree.getNodeById(nodeData.nextNodeId).nodeData.prevNodeId = newLeaf.nodeId;
+                    Node nextNode = bTree.getNodeById(nodeData.getNextNodeId(), true);
+                    nextNode.nodeData.setPrevNodeId(newLeaf.nodeId);
+                    bTree.releaseNode(nextNode);
                 }
-                nodeData.nextNodeId = newLeaf.nodeId;
+
+                nodeData.setNextNodeId(newLeaf.nodeId);
             }
         }
 

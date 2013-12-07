@@ -1,16 +1,17 @@
 package ru.spbau.mit.dbmsau.index.btree;
 
+import ru.spbau.mit.dbmsau.pages.Page;
+
 public abstract class Node {
     int nodeId;
     NodeData nodeData;
     BTree bTree;
-    int order;
 
-    public Node(int nodeId, boolean isLeaf, BTree bTree, int order) {
+    public Node(int nodeId, NodeData nodeData, BTree bTree)
+    {
         this.nodeId = nodeId;
-        this.nodeData = new NodeData(isLeaf);
+        this.nodeData = nodeData;
         this.bTree = bTree;
-        this.order = order;
     }
 
     public abstract Node put(TreeTuple key, TreeTuple value);

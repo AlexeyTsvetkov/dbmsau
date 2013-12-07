@@ -1,13 +1,18 @@
 package ru.spbau.mit.dbmsau.index.btree;
 
+import ru.spbau.mit.dbmsau.pages.Page;
+
 import java.util.ArrayList;
 
 public class GuideNode extends Node{
-    public GuideNode(int nodeId, BTree bTree, int order) {
-        super(nodeId, false, bTree, order);
+    public GuideNode(int nodeId, NodeData nodeData, BTree bTree) {
+        super(nodeId, nodeData, bTree);
+    }
 
-        //TODO: убрать после преписывания на страницы (не забыть про amount of keys)
-        this.nodeData.addKey(0, null);
+    public static GuideNode getNewGuideNode(Page page, int keySize, int valSize, BTree bTree)
+    {
+        NodeData nodeData = NodeData.getNewData(false, page, keySize, valSize);
+        return new GuideNode(page.getId(), nodeData, bTree);
     }
 
     /**
@@ -22,38 +27,45 @@ public class GuideNode extends Node{
 
         // Recurse to child.
         int childId = this.nodeData.getValue(guideIndex).getInteger(0);
-        Node newNode = this.bTree.getNodeById(childId).put(key, value);
+        Node child = this.bTree.getNodeById(childId, true);
+        Node newNode = child.put(key, value);
+        bTree.releaseNode(childId);
 
         // Did we split?
         if(newNode != null)
         {
             // Insert the new key and node at the found index.
             this.nodeData.addKey(guideIndex+1, newNode.nodeData.getKey(0));
-            this.nodeData.addValue(guideIndex+1, new TreeTuple(newNode.nodeId));
+            this.nodeData.addValue(guideIndex + 1, bTree.getNewNodeIdTuple(newNode.nodeId));
 
             // Do we need to split?
-            if(nodeData.amountOfKeys > order)
+            if(nodeData.getAmountOfKeys() > nodeData.getOrder())
             {
                 newGuide = bTree.getNewNode(false);
 
-                newGuide.nodeData.removeKey(0);
+                //newGuide.nodeData.removeKey(0);
 
-                for(int i = nodeData.amountOfKeys/2; i< nodeData.amountOfKeys; i++)
+                for(int i = nodeData.getAmountOfKeys()/2; i< nodeData.getAmountOfKeys(); i++)
                 {
-                    newGuide.nodeData.addKey(nodeData.getKey(i));
                     newGuide.nodeData.addValue(nodeData.getValue(i));
+                    newGuide.nodeData.addKey(nodeData.getKey(i));
                 }
 
-                nodeData.resize(nodeData.amountOfKeys / 2);
+                nodeData.resize(nodeData.getAmountOfKeys() / 2)  ;
 
-                newGuide.nodeData.nextNodeId = nodeData.nextNodeId;
-                newGuide.nodeData.prevNodeId = this.nodeId;
-                if(nodeData.nextNodeId != NodeData.NO_NODE_ID)
+                newGuide.nodeData.setNextNodeId(nodeData.getNextNodeId());
+                newGuide.nodeData.setPrevNodeId(this.nodeId);
+
+                if(nodeData.getNextNodeId() != NodeData.NO_NODE_ID)
                 {
-                    bTree.getNodeById(nodeData.nextNodeId).nodeData.prevNodeId = newGuide.nodeId;
+                    Node nextNode = bTree.getNodeById(nodeData.getNextNodeId(), true);
+                    nextNode.nodeData.setPrevNodeId(newGuide.nodeId);
+                    bTree.releaseNode(nextNode);
                 }
-                nodeData.nextNodeId = newGuide.nodeId;
+                nodeData.setNextNodeId(newGuide.nodeId);
             }
+
+            bTree.releaseNode(newNode);
         }
 
         return newGuide;

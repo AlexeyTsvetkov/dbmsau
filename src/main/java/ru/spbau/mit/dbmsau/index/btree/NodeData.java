@@ -1,124 +1,196 @@
 package ru.spbau.mit.dbmsau.index.btree;
 
+import com.sun.corba.se.spi.activation._InitialNameServiceImplBase;
+import ru.spbau.mit.dbmsau.pages.DataHolder;
+import ru.spbau.mit.dbmsau.pages.Page;
+import ru.spbau.mit.dbmsau.pages.PageManager;
+import ru.spbau.mit.dbmsau.table.Type;
+
 import java.util.ArrayList;
 
-public class NodeData {
+public class NodeData{
     static final int NO_NODE_ID = -1;
 
-    private boolean isLeaf;
-    int prevNodeId;
-    int nextNodeId;
-    int amountOfKeys;
+    Page dataPage;
 
-    private ArrayList<TreeTuple> keys;
-    private ArrayList<TreeTuple> values;
+    private static int isLeafOffset = 0;
+    private static int prevNodeIdOffset = isLeafOffset + 4;
+    private static int nextNodeIdOffset = prevNodeIdOffset + 4;
+    private static int amountOfKeysOffset = nextNodeIdOffset + 4;
+    private static int headerSize = amountOfKeysOffset + 4;
+    private int keySize;
+    private int valSize;
+    private int order;
+    private int keyOffset, valOffset;
 
-    public NodeData(boolean isLeaf)
+    public static NodeData getNewData(boolean isLeaf, Page dataPage, int keySize, int valSize)
     {
-        this(isLeaf, NO_NODE_ID, NO_NODE_ID);
+        NodeData res = getDataFromPage(dataPage, keySize, valSize);
+
+        res.setIsLeaf(isLeaf);
+        res.setAmountOfKeys(0);
+
+        return res;
     }
 
-    public NodeData(boolean leaf, int prevNodeId, int nextNodeId) {
-        isLeaf = leaf;
-        this.prevNodeId = prevNodeId;
-        this.nextNodeId = nextNodeId;
-        this.amountOfKeys = 0;
+    public static NodeData getDataFromPage(Page dataPage, int keySize, int valSize)
+    {
+        return new NodeData(dataPage, keySize, valSize);
+    }
 
-        keys = new ArrayList<>();
-        values = new ArrayList<>();
+    private NodeData(Page dataPage, int keySize, int valSize)
+    {
+        this.dataPage = dataPage;
+        changeSizes(keySize, valSize);
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void calculateOrder(int keySize, int valSize)
+    {
+        order = (PageManager.PAGE_SIZE - headerSize) / (keySize + valSize) - 2;
+
+        keyOffset = headerSize;
+        valOffset = headerSize + keySize * (order + 1);
+    }
+
+    public void changeSizes(int keySize, int valSize)
+    {
+        this.keySize = keySize;
+        this.valSize = valSize;
+
+        calculateOrder(keySize, valSize);
+    }
+
+    private void shift(int startOffset, int endOffset, int elemSize, int direction)
+    {
+        byte[] element = new byte[elemSize];
+
+        while(endOffset != startOffset)
+        {
+            dataPage.getByteBuffer().get(endOffset + direction*elemSize, element);
+            dataPage.getByteBuffer().put(endOffset, element);
+
+            endOffset = endOffset + direction*elemSize;
+        }
+    }
+
+    private void shiftRight(int startOffset, int endOffset, int elemSize)
+    {
+        shift(startOffset, endOffset, elemSize, -1);
+    }
+
+    private void shiftLeft(int startOffset, int endOffset, int elemSize)
+    {
+        shift(endOffset, startOffset, elemSize, 1);
     }
 
     public void addKey(TreeTuple key)
     {
-        this.addKey(amountOfKeys, key);
+        this.addKey(getAmountOfKeys(), key);
     }
 
     public void addKey(int pos, TreeTuple key)
     {
-        keys.add(pos, key);
-        amountOfKeys+=1;
+        int amountOfKeys = getAmountOfKeys();
+
+        shiftRight(keyOffset + pos*keySize, keyOffset + amountOfKeys*keySize, keySize);
+        dataPage.getByteBuffer().put(keyOffset + pos * keySize, key.getBytes());
+
+        setAmountOfKeys(amountOfKeys+1);
     }
 
     public void addValue(TreeTuple value)
     {
-        values.add(value);
+        this.addValue(getAmountOfKeys(), value);
     }
 
     public void addValue(int pos, TreeTuple value)
     {
-        values.add(pos, value);
+        int amountOfKeys = getAmountOfKeys();
+
+        shiftRight(valOffset + pos * valSize, valOffset + amountOfKeys * valSize, valSize);
+        dataPage.getByteBuffer().put(valOffset + pos * valSize, value.getBytes());
     }
 
     public void setKey(int pos, TreeTuple key)
     {
-        keys.set(pos, key);
+        dataPage.getByteBuffer().put(keyOffset + pos*keySize, key.getBytes());
     }
 
     public void setValue(int pos, TreeTuple value)
     {
-        values.set(pos, value);
+        dataPage.getByteBuffer().put(valOffset + pos*valSize, value.getBytes());
     }
 
     public void resize(int newSize)
     {
-        ArrayList<TreeTuple> newKeys = new ArrayList<>();
-        ArrayList<TreeTuple> newValues = new ArrayList<>();
-
-        newKeys.addAll(keys.subList(0, newSize));
-        newValues.addAll(values.subList(0, newSize));
-
-        keys = newKeys;
-        values = newValues;
-        amountOfKeys = keys.size();
+        setAmountOfKeys(newSize);
     }
 
     public void removeKey(int pos)
     {
-        keys.remove(pos);
-        amountOfKeys -= 1;
+        int amountOfKeys = getAmountOfKeys();
+
+        shiftLeft(keyOffset + pos*keySize, keyOffset + amountOfKeys * keySize, keySize);
+        setAmountOfKeys(amountOfKeys-1);
     }
 
     public void removeValue(int pos)
     {
-        values.remove(pos);
+        int amountOfKeys = getAmountOfKeys();
+        shiftLeft(valOffset + pos*valSize, valOffset + amountOfKeys*valSize, valSize);
     }
 
     public TreeTuple getKey(int pos)
     {
-        return keys.get(pos);
+        TreeTuple res = new TreeTuple(keySize);
+        dataPage.getByteBuffer().get(keyOffset + pos*keySize, res.getBytes());
+        return res;
     }
 
     public TreeTuple getValue(int pos)
     {
-        return values.get(pos);
+        TreeTuple res = new TreeTuple(valSize);
+        dataPage.getByteBuffer().get(valOffset + pos*valSize, res.getBytes());
+        return res;
     }
 
-
     public boolean isLeaf() {
-        return isLeaf;
+        return dataPage.getByteBuffer().get(isLeafOffset) != 0;
+    }
+
+    private void setIsLeaf(boolean val)
+    {
+        if(val)
+            dataPage.getByteBuffer().put(isLeafOffset, (byte)1);
+        else
+            dataPage.getByteBuffer().put(isLeafOffset, (byte)0);
     }
 
     public void setAmountOfKeys(int amountOfKeys) {
-        this.amountOfKeys = amountOfKeys;
-    }
-
-    public void setPrevNodeId(int prevNodeId) {
-        this.prevNodeId = prevNodeId;
-    }
-
-    public void setNextNodeId(int nextNodeId) {
-        this.nextNodeId = nextNodeId;
-    }
-
-    public int getPrevNodeId() {
-        return prevNodeId;
-    }
-
-    public int getNextNodeId() {
-        return nextNodeId;
+        dataPage.getByteBuffer().putInt(amountOfKeysOffset, amountOfKeys);
     }
 
     public int getAmountOfKeys() {
-        return amountOfKeys;
+        return dataPage.getByteBuffer().getInt(amountOfKeysOffset);
+    }
+
+    public void setPrevNodeId(int prevNodeId) {
+        dataPage.getByteBuffer().putInt(prevNodeIdOffset, prevNodeId);
+    }
+
+    public int getPrevNodeId() {
+        return dataPage.getByteBuffer().getInt(prevNodeIdOffset);
+    }
+
+    public void setNextNodeId(int nextNodeId) {
+        dataPage.getByteBuffer().putInt(nextNodeIdOffset, nextNodeId);
+    }
+
+    public int getNextNodeId() {
+        return dataPage.getByteBuffer().getInt(nextNodeIdOffset);
     }
 }

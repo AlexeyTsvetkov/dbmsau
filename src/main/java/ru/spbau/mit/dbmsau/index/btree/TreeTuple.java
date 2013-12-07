@@ -1,24 +1,50 @@
 package ru.spbau.mit.dbmsau.index.btree;
 
+import ru.spbau.mit.dbmsau.pages.DataHolder;
+
 public class TreeTuple {
-    private int value;
+    private DataHolder data;
+    private int sizeInBytes;
 
-    public TreeTuple()
+    public TreeTuple(byte[] bytes)
     {
-        value = 0;
+        data = new DataHolder(bytes);
+        sizeInBytes = bytes.length;
     }
 
-    public int getInteger(int pos)
+    public TreeTuple(int sizeInBytes)
     {
-        return value;
+        this(new byte[sizeInBytes]);
     }
 
-    public TreeTuple(int value) {
-        this.value = value;
+    public int getInteger(int offset)
+    {
+        return data.getInt(offset);
     }
 
-    public int compareTo(TreeTuple other)
+    public TreeTuple setInteger(int offset, int val)
     {
-        return Integer.compare(value, other.value);
+        data.putInt(offset, val);
+        return this;
+    }
+
+    public String getString(int offset, int maxLength)
+    {
+        return data.getString(offset, maxLength);
+    }
+
+    public TreeTuple setString(int offset, String str, int maxLength)
+    {
+        data.putString(offset, str, maxLength);
+        return this;
+    }
+
+    public int getSize() {
+        return sizeInBytes;
+    }
+
+    public byte[] getBytes()
+    {
+        return data.getBytes();
     }
 }

@@ -1,58 +1,168 @@
 package ru.spbau.mit.dbmsau.index.btree;
 
-import java.util.ArrayList;
+import ru.spbau.mit.dbmsau.Context;
+import ru.spbau.mit.dbmsau.ContextContainer;
+import ru.spbau.mit.dbmsau.pages.Page;
+import ru.spbau.mit.dbmsau.pages.PageManager;
+import ru.spbau.mit.dbmsau.pages.RecordsPage;
+import ru.spbau.mit.dbmsau.table.Type;
+import sun.reflect.generics.tree.Tree;
 
-public class BTree {
-    private ArrayList<Node> nodes;
-    private Node root;
-    private int leafOrder, guideOrder;
+import java.util.ArrayList;
+import java.util.Objects;
+
+public class BTree extends ContextContainer {
+    public static final int NODE_ID_SIZE = 4;
+    private int rootId;
+    private int keySize, valSize;
+    private ArrayList<Type> keyType, valType;
     int size;
 
-    public BTree() {
-        this.nodes = new ArrayList<>();
+    public BTree(ArrayList<Type> keyType, ArrayList<Type> valType, Context context) {
+        super(context);
 
-        leafOrder = guideOrder = 3;
+        this.keyType = keyType;
+        this.valType = valType;
+
+        keySize = valSize = 0;
+        for (Type aKeyType : keyType) keySize += aKeyType.getSize();
+        for (Type aValType : valType) valSize += aValType.getSize();
+
         size = 0;
 
-        root = getNewNode(true);
+        Node root = getNewNode(true);
+        rootId = root.nodeId;
+        releaseNode(rootId);
     }
+
+    public void releaseNode(int nodeId)
+    {
+        context.getPageManager().releasePage(nodeId);
+    }
+
+    public void releaseNode(Node node)
+    {
+        releaseNode(node.nodeId);
+    }
+
+    public TreeTuple getNewNodeIdTuple(int nodeId)
+    {
+        TreeTuple res = new TreeTuple(NODE_ID_SIZE);
+        res.setInteger(0, nodeId);
+
+        return res;
+    }
+
+    public TreeTuple getNewKeyTuple(ArrayList<Object> objects)
+    {
+        return getTreeTupleFromList(keySize, keyType, objects);
+    }
+
+    public TreeTuple getNewValueTuple(ArrayList<Object> objects)
+    {
+        return getTreeTupleFromList(valSize, valType, objects);
+    }
+
+    private TreeTuple getTreeTupleFromList(int typeSize, ArrayList<Type> type, ArrayList<Object> objects)
+    {
+        TreeTuple res = new TreeTuple(typeSize);
+
+        int offset = 0;
+        for(int i=0; i<objects.size(); i++)
+        {
+            if(type.get(i).getType() == Type.TYPE_INTEGER)
+            {
+                res.setInteger(offset, (int)objects.get(i));
+            }
+            else
+            {
+                res.setString(offset, (String)objects.get(i), type.get(i).getLength());
+            }
+
+            offset += type.get(i).getSize();
+        }
+
+        return res;
+    }
+
 
     public Node getNewNode(boolean isLeaf)
     {
-        int newNodeId = nodes.size();
+        Page page = context.getPageManager().allocatePage();
         Node newNode;
 
         if(isLeaf)
-            newNode = new LeafNode(newNodeId, this, leafOrder);
+        {
+            newNode = LeafNode.getNewLeafNode(page, keySize, valSize, this);
+        }
         else
-            newNode = new GuideNode(newNodeId, this, guideOrder);
+        {
+            newNode = GuideNode.getNewGuideNode(page, keySize, NODE_ID_SIZE, this);
+        }
 
-        nodes.add(newNode);
         return newNode;
     }
 
-    public Node getNodeById(int nodeId)
+    public Node getNodeById(int nodeId, boolean isForWriting)
     {
-        return nodes.get(nodeId);
+        Page page = context.getPageManager().getPageById(nodeId, isForWriting);
+        NodeData nodeData = NodeData.getDataFromPage(page, keySize, valSize);
+
+        if(nodeData.isLeaf())
+        {
+            nodeData.changeSizes(keySize, valSize);
+            return new LeafNode(page.getId(), nodeData, this);
+        }
+        else
+        {
+            nodeData.changeSizes(keySize, 4);
+            return new GuideNode(page.getId(), nodeData, this);
+        }
+    }
+
+
+    private int cmp(TreeTuple first, TreeTuple second)
+    {
+        int offset = 0;
+        for(int i=0; i<keyType.size(); i++)
+        {
+            int cur = 0;
+            if(keyType.get(i).getType() == Type.TYPE_INTEGER)
+            {
+                cur = first.getInteger(i) - second.getInteger(i);
+            }
+            else
+            {
+                int maxLength = keyType.get(i).getLength();
+                cur = first.getString(offset, maxLength).compareTo(second.getString(offset, maxLength));
+            }
+
+            if(cur!=0)
+                return cur;
+
+            offset += keyType.get(i).getSize();
+        }
+
+        return 0;
     }
 
     public int findGuideIndex(Node node, TreeTuple key)
     {
-        for(int i = 1; i < node.nodeData.amountOfKeys; i++)
+        for(int i = 1; i < node.nodeData.getAmountOfKeys(); i++)
         {
-            if(key.compareTo(node.nodeData.getKey(i)) < 0)
+            if(cmp(key, node.nodeData.getKey(i)) < 0)
                 return i - 1;
         }
 
-        return node.nodeData.amountOfKeys - 1;
+        return node.nodeData.getAmountOfKeys() - 1;
     }
 
     public int findInsertIndex(Node node, TreeTuple key)
     {
         int insertIndex = 0;
-        while(insertIndex < node.nodeData.amountOfKeys)
+        while(insertIndex < node.nodeData.getAmountOfKeys())
         {
-            if(key.compareTo(node.nodeData.getKey(insertIndex)) <= 0)
+            if(cmp(key, node.nodeData.getKey(insertIndex)) <= 0)
                 break;
 
             insertIndex++;
@@ -63,9 +173,9 @@ public class BTree {
 
     public int findLeafIndex(Node node, TreeTuple key)
     {
-        for(int i = 0; i < node.nodeData.amountOfKeys; i++)
+        for(int i = 0; i < node.nodeData.getAmountOfKeys(); i++)
         {
-            if(key.compareTo(node.nodeData.getKey(i)) == 0)
+            if(cmp(key, node.nodeData.getKey(i)) == 0)
                 return i;
         }
 
@@ -85,17 +195,25 @@ public class BTree {
         TreeTuple ret = get(key);
 
         // Insert the new key/value into the tree.
+        Node root = getNodeById(rootId, true);
         Node newNode = root.put(key, value);
+        releaseNode(root);
 
         // Create new root?
         if(newNode != null)
         {
             Node newRoot = getNewNode(false);
-            newRoot.nodeData.addKey(newNode.nodeData.getKey(0));
-            newRoot.nodeData.addValue(new TreeTuple(root.nodeId));
-            newRoot.nodeData.addValue(new TreeTuple(newNode.nodeId));;
 
-            root = newRoot;
+            newRoot.nodeData.addValue(0, getNewNodeIdTuple(rootId));
+            newRoot.nodeData.setAmountOfKeys(1);
+
+            newRoot.nodeData.addValue(1, getNewNodeIdTuple(newNode.nodeId));
+            newRoot.nodeData.addKey(1, newNode.nodeData.getKey(0));
+
+            rootId = newRoot.nodeId;
+
+            releaseNode(newRoot);
+            releaseNode(newNode);
         }
 
         // Return the previous value.
@@ -112,18 +230,25 @@ public class BTree {
      */
     public TreeTuple get(TreeTuple key)
     {
-        Node cur = root;
+        Node cur = getNodeById(rootId, false);
         while(!cur.nodeData.isLeaf())
         {
             int index = findGuideIndex(cur, key);
             int nextNodeIndex = cur.nodeData.getValue(index).getInteger(0);
-            cur = getNodeById(nextNodeIndex);
+            releaseNode(cur);
+            cur = getNodeById(nextNodeIndex, false);
         }
 
         int index = findLeafIndex(cur, key);
+        TreeTuple res;
+
         if(index == -1)
-            return null;
+            res = null;
         else
-            return cur.nodeData.getValue(index);
+            res =  cur.nodeData.getValue(index);
+
+        releaseNode(cur);
+
+        return res;
     }
 }
