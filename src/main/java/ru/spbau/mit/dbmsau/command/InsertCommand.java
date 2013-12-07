@@ -33,7 +33,7 @@ public class InsertCommand extends AbstractSQLCommand {
     public SQLCommandResult execute() throws CommandExecutionException {
         Table table = getTable(getTableName());
 
-        getContext().getSemanticValidator().checkTypesCompatibility(table, getColumns(), getValues());
+        getContext().getSemanticValidator().checkColumns(table, getColumns(), getValues());
 
         try {
             getContext().getRecordManager().insert(table, getColumns(), getValues());

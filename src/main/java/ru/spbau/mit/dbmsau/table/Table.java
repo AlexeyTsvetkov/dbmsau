@@ -80,6 +80,11 @@ public class Table {
         return columns.get(number).getType();
     }
 
+    public Type getColumnType(String name) {
+        int index = getColumnNumberByName(name);
+        return columns.get(index).getType();
+    }
+
     public int getColumnOffsetByName(String name) {
         return getColumnOffset(getColumnNumberByName(name));
     }
