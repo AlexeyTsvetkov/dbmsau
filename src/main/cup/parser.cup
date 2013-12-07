@@ -38,7 +38,7 @@ init with {:
 :};
 
 terminal TerminalNode QUIT;
-terminal TerminalNode CREATE,TABLE,INSERT,INTO,VALUES,SELECT,FROM,DELETE;
+terminal TerminalNode CREATE,TABLE,INSERT,INTO,VALUES,SELECT,FROM,DELETE,WHERE;
 terminal TerminalNode LEFTPAR,RIGHTPAR,LEFTBRACKET,RIGHTBRACKET;
 terminal TerminalNode OR,DIV,MOD,AND,MAIN,COMMA,EQUALS,COLON,NOT,NOTEQUAL,LESS,LESSOREQUAL,MORE,MOREOREQUAL,PLUS,MINUS,ASTERISK,DIVIDE,DOT;
 terminal TerminalNode INTEGER_LITERAL;
@@ -57,6 +57,11 @@ non terminal LinkedList< TerminalNode >   columns_list;
 
 non terminal SelectStatementNode          select_statement;
 non terminal DeleteStatementNode          delete_statement;
+
+non terminal WhereClauseNode              where_clause;
+non terminal LinkedList< ComparisonNode > comparisons;
+non terminal ComparisonNode               comparison_expr;
+non terminal TerminalNode                 comparison_sign;
 
 non terminal CreateTableStatementNode     create_table_statement;
 non terminal LinkedList< ColumnDescriptionNode > columns_descriptions_list;
@@ -84,8 +89,8 @@ statement ::= create_table_statement:e1 {: RESULT = e1; :}
               QUIT:e1 {: RESULT = null; :}
              ;
 
-select_statement ::= SELECT ASTERISK FROM IDENT:tableFrom
-                    {: RESULT = new SelectStatementNode(tableFrom); :}
+select_statement ::= SELECT ASTERISK FROM IDENT:tableFrom where_clause:filter
+                    {: RESULT = new SelectStatementNode(tableFrom, filter); :}
                   ;
 
 insert_statement ::= INSERT INTO IDENT:tableName LEFTPAR columns_list:cList RIGHTPAR VALUES
@@ -96,6 +101,30 @@ insert_statement ::= INSERT INTO IDENT:tableName LEFTPAR columns_list:cList RIGH
 delete_statement ::= DELETE FROM IDENT:tableName
                      {: RESULT = new DeleteStatementNode(tableName); :}
                    ;
+
+where_clause ::= WHERE comparisons:comparisons_list
+                    {: RESULT = new WhereClauseNode(comparisons_list); :}
+                   |
+                   empty
+                    {: RESULT = null; :}
+                   ;
+
+comparisons ::= comparison_expr:cmp
+                {: RESULT = new LinkedList<>(); RESULT.add(cmp); :}
+                |
+                comparison_expr:cmp AND comparisons:cmps
+                {: RESULT = cmps; RESULT.addFirst(cmp); :}
+                ;
+
+comparison_expr ::= IDENT:id comparison_sign:cmp value:val
+                    {: RESULT = new ComparisonNode(id, cmp, val); :}
+                    ;
+
+comparison_sign ::= EQUALS:eq
+            {: RESULT = eq; :}
+        | LESS:ls
+            {: RESULT = ls; :}
+        ;
 
 columns_list ::= idents_list:e1 {: RESULT = e1; :};
 
