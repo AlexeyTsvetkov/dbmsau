@@ -5,6 +5,7 @@ import ru.spbau.mit.dbmsau.table.Column;
 import ru.spbau.mit.dbmsau.table.RecordComparisonClause;
 import ru.spbau.mit.dbmsau.table.Type;
 import ru.spbau.mit.dbmsau.syntax.ast.*;
+import ru.spbau.mit.dbmsau.table.WhereMatcher;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -55,22 +56,15 @@ public class SQLStatementsVisitor extends ASTNodeVisitor {
     public void visit(SelectStatementNode node) {
         String table = node.getTableFrom().getLexemeValue();
 
-        WhereClauseNode where = node.getWhereClause();
-        List<RecordComparisonClause> clauses = new ArrayList<>();
+        ASTNode where = node.getWhereClause();
+
+        WhereMatcher matcher = null;
 
         if (where != null) {
-            List<ComparisonNode> comparisons = where.getComparisons();
-
-            for (ComparisonNode comparison : comparisons) {
-                String identifier = comparison.getIdentifier().getLexemeValue();
-                String sign = comparison.getSign().getLexemeValue();
-                String value = comparison.getRValue().getLexemeValue();
-
-                clauses.add(new RecordComparisonClause(identifier, sign, value));
-            }
+            matcher = new ASTWhereMatcher(where);
         }
 
-        setLastCommand(new SelectCommand(table, clauses));
+        setLastCommand(new SelectCommand(table, matcher));
     }
 
     @Override

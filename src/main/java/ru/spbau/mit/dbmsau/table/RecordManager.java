@@ -45,19 +45,18 @@ public class RecordManager extends ContextContainer {
     }
 
     public RecordSet select(Table table, WhereMatcher matcher) {
-        return new FullScanRecordSet(
-                table,
-//                matcher,
-                buildPagesListByHeadPageId(table.getFullPagesListHeadPageId()),
-                buildPagesListByHeadPageId(table.getNotFullPagesListHeadPageId()),
-                context
-        );
+        RecordSet result = select(table);
+
+        if (matcher != null) {
+            result = new WhereMatcherRecordSet(result, matcher);
+        }
+
+        return result;
     }
 
     public RecordSet select(Table table) {
         return new FullScanRecordSet(
                 table,
-//                new StubMatcher(),
                 buildPagesListByHeadPageId(table.getFullPagesListHeadPageId()),
                 buildPagesListByHeadPageId(table.getNotFullPagesListHeadPageId()),
                 context
@@ -65,7 +64,7 @@ public class RecordManager extends ContextContainer {
     }
 
     public void delete(Table table) {
-        RecordSet recordSet = select(table, new StubMatcher());
+        RecordSet recordSet = select(table);
 
         Iterator<TableRecord> iterator = recordSet.iterator();
 

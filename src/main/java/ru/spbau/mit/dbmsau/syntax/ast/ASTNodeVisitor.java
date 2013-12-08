@@ -28,10 +28,6 @@ abstract public class ASTNodeVisitor {
         throw new NotImplementedException();
     }
 
-    public void visit(WhereClauseNode node) {
-        throw new NotImplementedException();
-    }
-
     public void visit(ComparisonNode node) {
         throw new NotImplementedException();
     }

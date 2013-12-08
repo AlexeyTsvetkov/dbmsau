@@ -9,11 +9,11 @@ import java.util.List;
 
 public class SelectCommand extends AbstractSQLCommand {
     private String table;
-    private final List<RecordComparisonClause> clauses;
+    private WhereMatcher matcher;
 
-    public SelectCommand(String table, List<RecordComparisonClause> clauses) {
+    public SelectCommand(String table, WhereMatcher matcher) {
         this.table = table;
-        this.clauses = clauses;
+        this.matcher = matcher;
     }
 
     public String getTableName() {
@@ -22,7 +22,6 @@ public class SelectCommand extends AbstractSQLCommand {
 
     public SQLCommandResult execute() throws CommandExecutionException {
         Table table = getTable(getTableName());
-        WhereMatcher matcher = new TableRecordMatcher(clauses);
         RecordSet result = getContext().getRecordManager().select(table, matcher);
 
         return new SQLCommandResult(new RecordSetCSVIterator(result, table));

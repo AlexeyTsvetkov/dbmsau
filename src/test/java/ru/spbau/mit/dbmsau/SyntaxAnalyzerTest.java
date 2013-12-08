@@ -1,11 +1,14 @@
 package ru.spbau.mit.dbmsau;
 
 import static org.hamcrest.CoreMatchers.*;
+
+import junitx.util.PrivateAccessor;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import ru.spbau.mit.dbmsau.command.*;
+import ru.spbau.mit.dbmsau.syntax.ASTWhereMatcher;
 import ru.spbau.mit.dbmsau.syntax.SyntaxAnalyzer;
 import ru.spbau.mit.dbmsau.syntax.exception.SyntaxErrors;
 
@@ -77,6 +80,16 @@ public class SyntaxAnalyzerTest extends Assert {
         SelectCommand command = (SelectCommand)getFirstResult("SELECT * FROM test;");
 
         assertThat(command.getTableName(), is("test"));
+    }
+
+    @Test
+    public void testSelectWhere() throws Exception {
+        SelectCommand command = (SelectCommand)getFirstResult("SELECT * FROM test WHERE id=2;");
+
+        assertThat(command.getTableName(), is("test"));
+
+        ASTWhereMatcher matcher = (ASTWhereMatcher) PrivateAccessor.getField(command, "matcher");
+        assertNotNull(matcher);
     }
 
     @Test

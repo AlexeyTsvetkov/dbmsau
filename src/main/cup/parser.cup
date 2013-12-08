@@ -58,7 +58,7 @@ non terminal LinkedList< TerminalNode >   columns_list;
 non terminal SelectStatementNode          select_statement;
 non terminal DeleteStatementNode          delete_statement;
 
-non terminal WhereClauseNode              where_clause;
+non terminal ASTNode                      where_clause;
 non terminal LinkedList< ComparisonNode > comparisons;
 non terminal ComparisonNode               comparison_expr;
 non terminal TerminalNode                 comparison_sign;
@@ -102,8 +102,8 @@ delete_statement ::= DELETE FROM IDENT:tableName
                      {: RESULT = new DeleteStatementNode(tableName); :}
                    ;
 
-where_clause ::= WHERE comparisons:comparisons_list
-                    {: RESULT = new WhereClauseNode(comparisons_list); :}
+where_clause ::= WHERE comparison_expr:cmp
+                    {: RESULT = cmp; :}
                    |
                    empty
                     {: RESULT = null; :}

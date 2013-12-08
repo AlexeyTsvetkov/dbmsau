@@ -26,7 +26,11 @@ public class TerminalNode extends ASTNode {
         
         this.token = token;
     }
-    
+
+    public TerminalNode(Object value) {
+        this.value = value;
+    }
+
     public int getToken() {
         return token;
     }

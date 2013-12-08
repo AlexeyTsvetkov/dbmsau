@@ -25,8 +25,7 @@ public class SelectCommandTest extends BaseTest {
         insert.setContext(context);
         insert.execute();
 
-        List<RecordComparisonClause> clauses = new ArrayList<>();
-        SelectCommand select = new SelectCommand("test", clauses);
+        SelectCommand select = new SelectCommand("test", null);
         select.setContext(context);
         SQLCommandResult result = select.execute();
 

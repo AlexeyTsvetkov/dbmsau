@@ -125,4 +125,8 @@ public class Table {
     public void setNotFullPagesListHeadPageId(int notFullPagesListHeadPageId) {
         this.notFullPagesListHeadPageId = notFullPagesListHeadPageId;
     }
+
+    public int getColumnsCount() {
+        return getColumns().size();
+    }
 }
