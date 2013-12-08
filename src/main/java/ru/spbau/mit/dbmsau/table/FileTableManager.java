@@ -2,10 +2,12 @@ package ru.spbau.mit.dbmsau.table;
 
 import ru.spbau.mit.dbmsau.Context;
 import ru.spbau.mit.dbmsau.pages.PagesList;
+import ru.spbau.mit.dbmsau.table.exception.SemanticError;
 import ru.spbau.mit.dbmsau.table.exception.TableManagerException;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class FileTableManager extends TableManager {
@@ -33,10 +35,6 @@ public class FileTableManager extends TableManager {
 
     @Override
     public void createNewTable(Table table) throws TableManagerException {
-        if (tables.containsKey(table.getName())) {
-            throw new TableManagerException("Table `" + table.getName() + "` already exists");
-        }
-
         createTablePagesLists(table);
 
         try {

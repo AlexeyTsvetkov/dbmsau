@@ -51,20 +51,29 @@ public class Table {
         return columns;
     }
 
+    public List<String> getColumnsNames() {
+        List<String> names = new ArrayList<>(columns.size());
+        for(Column column : columns) {
+            names.add(column.getName());
+        }
+
+        return names;
+    }
+
     public int getRecordSize() {
         return recordSize;
     }
 
-    public Integer getColumnNumberByName(String name) {
+    public Integer getColumnIndex(String name) {
         return columnsMap.get(name);
     }
 
     public boolean hasColumn(String name) {
-        return getColumnNumberByName(name) != null;
+        return getColumnIndex(name) != null;
     }
 
-    public Column getColumnByName(String name) {
-        Integer number = getColumnNumberByName(name);
+    public Column getColumn(String name) {
+        Integer number = getColumnIndex(name);
 
         if (number == null) {
             return null;
@@ -81,8 +90,13 @@ public class Table {
         return columns.get(number).getType();
     }
 
-    public int getColumnOffsetByName(String name) {
-        return getColumnOffset(getColumnNumberByName(name));
+    public Type getColumnType(String name) {
+        int index = getColumnIndex(name);
+        return columns.get(index).getType();
+    }
+
+    public int getColumnOffset(String name) {
+        return getColumnOffset(getColumnIndex(name));
     }
 
     public int getFullPagesListHeadPageId() {
@@ -94,7 +108,7 @@ public class Table {
         int i = 0;
 
         for (String name : columns) {
-            columnNumbers[i++] = getColumnNumberByName(name);
+            columnNumbers[i++] = getColumnIndex(name);
         }
 
         return columnNumbers;

@@ -2,9 +2,11 @@ package ru.spbau.mit.dbmsau.syntax;
 
 import ru.spbau.mit.dbmsau.command.*;
 import ru.spbau.mit.dbmsau.table.Column;
+import ru.spbau.mit.dbmsau.table.RecordComparisonClause;
 import ru.spbau.mit.dbmsau.table.Type;
 import ru.spbau.mit.dbmsau.syntax.ast.*;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -51,7 +53,24 @@ public class SQLStatementsVisitor extends ASTNodeVisitor {
 
     @Override
     public void visit(SelectStatementNode node) {
-        setLastCommand(new SelectCommand(node.getTableFrom().getLexemeValue()));
+        String table = node.getTableFrom().getLexemeValue();
+
+        WhereClauseNode where = node.getWhereClause();
+        List<RecordComparisonClause> clauses = new ArrayList<>();
+
+        if (where != null) {
+            List<ComparisonNode> comparisons = where.getComparisons();
+
+            for (ComparisonNode comparison : comparisons) {
+                String identifier = comparison.getIdentifier().getLexemeValue();
+                String sign = comparison.getSign().getLexemeValue();
+                String value = comparison.getRValue().getLexemeValue();
+
+                clauses.add(new RecordComparisonClause(identifier, sign, value));
+            }
+        }
+
+        setLastCommand(new SelectCommand(table, clauses));
     }
 
     @Override

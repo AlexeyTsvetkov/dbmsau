@@ -43,16 +43,6 @@ public class FileTableManagerTest extends BaseTest {
     }
 
     @Test
-    public void testAlreadyExists() throws Exception {
-        thrown.expect(TableManagerException.class);
-        thrown.expectMessage("Table `" + TEST_TABLE_NAME + "` already exists");
-
-        setUpContext();
-        createTestTable();
-        createTestTable();
-    }
-
-    @Test
     public void testLoading() throws Exception {
         FileUtils.copyFile(
                 FileUtils.toFile(getClass().getResource("test.tbl")),

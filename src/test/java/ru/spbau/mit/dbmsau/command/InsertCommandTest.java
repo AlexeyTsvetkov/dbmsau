@@ -47,12 +47,29 @@ public class InsertCommandTest extends BaseTest {
     @Test
     public void testInsertWrongType() throws Exception {
         thrown.expect(SemanticError.class);
-        thrown.expectMessage("Semantic Error: `id` should be and integer");
+        thrown.expectMessage("`id` should be an integer");
 
         ArrayList<String> columns = new ArrayList<>();
         ArrayList<String> values = new ArrayList<>();
         columns.add("id");values.add("abcde");
         columns.add("name");values.add("2");
+
+        InsertCommand command = new InsertCommand("test", columns, values);
+        command.setContext(context);
+
+        assertNotNull(command.execute());
+    }
+
+    @Test
+    public void testColumnsUnique() throws Exception {
+        thrown.expect(SemanticError.class);
+        thrown.expectMessage("Column `id` referenced more than once");
+
+        ArrayList<String> columns = new ArrayList<>();
+        ArrayList<String> values = new ArrayList<>();
+
+        columns.add("id");values.add("10");
+        columns.add("id");values.add("10");
 
         InsertCommand command = new InsertCommand("test", columns, values);
         command.setContext(context);

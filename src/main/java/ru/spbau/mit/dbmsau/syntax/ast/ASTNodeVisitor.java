@@ -27,6 +27,14 @@ abstract public class ASTNodeVisitor {
     public void visit(DeleteStatementNode node) {
         throw new NotImplementedException();
     }
+
+    public void visit(WhereClauseNode node) {
+        throw new NotImplementedException();
+    }
+
+    public void visit(ComparisonNode node) {
+        throw new NotImplementedException();
+    }
     
     protected String getTerminalValue(ASTNode node) {
         node.accept(this);

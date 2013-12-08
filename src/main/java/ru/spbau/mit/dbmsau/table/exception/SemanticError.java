@@ -4,6 +4,6 @@ import ru.spbau.mit.dbmsau.exception.UserError;
 
 public class SemanticError extends UserError {
     public SemanticError(String message) {
-        super("Semantic Error: " + message);
+        super(message);
     }
 }
