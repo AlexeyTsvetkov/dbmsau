@@ -47,7 +47,7 @@ public class InsertCommandTest extends BaseTest {
     @Test
     public void testInsertWrongType() throws Exception {
         thrown.expect(SemanticError.class);
-        thrown.expectMessage("Semantic Error: `id` should be and integer");
+        thrown.expectMessage("`id` should be an integer");
 
         ArrayList<String> columns = new ArrayList<>();
         ArrayList<String> values = new ArrayList<>();

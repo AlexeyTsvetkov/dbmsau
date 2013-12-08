@@ -2,6 +2,7 @@ package ru.spbau.mit.dbmsau.table;
 
 import ru.spbau.mit.dbmsau.Context;
 import ru.spbau.mit.dbmsau.pages.PagesList;
+import ru.spbau.mit.dbmsau.table.exception.SemanticError;
 import ru.spbau.mit.dbmsau.table.exception.TableManagerException;
 
 import java.io.*;
@@ -32,11 +33,24 @@ public class FileTableManager extends TableManager {
         }
     }
 
-    @Override
-    public void createNewTable(Table table) throws TableManagerException {
+    private void checkTable(Table table) throws TableManagerException {
         if (tables.containsKey(table.getName())) {
             throw new TableManagerException("Table `" + table.getName() + "` already exists");
         }
+
+        List<String> columns = table.getColumnsNames();
+        SemanticValidator validator = new SemanticValidator();
+
+        try {
+            validator.assertColumnsUnique(columns);
+        } catch (SemanticError e) {
+            throw new TableManagerException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void createNewTable(Table table) throws TableManagerException {
+        checkTable(table);
 
         createTablePagesLists(table);
 

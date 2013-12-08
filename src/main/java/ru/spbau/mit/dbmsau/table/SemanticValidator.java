@@ -7,33 +7,32 @@ import java.util.HashSet;
 import java.util.List;
 
 public class SemanticValidator {
-    private boolean checkType(Type type, String name, String value) {
+    private void assertTypesCompatible(Type type, String name, String value) {
         if (type.getType() == Type.TYPE_INTEGER) {
+
             try {
-                int num = Integer.parseInt(value);
-                return true;
+                Integer.parseInt(value);
             } catch (NumberFormatException e) {
-                throw new SemanticError("`" + name + "` should be and integer");
+                String message = String.format("`%s` should be an integer", name);
+                throw new SemanticError(message);
             }
         }
-
-        return true;
     }
 
-    private void checkColumnExists(Table table, String column) {
+    private void assertColumnExists(Table table, String column) {
         if (!table.hasColumn(column)) {
             String message = String.format("No such column `%s`", column);
             throw new SemanticError(message);
         }
     }
 
-    private void checkColumnsUnique(List<String> columns) {
+    public void assertColumnsUnique(List<String> columns) {
         AbstractSet<String> columnSet = new HashSet<>(columns.size());
 
 
         for(String column : columns) {
             if(columnSet.contains(column)) {
-                String message = String.format("Column %s refered more than once", column);
+                String message = String.format("Column `%s` referenced more than once", column);
                 throw new SemanticError(message);
             }
 
@@ -51,13 +50,13 @@ public class SemanticValidator {
             String column = columns.get(i);
             String value  = values.get(i);
 
-            checkColumnExists(table, column);
+            assertColumnExists(table, column);
 
             Type type = table.getColumnType(column);
-            checkType(type, column, value);
+            assertTypesCompatible(type, column, value);
         }
 
-        checkColumnsUnique(columns);
+        assertColumnsUnique(columns);
 
         return true;
     }
