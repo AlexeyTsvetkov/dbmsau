@@ -12,9 +12,15 @@ import java.util.List;
 
 public class SelectCommand extends AbstractSQLCommand {
     private String table;
+    private final List<String> columns;
+    private final List<String> compareSigns;
+    private final List<String> values;
 
-    public SelectCommand(String table) {
+    public SelectCommand(String table, List<String> columns, List<String> signs, List<String> values) {
         this.table = table;
+        this.columns = columns;
+        this.compareSigns = signs;
+        this.values = values;
     }
 
     public String getTableName() {

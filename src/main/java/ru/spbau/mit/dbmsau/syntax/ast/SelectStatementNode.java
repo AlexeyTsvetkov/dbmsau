@@ -2,15 +2,19 @@ package ru.spbau.mit.dbmsau.syntax.ast;
 
 public class SelectStatementNode extends ASTNode {
     private TerminalNode tableFrom;
-    private WhereClauseNode filter;
+    private WhereClauseNode whereClause;
 
-    public SelectStatementNode(TerminalNode tableFrom, WhereClauseNode filter) {
+    public SelectStatementNode(TerminalNode tableFrom, WhereClauseNode whereClause) {
         this.tableFrom = tableFrom;
-        this.filter = filter;
+        this.whereClause = whereClause;
     }
 
     public TerminalNode getTableFrom() {
         return tableFrom;
+    }
+
+    public WhereClauseNode getWhereClause() {
+        return whereClause;
     }
 
     @Override

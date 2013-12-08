@@ -5,6 +5,7 @@ import ru.spbau.mit.dbmsau.table.Column;
 import ru.spbau.mit.dbmsau.table.Type;
 import ru.spbau.mit.dbmsau.syntax.ast.*;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -51,7 +52,25 @@ public class SQLStatementsVisitor extends ASTNodeVisitor {
 
     @Override
     public void visit(SelectStatementNode node) {
-        setLastCommand(new SelectCommand(node.getTableFrom().getLexemeValue()));
+        String table = node.getTableFrom().getLexemeValue();
+
+        WhereClauseNode where = node.getWhereClause();
+        List<String> columns = new ArrayList<>();
+        List<String> signs = new ArrayList<>();
+        List<String> values = new ArrayList<>();
+
+        if (where != null) {
+            List<ComparisonNode> comparisons = where.getComparisons();
+
+            for (ComparisonNode comparison : comparisons) {
+
+                columns.add(comparison.getIdentifier().getLexemeValue());
+                signs.add(comparison.getSign().getLexemeValue());
+                values.add(comparison.getRValue().getLexemeValue());
+            }
+        }
+
+        setLastCommand(new SelectCommand(table, columns, signs, values));
     }
 
     @Override
