@@ -33,25 +33,8 @@ public class FileTableManager extends TableManager {
         }
     }
 
-    private void checkTable(Table table) throws TableManagerException {
-        if (tables.containsKey(table.getName())) {
-            throw new TableManagerException("Table `" + table.getName() + "` already exists");
-        }
-
-        List<String> columns = table.getColumnsNames();
-        SemanticValidator validator = new SemanticValidator();
-
-        try {
-            validator.assertColumnsUnique(columns);
-        } catch (SemanticError e) {
-            throw new TableManagerException(e.getMessage());
-        }
-    }
-
     @Override
     public void createNewTable(Table table) throws TableManagerException {
-        checkTable(table);
-
         createTablePagesLists(table);
 
         try {

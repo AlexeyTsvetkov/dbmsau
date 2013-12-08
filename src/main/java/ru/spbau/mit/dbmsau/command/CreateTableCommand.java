@@ -4,6 +4,7 @@ import ru.spbau.mit.dbmsau.command.AbstractSQLCommand;
 import ru.spbau.mit.dbmsau.command.SQLCommandResult;
 import ru.spbau.mit.dbmsau.command.exception.CommandExecutionException;
 import ru.spbau.mit.dbmsau.table.*;
+import ru.spbau.mit.dbmsau.table.exception.SemanticError;
 import ru.spbau.mit.dbmsau.table.exception.TableManagerException;
 
 import java.util.ArrayList;
@@ -27,8 +28,12 @@ public class CreateTableCommand extends AbstractSQLCommand {
     }
 
     @Override
-    public SQLCommandResult execute() throws CommandExecutionException {
+    public SQLCommandResult execute() throws CommandExecutionException, SemanticError {
         Table table = new Table(getTableName(), new ArrayList<>(getColumns()));
+        TableManager manager = getContext().getTableManager();
+
+        SemanticValidator validator = new SemanticValidator();
+        validator.checkCreateTable(table, manager);
 
         try {
             getContext().getTableManager().createNewTable(table);

@@ -40,6 +40,17 @@ public class SemanticValidator {
         }
     }
 
+    public void checkCreateTable(Table table, TableManager tableManager) throws SemanticError {
+        String name = table.getName();
+        if (tableManager.tableExists(name)) {
+            String message = String.format("Table `%s` already exists", name);
+            throw new SemanticError(message);
+        }
+
+        List<String> columns = table.getColumnsNames();
+        assertColumnsUnique(columns);
+    }
+
     public boolean checkColumns(Table table, List<String> columns, List<String> values)  {
         if (columns.size() != values.size()) {
             throw new SemanticError("Columns and values size are not equal");
