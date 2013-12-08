@@ -2,6 +2,7 @@ package ru.spbau.mit.dbmsau.table;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Table {
     private String name;
@@ -50,20 +51,29 @@ public class Table {
         return columns;
     }
 
+    public List<String> getColumnsNames() {
+        List<String> names = new ArrayList<>(columns.size());
+        for(Column column : columns) {
+            names.add(column.getName());
+        }
+
+        return names;
+    }
+
     public int getRecordSize() {
         return recordSize;
     }
 
-    public Integer getColumnNumberByName(String name) {
+    public Integer getColumnIndex(String name) {
         return columnsMap.get(name);
     }
 
     public boolean hasColumn(String name) {
-        return getColumnNumberByName(name) != null;
+        return getColumnIndex(name) != null;
     }
 
-    public Column getColumnByName(String name) {
-        Integer number = getColumnNumberByName(name);
+    public Column getColumn(String name) {
+        Integer number = getColumnIndex(name);
 
         if (number == null) {
             return null;
@@ -81,12 +91,12 @@ public class Table {
     }
 
     public Type getColumnType(String name) {
-        int index = getColumnNumberByName(name);
+        int index = getColumnIndex(name);
         return columns.get(index).getType();
     }
 
-    public int getColumnOffsetByName(String name) {
-        return getColumnOffset(getColumnNumberByName(name));
+    public int getColumnOffset(String name) {
+        return getColumnOffset(getColumnIndex(name));
     }
 
     public int getFullPagesListHeadPageId() {

@@ -29,12 +29,12 @@ public class TableRecord {
     }
 
     public void setValue(String column, String value) {
-        int columnNumber = table.getColumnNumberByName(column);
+        int columnNumber = table.getColumnIndex(column);
         setValue(columnNumber, value);
     }
 
     public String getValueAsString(String column) {
-        int columnNumber = table.getColumnNumberByName(column);
+        int columnNumber = table.getColumnIndex(column);
         int columnOffset = table.getColumnOffset(columnNumber);
 
         Type type = table.getColumnTypeByNumber(columnNumber);
