@@ -1,10 +1,7 @@
 package ru.spbau.mit.dbmsau.command;
 
 import ru.spbau.mit.dbmsau.command.exception.CommandExecutionException;
-import ru.spbau.mit.dbmsau.table.Column;
-import ru.spbau.mit.dbmsau.table.RecordSet;
-import ru.spbau.mit.dbmsau.table.Table;
-import ru.spbau.mit.dbmsau.table.TableRecord;
+import ru.spbau.mit.dbmsau.table.*;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -12,15 +9,11 @@ import java.util.List;
 
 public class SelectCommand extends AbstractSQLCommand {
     private String table;
-    private final List<String> columns;
-    private final List<String> compareSigns;
-    private final List<String> values;
+    private final List<RecordComparisonClause> clauses;
 
-    public SelectCommand(String table, List<String> columns, List<String> signs, List<String> values) {
+    public SelectCommand(String table, List<RecordComparisonClause> clauses) {
         this.table = table;
-        this.columns = columns;
-        this.compareSigns = signs;
-        this.values = values;
+        this.clauses = clauses;
     }
 
     public String getTableName() {
@@ -29,7 +22,8 @@ public class SelectCommand extends AbstractSQLCommand {
 
     public SQLCommandResult execute() throws CommandExecutionException {
         Table table = getTable(getTableName());
-        RecordSet result = getContext().getRecordManager().select(table);
+        WhereMatcher matcher = new TableRecordMatcher(clauses);
+        RecordSet result = getContext().getRecordManager().select(table, matcher);
 
         return new SQLCommandResult(new RecordSetCSVIterator(result, table));
     }

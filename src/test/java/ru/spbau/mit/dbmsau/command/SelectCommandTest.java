@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import ru.spbau.mit.dbmsau.BaseTest;
+import ru.spbau.mit.dbmsau.table.RecordComparisonClause;
 import ru.spbau.mit.dbmsau.table.RecordManager;
 
 import java.util.ArrayList;
@@ -24,8 +25,8 @@ public class SelectCommandTest extends BaseTest {
         insert.setContext(context);
         insert.execute();
 
-        List<String> emptyList = new ArrayList<>();
-        SelectCommand select = new SelectCommand("test", emptyList, emptyList, emptyList);
+        List<RecordComparisonClause> clauses = new ArrayList<>();
+        SelectCommand select = new SelectCommand("test", clauses);
         select.setContext(context);
         SQLCommandResult result = select.execute();
 
