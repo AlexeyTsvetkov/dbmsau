@@ -60,6 +60,23 @@ public class InsertCommandTest extends BaseTest {
         assertNotNull(command.execute());
     }
 
+    @Test
+    public void testColumnsUnique() throws Exception {
+        thrown.expect(SemanticError.class);
+        thrown.expectMessage("Column `id` referenced more than once");
+
+        ArrayList<String> columns = new ArrayList<>();
+        ArrayList<String> values = new ArrayList<>();
+
+        columns.add("id");values.add("10");
+        columns.add("id");values.add("10");
+
+        InsertCommand command = new InsertCommand("test", columns, values);
+        command.setContext(context);
+
+        assertNotNull(command.execute());
+    }
+
     @Before
     public void setUp() throws Exception {
         FileUtils.copyFile(
