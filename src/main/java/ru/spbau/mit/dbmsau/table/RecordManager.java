@@ -45,7 +45,7 @@ public class RecordManager extends ContextContainer {
     }
 
     public RecordSet select(Table table) {
-        return new RecordSet(
+        return new FullScanRecordSet(
                 table,
                 buildPagesListByHeadPageId(table.getFullPagesListHeadPageId()),
                 buildPagesListByHeadPageId(table.getNotFullPagesListHeadPageId()),
