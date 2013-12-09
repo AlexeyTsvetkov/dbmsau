@@ -2,16 +2,16 @@ package ru.spbau.mit.dbmsau.command;
 
 import ru.spbau.mit.dbmsau.command.exception.CommandExecutionException;
 import ru.spbau.mit.dbmsau.table.*;
+import ru.spbau.mit.dbmsau.table.exception.SemanticError;
 
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
 public class SelectCommand extends AbstractSQLCommand {
     private String table;
-    private final List<RecordComparisonClause> clauses;
+    private final ClauseIterator clauses;
 
-    public SelectCommand(String table, List<RecordComparisonClause> clauses) {
+    public SelectCommand(String table, ClauseIterator clauses) {
         this.table = table;
         this.clauses = clauses;
     }
@@ -20,8 +20,12 @@ public class SelectCommand extends AbstractSQLCommand {
         return table;
     }
 
-    public SQLCommandResult execute() throws CommandExecutionException {
+    public SQLCommandResult execute() throws CommandExecutionException, SemanticError {
         Table table = getTable(getTableName());
+
+        SemanticValidator validator = new SemanticValidator();
+        validator.checkColumns(table, clauses.getColumns(), clauses.getValues());
+
         WhereMatcher matcher = new TableRecordMatcher(clauses);
         RecordSet result = getContext().getRecordManager().select(table, matcher);
 
@@ -42,11 +46,8 @@ public class SelectCommand extends AbstractSQLCommand {
 
         @Override
         public boolean hasNext() {
-            if (!wasHeader) {
-                return true;
-            }
+            return !wasHeader || recordSet.hasNext();
 
-            return recordSet.hasNext();
         }
 
         @Override
@@ -63,7 +64,14 @@ public class SelectCommand extends AbstractSQLCommand {
                 return joinCSV(header);
             }
 
-            TableRecord record = recordSet.next();
+            TableRecord record = recordSet.nextMatched();
+            while (record == null && hasNext()) {
+                record = recordSet.nextMatched();
+            }
+
+            if (record == null) {
+                return "";
+            }
 
             LinkedList<String> row = new LinkedList<>();
 

@@ -3,6 +3,7 @@ package ru.spbau.mit.dbmsau.command;
 import ru.spbau.mit.dbmsau.command.exception.CommandExecutionException;
 import ru.spbau.mit.dbmsau.table.Table;
 import ru.spbau.mit.dbmsau.table.exception.RecordManagerException;
+import ru.spbau.mit.dbmsau.table.exception.SemanticError;
 
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class InsertCommand extends AbstractSQLCommand {
     }
 
     @Override
-    public SQLCommandResult execute() throws CommandExecutionException {
+    public SQLCommandResult execute() throws CommandExecutionException, SemanticError {
         Table table = getTable(getTableName());
 
         getContext().getSemanticValidator().checkColumns(table, getColumns(), getValues());

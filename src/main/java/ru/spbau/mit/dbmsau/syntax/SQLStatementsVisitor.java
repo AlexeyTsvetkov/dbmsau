@@ -1,8 +1,8 @@
 package ru.spbau.mit.dbmsau.syntax;
 
 import ru.spbau.mit.dbmsau.command.*;
+import ru.spbau.mit.dbmsau.table.ClauseIterator;
 import ru.spbau.mit.dbmsau.table.Column;
-import ru.spbau.mit.dbmsau.table.RecordComparisonClause;
 import ru.spbau.mit.dbmsau.table.Type;
 import ru.spbau.mit.dbmsau.syntax.ast.*;
 
@@ -56,21 +56,27 @@ public class SQLStatementsVisitor extends ASTNodeVisitor {
         String table = node.getTableFrom().getLexemeValue();
 
         WhereClauseNode where = node.getWhereClause();
-        List<RecordComparisonClause> clauses = new ArrayList<>();
+
+        List<String> columns = new ArrayList<>();
+        List<String> signs   = new ArrayList<>();
+        List<String> values  = new ArrayList<>();
 
         if (where != null) {
             List<ComparisonNode> comparisons = where.getComparisons();
 
             for (ComparisonNode comparison : comparisons) {
-                String identifier = comparison.getIdentifier().getLexemeValue();
-                String sign = comparison.getSign().getLexemeValue();
-                String value = comparison.getRValue().getLexemeValue();
+                String column = comparison.getColumn().getLexemeValue();
+                String sign   = comparison.getSign().getLexemeValue();
+                String value  = comparison.getRValue().getLexemeValue();
 
-                clauses.add(new RecordComparisonClause(identifier, sign, value));
+                columns.add(column);
+                signs.add(sign);
+                values.add(value);
             }
         }
 
-        setLastCommand(new SelectCommand(table, clauses));
+        ClauseIterator iterator = new ClauseIterator(columns, signs, values);
+        setLastCommand(new SelectCommand(table, iterator));
     }
 
     @Override

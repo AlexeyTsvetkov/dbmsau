@@ -11,7 +11,7 @@ import java.util.Queue;
 
 public class RecordSet implements Iterable<TableRecord>, Iterator<TableRecord> {
     private Table table;
-    private WhereMatcher mathcher;
+    private WhereMatcher matcher;
     private PagesList fullPages;
     private PagesList notFullPages;
     private Context context;
@@ -21,9 +21,9 @@ public class RecordSet implements Iterable<TableRecord>, Iterator<TableRecord> {
     private TableRecordsPage currentPage = null;
     private Iterator<Record> currentPageIterator = null;
 
-    public RecordSet(Table table, WhereMatcher mathcher, PagesList fullPages, PagesList notFullPages, Context context) {
+    public RecordSet(Table table, WhereMatcher matcher, PagesList fullPages, PagesList notFullPages, Context context) {
         this.table = table;
-        this.mathcher = mathcher;
+        this.matcher = matcher;
         this.fullPages = fullPages;
         this.notFullPages = notFullPages;
         this.context = context;
@@ -68,6 +68,21 @@ public class RecordSet implements Iterable<TableRecord>, Iterator<TableRecord> {
         moveUntilNext();
 
         return new TableRecord(currentPageIterator.next(), table);
+    }
+
+    public TableRecord nextMatched() {
+        TableRecord record;
+        boolean matched;
+        do {
+            record = next();
+            matched = matcher.matches(record.getRecord());
+        } while (!matched && hasNext());
+
+        if (!matched) {
+            return null;
+        }
+
+        return record;
     }
 
     private boolean isFullPagesListProcessing() {

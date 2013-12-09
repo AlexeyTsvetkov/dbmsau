@@ -55,13 +55,7 @@ public class RecordManager extends ContextContainer {
     }
 
     public RecordSet select(Table table) {
-        return new RecordSet(
-                table,
-                new StubMatcher(),
-                buildPagesListByHeadPageId(table.getFullPagesListHeadPageId()),
-                buildPagesListByHeadPageId(table.getNotFullPagesListHeadPageId()),
-                context
-        );
+        return select(table, new StubMatcher());
     }
 
     public void delete(Table table) {

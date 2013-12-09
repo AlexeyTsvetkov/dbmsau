@@ -3,12 +3,12 @@ package ru.spbau.mit.dbmsau.table;
 public class RecordComparisonClause {
     private final String column;
     private final String sign;
-    private final String rvalue;
+    private final String value;
 
-    public RecordComparisonClause(String column, String sign, String rvalue) {
+    public RecordComparisonClause(String column, String sign, String value) {
         this.column = column;
         this.sign = sign;
-        this.rvalue = rvalue;
+        this.value = value;
     }
 
     public String getColumn() {
@@ -19,7 +19,7 @@ public class RecordComparisonClause {
         return sign;
     }
 
-    public String getRValue() {
-        return rvalue;
+    public String getValue() {
+        return value;
     }
 }

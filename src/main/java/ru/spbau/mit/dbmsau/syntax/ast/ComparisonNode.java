@@ -1,18 +1,18 @@
 package ru.spbau.mit.dbmsau.syntax.ast;
 
 public class ComparisonNode extends ASTNode {
-    private final TerminalNode identifier;
+    private final TerminalNode column;
     private final TerminalNode sign;
     private final TerminalNode rvalue;
 
-    public ComparisonNode(TerminalNode identifier, TerminalNode sign, TerminalNode rvalue) {
-        this.identifier = identifier;
+    public ComparisonNode(TerminalNode column, TerminalNode sign, TerminalNode rvalue) {
+        this.column = column;
         this.sign = sign;
         this.rvalue = rvalue;
     }
 
-    public TerminalNode getIdentifier() {
-        return identifier;
+    public TerminalNode getColumn() {
+        return column;
     }
 
     public TerminalNode getSign() {
