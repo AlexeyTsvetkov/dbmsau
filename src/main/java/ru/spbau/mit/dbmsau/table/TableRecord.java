@@ -11,10 +11,14 @@ public class TableRecord {
         this.table = table;
     }
 
+    public Type getColumnType(String column) {
+        return table.getColumnType(column);
+    }
+
     public void setValue(int columnNumber, String value) {
         int columnOffset = table.getColumnOffset(columnNumber);
 
-        Type type = table.getColumnTypeByNumber(columnNumber);
+        Type type = table.getColumnType(columnNumber);
 
         if (type.getType() == Type.TYPE_INTEGER) {
             setIntegerValue(columnNumber, Integer.valueOf(value));
@@ -37,7 +41,7 @@ public class TableRecord {
         int columnNumber = table.getColumnIndex(column);
         int columnOffset = table.getColumnOffset(columnNumber);
 
-        Type type = table.getColumnTypeByNumber(columnNumber);
+        Type type = table.getColumnType(columnNumber);
 
         if (type.getType() == Type.TYPE_INTEGER) {
             return Integer.valueOf(getIntegerValue(columnNumber)).toString();

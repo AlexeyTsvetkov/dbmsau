@@ -1,11 +1,11 @@
 package ru.spbau.mit.dbmsau.table;
 
-public class RecordComparisonClause {
+public class RecordClause {
     private final String column;
     private final String sign;
     private final String value;
 
-    public RecordComparisonClause(String column, String sign, String value) {
+    public RecordClause(String column, String sign, String value) {
         this.column = column;
         this.sign = sign;
         this.value = value;

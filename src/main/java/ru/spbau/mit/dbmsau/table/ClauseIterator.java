@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class ClauseIterator implements Iterator<RecordComparisonClause>,
-                                       Iterable<RecordComparisonClause> {
+public class ClauseIterator implements Iterator<RecordClause>,
+                                       Iterable<RecordClause> {
 
     private final List<String> columns;
     private final List<String> signs;
@@ -43,7 +43,7 @@ public class ClauseIterator implements Iterator<RecordComparisonClause>,
     }
 
     @Override
-    public Iterator<RecordComparisonClause> iterator() {
+    public Iterator<RecordClause> iterator() {
         counter = 0;
         return this;
     }
@@ -54,12 +54,12 @@ public class ClauseIterator implements Iterator<RecordComparisonClause>,
     }
 
     @Override
-    public RecordComparisonClause next() {
+    public RecordClause next() {
         String column = columns.get(counter);
         String sign   = signs.get(counter);
         String value  = values.get(counter);
 
-        RecordComparisonClause clause = new RecordComparisonClause(column, sign, value);
+        RecordClause clause = new RecordClause(column, sign, value);
         counter++;
 
         return clause;

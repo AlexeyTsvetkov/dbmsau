@@ -86,7 +86,7 @@ public class Table {
         return columnsOffsets[number];
     }
 
-    public Type getColumnTypeByNumber(int number) {
+    public Type getColumnType(int number) {
         return columns.get(number).getType();
     }
 

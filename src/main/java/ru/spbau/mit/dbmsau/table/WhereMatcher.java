@@ -5,5 +5,5 @@ import ru.spbau.mit.dbmsau.pages.Record;
 import java.util.List;
 
 public interface WhereMatcher {
-    public boolean matches(Record record);
+    public boolean matches(TableRecord record);
 }

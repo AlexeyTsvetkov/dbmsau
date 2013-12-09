@@ -75,7 +75,7 @@ public class RecordSet implements Iterable<TableRecord>, Iterator<TableRecord> {
         boolean matched;
         do {
             record = next();
-            matched = matcher.matches(record.getRecord());
+            matched = matcher.matches(record);
         } while (!matched && hasNext());
 
         if (!matched) {
