@@ -67,8 +67,6 @@ public class SemanticValidator {
             assertTypesCompatible(type, column, value);
         }
 
-        assertColumnsUnique(columns);
-
         return true;
     }
 }

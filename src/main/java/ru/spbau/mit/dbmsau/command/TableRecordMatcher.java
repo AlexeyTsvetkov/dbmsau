@@ -24,6 +24,10 @@ public class TableRecordMatcher implements WhereMatcher {
             return false;
         }
 
+        if (sign.equals(">") && recordVal <= compareVal) {
+            return false;
+        }
+
         return true;
     }
 
@@ -34,6 +38,10 @@ public class TableRecordMatcher implements WhereMatcher {
         }
 
         if (sign.equals("=") && compareResult != 0) {
+            return false;
+        }
+
+        if (sign.equals(">") && compareResult <= 0) {
             return false;
         }
 

@@ -124,6 +124,8 @@ comparison_sign ::= EQUALS:eq
             {: RESULT = eq; :}
         | LESS:ls
             {: RESULT = ls; :}
+        | MORE:mr
+                    {: RESULT = mr; :}
         ;
 
 columns_list ::= idents_list:e1 {: RESULT = e1; :};

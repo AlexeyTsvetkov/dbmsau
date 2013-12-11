@@ -35,6 +35,7 @@ public class InsertCommand extends AbstractSQLCommand {
         Table table = getTable(getTableName());
 
         getContext().getSemanticValidator().checkColumns(table, getColumns(), getValues());
+        getContext().getSemanticValidator().assertColumnsUnique(getColumns());
 
         try {
             getContext().getRecordManager().insert(table, getColumns(), getValues());
