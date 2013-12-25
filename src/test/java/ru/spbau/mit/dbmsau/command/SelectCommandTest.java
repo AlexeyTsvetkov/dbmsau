@@ -4,11 +4,9 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import ru.spbau.mit.dbmsau.BaseTest;
-import ru.spbau.mit.dbmsau.table.RecordComparisonClause;
 import ru.spbau.mit.dbmsau.table.RecordManager;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class SelectCommandTest extends BaseTest {

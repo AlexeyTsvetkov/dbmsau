@@ -2,7 +2,6 @@ package ru.spbau.mit.dbmsau.syntax;
 
 import ru.spbau.mit.dbmsau.command.*;
 import ru.spbau.mit.dbmsau.table.Column;
-import ru.spbau.mit.dbmsau.table.RecordComparisonClause;
 import ru.spbau.mit.dbmsau.table.Type;
 import ru.spbau.mit.dbmsau.syntax.ast.*;
 import ru.spbau.mit.dbmsau.table.WhereMatcher;
