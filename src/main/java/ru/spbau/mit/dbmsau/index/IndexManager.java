@@ -20,11 +20,11 @@ abstract public class IndexManager extends ContextContainer {
     }
 
     public RecordSet buildIndexedRecordSetIfPossible(Table table, String[] candidatesColumns, String[] values) {
-        int[] columnNumbers = table.getColumnNumbersByNames(Arrays.asList(candidatesColumns));
+        int[] columnIndexes = table.getColumnIndexesByNames(Arrays.asList(candidatesColumns));
 
         for (Index index : getIndexesForTable(table)) {
-            if (index.isMatchingFor(columnNumbers, Index.EQUALITY_MATCHING_TYPE)) {
-                return index.buildRecordSetMatchingEqualityCondition(columnNumbers, values);
+            if (index.isMatchingFor(columnIndexes, Index.EQUALITY_MATCHING_TYPE)) {
+                return index.buildRecordSetMatchingEqualityCondition(columnIndexes, values);
             }
         }
 

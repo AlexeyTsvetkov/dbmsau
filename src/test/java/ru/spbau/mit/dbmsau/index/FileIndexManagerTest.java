@@ -50,7 +50,7 @@ public class FileIndexManagerTest extends BaseTest {
         assertThat(index.getRootPageId(), is(4));
         assertThat(index.getTable().getName(), is("test"));
 
-        assertArrayEquals(new int[]{ 0, 1 }, index.getColumnNumbers());
+        assertArrayEquals(new int[]{ 0, 1 }, index.getColumnIndexes());
 
         assertTrue(FileUtils.contentEquals(
                 getResourceFileByName(TEST_INDEX_FILE_NAME),

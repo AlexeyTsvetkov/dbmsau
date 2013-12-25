@@ -19,7 +19,7 @@ public class FileIndexManager extends IndexManager {
 
     @Override
     public void createIndex(String name, Table table, List<String> columns) {
-        int[] columnNumbers = table.getColumnNumbersByNames(columns);
+        int[] columnIndexes = table.getColumnIndexesByNames(columns);
 
         if (indexesByNames.containsKey(name)) {
             throw new IndexCreationError("index `" + name + "` already exists");
@@ -27,12 +27,12 @@ public class FileIndexManager extends IndexManager {
 
         //for BTree only
         int rootPageId = context.getPageManager().doAllocatePage();
-        BTreeIndex index = new BTreeIndex(name, table, columnNumbers, rootPageId);
+        BTreeIndex index = new BTreeIndex(name, table, columnIndexes, rootPageId);
 
         try {
             saveIndexToFile(index);
         } catch(IOException e) {
-             throw new IndexManagerException("Can't to save index");
+             throw new IndexManagerException("Can't save index");
         }
 
         addIndex(index);
@@ -84,17 +84,17 @@ public class FileIndexManager extends IndexManager {
             String tableName = is.nextLine();
 
             int columnsCount = is.nextInt();
-            int[] columnNumbers = new int[columnsCount];
+            int[] columnIndexes = new int[columnsCount];
 
             for (int i = 0; i < columnsCount; i++) {
-                columnNumbers[i] = is.nextInt();
+                columnIndexes[i] = is.nextInt();
             }
 
             int rootPageId = is.nextInt();
 
             Table table = context.getTableManager().getTable(tableName);
 
-            return new BTreeIndex(name, table, columnNumbers, rootPageId);
+            return new BTreeIndex(name, table, columnIndexes, rootPageId);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -108,10 +108,10 @@ public class FileIndexManager extends IndexManager {
 
         os.println(index.getName());
         os.println(index.getTable().getName());
-        os.println(Integer.valueOf(index.getColumnNumbers().length).toString());
+        os.println(Integer.valueOf(index.getColumnIndexes().length).toString());
 
-        for (int columnNumber : index.getColumnNumbers()) {
-            os.println(columnNumber);
+        for (int columnIndex : index.getColumnIndexes()) {
+            os.println(columnIndex);
         }
 
         if (index instanceof BTreeIndex) {

@@ -103,15 +103,15 @@ public class Table {
         return fullPagesListHeadPageId;
     }
 
-    public int[] getColumnNumbersByNames(List<String> columns) {
-        int[] columnNumbers = new int[columns.size()];
+    public int[] getColumnIndexesByNames(List<String> columns) {
+        int[] columnIndexes = new int[columns.size()];
         int i = 0;
 
         for (String name : columns) {
-            columnNumbers[i++] = getColumnIndex(name);
+            columnIndexes[i++] = getColumnIndex(name);
         }
 
-        return columnNumbers;
+        return columnIndexes;
     }
 
     public int getNotFullPagesListHeadPageId() {

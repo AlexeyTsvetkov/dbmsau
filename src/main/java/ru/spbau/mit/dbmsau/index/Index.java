@@ -10,12 +10,12 @@ abstract public class Index {
 
     protected String name;
     protected Table table;
-    protected int[] columnNumbers;
+    protected int[] columnIndexes;
 
-    protected Index(String name, Table table, int[] columnNumbers) {
+    protected Index(String name, Table table, int[] columnIndexes) {
         this.name = name;
         this.table = table;
-        this.columnNumbers = columnNumbers;
+        this.columnIndexes = columnIndexes;
     }
 
     public String getName() {
@@ -26,10 +26,10 @@ abstract public class Index {
         return table;
     }
 
-    public int[] getColumnNumbers() {
-        return columnNumbers;
+    public int[] getColumnIndexes() {
+        return columnIndexes;
     }
 
-    abstract public boolean isMatchingFor(int[] queryColumnNumbers, int matchingType);
-    abstract public RecordSet buildRecordSetMatchingEqualityCondition(int[] queryColumnNumbers, String[] values);
+    abstract public boolean isMatchingFor(int[] queryColumnIndexes, int matchingType);
+    abstract public RecordSet buildRecordSetMatchingEqualityCondition(int[] queryColumnIndexes, String[] values);
 }
