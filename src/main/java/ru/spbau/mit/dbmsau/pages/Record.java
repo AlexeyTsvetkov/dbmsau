@@ -18,11 +18,11 @@ public class Record {
     }
 
     public int getIntegerValue(int valueOffset) {
-         return getPageByteBuffer().getInt(getRecordOffset() + valueOffset);
+        return getPageByteBuffer().getInt(getRecordOffset() + valueOffset);
     }
 
     public void setIntegerValue(int valueOffset, int value) {
-         getPageByteBuffer().putInt(getRecordOffset() + valueOffset, value);
+        getPageByteBuffer().putInt(getRecordOffset() + valueOffset, value);
     }
 
     public void setStringValue(int valueOffset, String value, int maxLength) {

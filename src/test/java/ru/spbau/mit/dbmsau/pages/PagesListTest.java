@@ -1,15 +1,11 @@
 package ru.spbau.mit.dbmsau.pages;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.CoreMatchers.is;
-
-import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import ru.spbau.mit.dbmsau.BaseTest;
 
 import java.util.Iterator;
+
+import static org.hamcrest.CoreMatchers.is;
 
 public class PagesListTest extends BaseTest {
     private static final int HEAD_PAGE_ID = 100;

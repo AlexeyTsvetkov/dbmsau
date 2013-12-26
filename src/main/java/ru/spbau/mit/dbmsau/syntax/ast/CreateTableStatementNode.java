@@ -4,7 +4,7 @@ import java.util.List;
 
 public class CreateTableStatementNode extends ASTNode {
     private String tableName;
-    private List< ColumnDescriptionNode > columns;
+    private List<ColumnDescriptionNode> columns;
 
     public CreateTableStatementNode(String tableName, List<ColumnDescriptionNode> columns) {
         this.tableName = tableName;

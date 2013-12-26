@@ -1,9 +1,10 @@
 package ru.spbau.mit.dbmsau.command;
 
-import ru.spbau.mit.dbmsau.command.AbstractSQLCommand;
-import ru.spbau.mit.dbmsau.command.SQLCommandResult;
 import ru.spbau.mit.dbmsau.command.exception.CommandExecutionException;
-import ru.spbau.mit.dbmsau.table.*;
+import ru.spbau.mit.dbmsau.relation.Column;
+import ru.spbau.mit.dbmsau.table.SemanticValidator;
+import ru.spbau.mit.dbmsau.table.Table;
+import ru.spbau.mit.dbmsau.table.TableManager;
 import ru.spbau.mit.dbmsau.table.exception.SemanticError;
 import ru.spbau.mit.dbmsau.table.exception.TableManagerException;
 

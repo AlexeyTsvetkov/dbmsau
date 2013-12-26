@@ -1,13 +1,13 @@
 package ru.spbau.mit.dbmsau.index;
 
-import static org.hamcrest.CoreMatchers.is;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import ru.spbau.mit.dbmsau.BaseTest;
-import ru.spbau.mit.dbmsau.table.RecordSet;
+import ru.spbau.mit.dbmsau.relation.RecordSet;
 import ru.spbau.mit.dbmsau.table.Table;
+
+import static org.hamcrest.CoreMatchers.is;
 
 public class IndexManagerTest extends BaseTest {
     private Table getTestTable() {
@@ -19,10 +19,10 @@ public class IndexManagerTest extends BaseTest {
         RecordSet indexedRecordSet = context.
                 getIndexManager().
                 buildIndexedRecordSetIfPossible(
-                    getTestTable(),
-                    new String[]{"name", "id"},
-                    new String[]{"abc", "1"}
-            );
+                        getTestTable(),
+                        new String[]{"name", "id"},
+                        new String[]{"abc", "1"}
+                );
 
         assertNotNull(indexedRecordSet);
         assertThat(indexedRecordSet.toString(), is("1, abc"));

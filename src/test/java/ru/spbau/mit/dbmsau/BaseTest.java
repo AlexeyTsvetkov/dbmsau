@@ -1,7 +1,6 @@
 package ru.spbau.mit.dbmsau;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -14,13 +13,15 @@ import ru.spbau.mit.dbmsau.pages.StubPageManager;
 import ru.spbau.mit.dbmsau.pages.exception.PageManagerInitException;
 import ru.spbau.mit.dbmsau.syntax.SyntaxAnalyzer;
 import ru.spbau.mit.dbmsau.table.FileTableManager;
-import ru.spbau.mit.dbmsau.table.RecordManager;
 import ru.spbau.mit.dbmsau.table.TableManager;
+import ru.spbau.mit.dbmsau.table.TableRecordManager;
 
 import java.io.File;
 import java.io.FileInputStream;
 
 public class BaseTest extends Assert {
+    protected static final int TEST_COLUMN_INDEX_ID = 0;
+    protected static final int TEST_COLUMN_INDEX_NAME = 1;
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -34,7 +35,7 @@ public class BaseTest extends Assert {
         Context context = new Context(tempFolder.getRoot().getPath());
         context.setPageManager(buildPageManager(context));
         context.setTableManager(buildTableManager(context));
-        context.setRecordManager(new RecordManager(context));
+        context.setTableRecordManager(new TableRecordManager(context));
         context.setIndexManager(new FileIndexManager(context));
 
         try {
@@ -75,7 +76,7 @@ public class BaseTest extends Assert {
     protected File getResourceFileByName(String resourceName) {
         return FileUtils.toFile(getClass().getResource(resourceName));
     }
-    
+
     protected void initSQLDumpLoad(String resourceName) throws Exception {
         if (resourceName != null) {
             SyntaxAnalyzer analyzer = new SyntaxAnalyzer(new FileInputStream(

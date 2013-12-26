@@ -35,7 +35,7 @@ public class StubPageManager extends PageManager {
 
     @Override
     protected Page doGetPageById(int id) {
-         return allPages.get(id);
+        return allPages.get(id);
     }
 
     @Override

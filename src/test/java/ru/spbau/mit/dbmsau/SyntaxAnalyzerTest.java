@@ -1,7 +1,5 @@
 package ru.spbau.mit.dbmsau;
 
-import static org.hamcrest.CoreMatchers.*;
-
 import junitx.util.PrivateAccessor;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -14,14 +12,16 @@ import ru.spbau.mit.dbmsau.syntax.exception.SyntaxErrors;
 
 import java.util.Iterator;
 
+import static org.hamcrest.CoreMatchers.is;
+
 public class SyntaxAnalyzerTest extends Assert {
 
-    private Iterator< AbstractSQLCommand > getResults(String query) {
-         return new SyntaxAnalyzer(query);
+    private Iterator<AbstractSQLCommand> getResults(String query) {
+        return new SyntaxAnalyzer(query);
     }
 
     private AbstractSQLCommand getFirstResult(String query) {
-        Iterator< AbstractSQLCommand > all = getResults(query);
+        Iterator<AbstractSQLCommand> all = getResults(query);
 
         assertTrue(all.hasNext());
 
@@ -34,7 +34,7 @@ public class SyntaxAnalyzerTest extends Assert {
 
     @Test
     public void testCreateTable() {
-        CreateTableCommand command = (CreateTableCommand)getFirstResult("CREATE TABLE TEST ( id integer, name VARCHAR(50) ); ");
+        CreateTableCommand command = (CreateTableCommand) getFirstResult("CREATE TABLE TEST ( id integer, name VARCHAR(50) ); ");
 
         assertThat(command.getTableName(), is("test"));
         assertThat(command.getColumns().size(), is(2));
@@ -56,7 +56,7 @@ public class SyntaxAnalyzerTest extends Assert {
 
     @Test
     public void testInsert() throws Exception {
-        InsertCommand command = (InsertCommand)getFirstResult("INSERT INTO test (id, name) VALUES(1,'2');");
+        InsertCommand command = (InsertCommand) getFirstResult("INSERT INTO test (id, name) VALUES(1,'2');");
 
         assertThat(command.getTableName(), is("test"));
         assertThat(command.getColumns().size(), is(2));
@@ -77,14 +77,14 @@ public class SyntaxAnalyzerTest extends Assert {
 
     @Test
     public void testSelect() throws Exception {
-        SelectCommand command = (SelectCommand)getFirstResult("SELECT * FROM test;");
+        SelectCommand command = (SelectCommand) getFirstResult("SELECT * FROM test;");
 
         assertThat(command.getTableName(), is("test"));
     }
 
     @Test
     public void testSelectWhere() throws Exception {
-        SelectCommand command = (SelectCommand)getFirstResult("SELECT * FROM test WHERE id=2;");
+        SelectCommand command = (SelectCommand) getFirstResult("SELECT * FROM test WHERE id=2;");
 
         assertThat(command.getTableName(), is("test"));
 
@@ -101,7 +101,7 @@ public class SyntaxAnalyzerTest extends Assert {
 
     @Test
     public void testDelete() throws Exception {
-        DeleteCommand command = (DeleteCommand)getFirstResult("delete FROM test;");
+        DeleteCommand command = (DeleteCommand) getFirstResult("delete FROM test;");
 
         assertThat(command.getTableName(), is("test"));
     }

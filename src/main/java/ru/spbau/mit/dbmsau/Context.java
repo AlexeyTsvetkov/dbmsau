@@ -6,9 +6,9 @@ import ru.spbau.mit.dbmsau.pages.FilePageManager;
 import ru.spbau.mit.dbmsau.pages.PageManager;
 import ru.spbau.mit.dbmsau.pages.exception.PageManagerInitException;
 import ru.spbau.mit.dbmsau.table.FileTableManager;
-import ru.spbau.mit.dbmsau.table.RecordManager;
 import ru.spbau.mit.dbmsau.table.SemanticValidator;
 import ru.spbau.mit.dbmsau.table.TableManager;
+import ru.spbau.mit.dbmsau.table.TableRecordManager;
 
 import java.io.File;
 
@@ -16,7 +16,7 @@ public class Context {
     private String path;
     private PageManager pageManager;
     private TableManager tableManager;
-    private RecordManager recordManager;
+    private TableRecordManager tableRecordManager;
     private IndexManager indexManager;
     private SemanticValidator semanticValidator;
 
@@ -25,7 +25,7 @@ public class Context {
         try {
             obj.pageManager = new FilePageManager(obj);
             obj.tableManager = new FileTableManager(obj);
-            obj.recordManager = new RecordManager(obj);
+            obj.tableRecordManager = new TableRecordManager(obj);
             obj.indexManager = new FileIndexManager(obj);
 
             obj.init();
@@ -69,12 +69,12 @@ public class Context {
         this.tableManager = tableManager;
     }
 
-    public RecordManager getRecordManager() {
-        return recordManager;
+    public TableRecordManager getTableRecordManager() {
+        return tableRecordManager;
     }
 
-    public void setRecordManager(RecordManager recordManager) {
-        this.recordManager = recordManager;
+    public void setTableRecordManager(TableRecordManager tableRecordManager) {
+        this.tableRecordManager = tableRecordManager;
     }
 
     public IndexManager getIndexManager() {
@@ -92,7 +92,7 @@ public class Context {
     public void init() throws PageManagerInitException {
         getPageManager().init();
         getTableManager().init();
-        getRecordManager().init();
+        getTableRecordManager().init();
         getIndexManager().init();
     }
 

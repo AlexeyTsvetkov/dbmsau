@@ -20,7 +20,7 @@ abstract public class AbstractSQLCommand {
         Table table = getContext().getTableManager().getTable(name);
 
         if (table == null) {
-            throw new UserError("No such table `" +  name + "`");
+            throw new UserError("No such table `" + name + "`");
         }
 
         return table;

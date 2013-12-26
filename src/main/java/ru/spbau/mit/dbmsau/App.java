@@ -7,12 +7,9 @@ import ru.spbau.mit.dbmsau.syntax.SyntaxAnalyzer;
 
 /**
  * Hello world!
- *
  */
-public class App 
-{
-    public static void main( String[] args )
-    {
+public class App {
+    public static void main(String[] args) {
 
         if (args.length == 0) {
             System.err.println("Usage: dbmsau <path>");
@@ -44,7 +41,7 @@ public class App
                     continue;
                 }
 
-                if (result.isOk())  {
+                if (result.isOk()) {
 
                     if (result.isIterable()) {
                         for (String resultLine : result) {

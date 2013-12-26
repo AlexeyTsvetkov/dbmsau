@@ -1,12 +1,11 @@
 package ru.spbau.mit.dbmsau.syntax;
 
 import ru.spbau.mit.dbmsau.command.*;
-import ru.spbau.mit.dbmsau.table.Column;
-import ru.spbau.mit.dbmsau.table.Type;
+import ru.spbau.mit.dbmsau.relation.Column;
+import ru.spbau.mit.dbmsau.relation.Type;
+import ru.spbau.mit.dbmsau.relation.WhereMatcher;
 import ru.spbau.mit.dbmsau.syntax.ast.*;
-import ru.spbau.mit.dbmsau.table.WhereMatcher;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -28,7 +27,7 @@ public class SQLStatementsVisitor extends ASTNodeVisitor {
     public void visit(CreateTableStatementNode node) {
         List<Column> columnDescriptions = new LinkedList<>();
 
-        for (ColumnDescriptionNode columnDescriptionNode : node.getColumns() ) {
+        for (ColumnDescriptionNode columnDescriptionNode : node.getColumns()) {
             Integer typeLength = columnDescriptionNode.getType().getLength();
             Type typeDescription = Type.getType(
                     columnDescriptionNode.getType().getTypeIdentifier(),

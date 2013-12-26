@@ -1,14 +1,14 @@
 package ru.spbau.mit.dbmsau.syntax;
 
+import ru.spbau.mit.dbmsau.relation.RelationRecord;
+import ru.spbau.mit.dbmsau.relation.WhereMatcher;
 import ru.spbau.mit.dbmsau.syntax.ast.ASTNode;
 import ru.spbau.mit.dbmsau.syntax.ast.ASTNodeVisitor;
 import ru.spbau.mit.dbmsau.syntax.ast.ComparisonNode;
-import ru.spbau.mit.dbmsau.table.TableRecord;
-import ru.spbau.mit.dbmsau.table.WhereMatcher;
 
 public class ASTWhereMatcher extends ASTNodeVisitor implements WhereMatcher {
     private ASTNode condition;
-    private TableRecord currentRecord;
+    private RelationRecord currentRecord;
     private boolean lastResult;
 
     public ASTWhereMatcher(ASTNode condition) {
@@ -16,7 +16,7 @@ public class ASTWhereMatcher extends ASTNodeVisitor implements WhereMatcher {
     }
 
     @Override
-    public boolean matches(TableRecord record) {
+    public boolean matches(RelationRecord record) {
         currentRecord = record;
         condition.accept(this);
 
@@ -25,8 +25,9 @@ public class ASTWhereMatcher extends ASTNodeVisitor implements WhereMatcher {
 
     @Override
     public void visit(ComparisonNode node) {
+        int columnIndex = currentRecord.getRelation().getColumnIndex(node.getIdentifier().getLexemeValue());
         lastResult = currentRecord.
-                getValueAsString(node.getIdentifier().getLexemeValue()).
+                getValueAsString(columnIndex).
                 equals(node.getRValue().getLexemeValue());
     }
 }

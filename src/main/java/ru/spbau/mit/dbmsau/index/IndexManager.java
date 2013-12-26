@@ -2,11 +2,10 @@ package ru.spbau.mit.dbmsau.index;
 
 import ru.spbau.mit.dbmsau.Context;
 import ru.spbau.mit.dbmsau.ContextContainer;
-import ru.spbau.mit.dbmsau.table.RecordSet;
+import ru.spbau.mit.dbmsau.relation.RecordSet;
 import ru.spbau.mit.dbmsau.table.Table;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 abstract public class IndexManager extends ContextContainer {
@@ -32,5 +31,6 @@ abstract public class IndexManager extends ContextContainer {
     }
 
     abstract public void createIndex(String name, Table table, List<String> columns);
+
     abstract public Iterable<Index> getIndexesForTable(Table table);
 }

@@ -1,7 +1,5 @@
 package ru.spbau.mit.dbmsau.pages;
 
-import static org.hamcrest.CoreMatchers.is;
-
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,6 +9,8 @@ import ru.spbau.mit.dbmsau.pages.exception.PageManagerInitException;
 
 import java.lang.reflect.Field;
 import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.is;
 
 public class FilePageManagerTest extends BaseTest {
 

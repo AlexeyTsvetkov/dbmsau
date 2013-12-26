@@ -1,14 +1,12 @@
 package ru.spbau.mit.dbmsau.index;
 
 import ru.spbau.mit.dbmsau.index.exception.IndexException;
-import ru.spbau.mit.dbmsau.table.RecordSet;
+import ru.spbau.mit.dbmsau.relation.RecordSet;
 import ru.spbau.mit.dbmsau.table.Table;
 import ru.spbau.mit.dbmsau.table.TableRecord;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
 
 public class BTreeIndex extends Index {
     private int rootPageId;
@@ -46,7 +44,7 @@ public class BTreeIndex extends Index {
     }
 
     private int[] getInverseQueryColumnIndexes(int[] queryColumnIndexes) {
-        int[] inverseQueryColumnIndexes = new int[table.getColumns().size()];
+        int[] inverseQueryColumnIndexes = new int[table.getColumnsCount()];
         Arrays.fill(inverseQueryColumnIndexes, -1);
 
         for (int i = 0; i < queryColumnIndexes.length; i++) {
@@ -60,6 +58,7 @@ public class BTreeIndex extends Index {
         ArrayList<String> matchingValues;
 
         private BTReeRecordSet(ArrayList<String> matchingValues) {
+            super(null);
             this.matchingValues = matchingValues;
         }
 
@@ -77,8 +76,8 @@ public class BTreeIndex extends Index {
         }
 
         @Override
-        public Iterator<TableRecord> iterator() {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        public void moveFirst() {
+            return;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         @Override

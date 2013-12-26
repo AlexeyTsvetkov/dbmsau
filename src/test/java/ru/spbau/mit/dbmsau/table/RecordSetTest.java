@@ -1,12 +1,9 @@
 package ru.spbau.mit.dbmsau.table;
 
-import static org.hamcrest.CoreMatchers.*;
-
-import org.junit.Ignore;
 import org.junit.Test;
+import ru.spbau.mit.dbmsau.relation.RecordSet;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 
 public class RecordSetTest extends TestTableTest {
@@ -14,14 +11,15 @@ public class RecordSetTest extends TestTableTest {
     public void testIteratorRemove() throws Exception {
         initSQLDumpLoad("create_insert_test.sql");
 
-        Iterator<TableRecord> recordSet = context.getRecordManager().select(context.getTableManager().getTable("test")).iterator();
+        RecordSet recordSet = context.getTableRecordManager().select(context.getTableManager().getTable("test"));
 
+        recordSet.moveFirst();
         recordSet.next();
         recordSet.next();
         recordSet.remove();
 
         String[][] shouldBe = new String[][]{
-                {"1","abc"}, {"5","efg"}
+                {"1", "abc"}, {"5", "efg"}
         };
 
         compareTestContent(shouldBe);
@@ -42,15 +40,18 @@ public class RecordSetTest extends TestTableTest {
             ArrayList<String> columns = new ArrayList<>();
             ArrayList<String> values = new ArrayList<>();
 
-            columns.add("id");values.add(shouldBe[i][0]);
-            columns.add("name");values.add(shouldBe[i][1]);
+            columns.add("id");
+            values.add(shouldBe[i][0]);
+            columns.add("name");
+            values.add(shouldBe[i][1]);
 
-            context.getRecordManager().insert(context.getTableManager().getTable("test"), columns, values);
+            context.getTableRecordManager().insert(context.getTableManager().getTable("test"), columns, values);
         }
 
-        Iterator<TableRecord> recordSet = context.getRecordManager().select(context.getTableManager().getTable("test")).iterator();
+        RecordSet recordSet = context.getTableRecordManager().select(context.getTableManager().getTable("test"));
+        recordSet.moveFirst();
 
-        String[][] newShouldBe = new String[n-(cutTo-cutFrom+1)][2];
+        String[][] newShouldBe = new String[n - (cutTo - cutFrom + 1)][2];
         int counter = 0;
 
         for (int i = 0; i < n; i++) {

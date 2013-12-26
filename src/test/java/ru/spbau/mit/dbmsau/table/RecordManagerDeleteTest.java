@@ -1,6 +1,5 @@
 package ru.spbau.mit.dbmsau.table;
 
-import static org.hamcrest.CoreMatchers.*;
 import org.junit.Test;
 
 public class RecordManagerDeleteTest extends TestTableTest {
@@ -11,7 +10,7 @@ public class RecordManagerDeleteTest extends TestTableTest {
         String[][] shouldBe = new String[][]{
         };
 
-        context.getRecordManager().delete(context.getTableManager().getTable("test"));
+        context.getTableRecordManager().delete(context.getTableManager().getTable("test"));
 
         compareTestContent(shouldBe);
     }

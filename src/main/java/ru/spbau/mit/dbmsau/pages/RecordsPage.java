@@ -2,7 +2,7 @@ package ru.spbau.mit.dbmsau.pages;
 
 import java.util.Iterator;
 
-public class RecordsPage extends Page implements Iterable< Record > {
+public class RecordsPage extends Page implements Iterable<Record> {
     private int recordsLength;
 
     public RecordsPage(Page page, int recordsLength) {
@@ -23,12 +23,11 @@ public class RecordsPage extends Page implements Iterable< Record > {
     }
 
     /**
-     *
      * @param slotIndex
      * @return индекс байта во всей странице, где лежит бит слота в битмапе
      */
     private int getBitmapSlotByteIndex(int slotIndex) {
-        return getBitmapOffset() + slotIndex/8;
+        return getBitmapOffset() + slotIndex / 8;
     }
 
     public Boolean isSlotUsed(int slotIndex) {
@@ -39,7 +38,7 @@ public class RecordsPage extends Page implements Iterable< Record > {
     private void setSlotStatus(int slotIndex, boolean isUsed) {
         if (isSlotUsed(slotIndex) != isUsed) {
             int byteNumber = getBitmapSlotByteIndex(slotIndex);
-            byte newValue = (byte)(getByteBuffer().get(byteNumber) ^ (1 << (slotIndex % 8)));
+            byte newValue = (byte) (getByteBuffer().get(byteNumber) ^ (1 << (slotIndex % 8)));
             getByteBuffer().put(byteNumber, newValue);
         }
     }
@@ -64,7 +63,7 @@ public class RecordsPage extends Page implements Iterable< Record > {
     }
 
     public boolean isEmpty() {
-         return getFreeSlotsCount() == getMaxRecordsCount();
+        return getFreeSlotsCount() == getMaxRecordsCount();
     }
 
     public boolean isFull() {
@@ -84,7 +83,7 @@ public class RecordsPage extends Page implements Iterable< Record > {
         if (slotIndex < getMaxRecordsCount()) {
             setSlotStatus(slotIndex, true);
             return getRecordFromSlot(slotIndex);
-        }   else {
+        } else {
             throw new Error("плохо 123");
         }
     }
@@ -98,7 +97,7 @@ public class RecordsPage extends Page implements Iterable< Record > {
         return new RecordsIterator();
     }
 
-    private class RecordsIterator implements Iterator< Record > {
+    private class RecordsIterator implements Iterator<Record> {
         int counter = 0;
 
         @Override

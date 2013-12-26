@@ -1,21 +1,15 @@
 package ru.spbau.mit.dbmsau.index;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.CoreMatchers.is;
-
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
 import org.junit.Test;
 import ru.spbau.mit.dbmsau.BaseTest;
 import ru.spbau.mit.dbmsau.index.exception.IndexCreationError;
-import ru.spbau.mit.dbmsau.index.exception.IndexManagerException;
 import ru.spbau.mit.dbmsau.table.Table;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
 
 public class FileIndexManagerTest extends BaseTest {
     private final String TEST_INDEX_NAME = "test_index";
@@ -50,7 +44,7 @@ public class FileIndexManagerTest extends BaseTest {
         assertThat(index.getRootPageId(), is(4));
         assertThat(index.getTable().getName(), is("test"));
 
-        assertArrayEquals(new int[]{ 0, 1 }, index.getColumnIndexes());
+        assertArrayEquals(new int[]{0, 1}, index.getColumnIndexes());
 
         assertTrue(FileUtils.contentEquals(
                 getResourceFileByName(TEST_INDEX_FILE_NAME),

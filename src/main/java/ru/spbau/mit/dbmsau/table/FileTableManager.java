@@ -2,12 +2,12 @@ package ru.spbau.mit.dbmsau.table;
 
 import ru.spbau.mit.dbmsau.Context;
 import ru.spbau.mit.dbmsau.pages.PagesList;
-import ru.spbau.mit.dbmsau.table.exception.SemanticError;
+import ru.spbau.mit.dbmsau.relation.Column;
+import ru.spbau.mit.dbmsau.relation.Type;
 import ru.spbau.mit.dbmsau.table.exception.TableManagerException;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class FileTableManager extends TableManager {
@@ -87,7 +87,7 @@ public class FileTableManager extends TableManager {
 
         os.println(table.getName());
         os.println(Integer.valueOf(table.getFullPagesListHeadPageId()).toString() + " " + table.getNotFullPagesListHeadPageId());
-        os.println(table.getColumns().size());
+        os.println(table.getColumnsCount());
 
         for (Column column : table.getColumns()) {
             os.println(column.getName());

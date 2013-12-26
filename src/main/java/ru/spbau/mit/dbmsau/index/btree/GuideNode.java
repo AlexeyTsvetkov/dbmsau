@@ -2,25 +2,22 @@ package ru.spbau.mit.dbmsau.index.btree;
 
 import ru.spbau.mit.dbmsau.pages.Page;
 
-import java.util.ArrayList;
-
-public class GuideNode extends Node{
+public class GuideNode extends Node {
     public GuideNode(int nodeId, NodeData nodeData, BTree bTree) {
         super(nodeId, nodeData, bTree);
     }
 
-    public static GuideNode getNewGuideNode(Page page, int keySize, int valSize, BTree bTree)
-    {
+    public static GuideNode getNewGuideNode(Page page, int keySize, int valSize, BTree bTree) {
         NodeData nodeData = NodeData.getNewData(false, page, keySize, valSize);
         return new GuideNode(page.getId(), nodeData, bTree);
     }
 
     /**
      * Maps the specified key to the specified value in this Node.
+     *
      * @return A new right node if this node was split, else null.
      */
-    public Node put(TreeTuple key, TreeTuple value)
-    {
+    public Node put(TreeTuple key, TreeTuple value) {
         Node newGuide = null;
 
         int guideIndex = findGuideIndex(key);
@@ -32,32 +29,28 @@ public class GuideNode extends Node{
         bTree.releaseNode(childId);
 
         // Did we split?
-        if(newNode != null)
-        {
+        if (newNode != null) {
             // Insert the new key and node at the found index.
-            this.nodeData.addKey(guideIndex+1, newNode.nodeData.getKey(0));
+            this.nodeData.addKey(guideIndex + 1, newNode.nodeData.getKey(0));
             this.nodeData.addValue(guideIndex + 1, bTree.getNewNodeIdTuple(newNode.nodeId));
 
             // Do we need to split?
-            if(nodeData.getAmountOfKeys() > nodeData.getOrder())
-            {
+            if (nodeData.getAmountOfKeys() > nodeData.getOrder()) {
                 newGuide = bTree.getNewNode(false);
 
                 //newGuide.nodeData.removeKey(0);
 
-                for(int i = nodeData.getAmountOfKeys()/2; i< nodeData.getAmountOfKeys(); i++)
-                {
+                for (int i = nodeData.getAmountOfKeys() / 2; i < nodeData.getAmountOfKeys(); i++) {
                     newGuide.nodeData.addValue(nodeData.getValue(i));
                     newGuide.nodeData.addKey(nodeData.getKey(i));
                 }
 
-                nodeData.resize(nodeData.getAmountOfKeys() / 2)  ;
+                nodeData.resize(nodeData.getAmountOfKeys() / 2);
 
                 newGuide.nodeData.setNextNodeId(nodeData.getNextNodeId());
                 newGuide.nodeData.setPrevNodeId(this.nodeId);
 
-                if(nodeData.getNextNodeId() != NodeData.NO_NODE_ID)
-                {
+                if (nodeData.getNextNodeId() != NodeData.NO_NODE_ID) {
                     Node nextNode = bTree.getNodeById(nodeData.getNextNodeId(), true);
                     nextNode.nodeData.setPrevNodeId(newGuide.nodeId);
                     bTree.releaseNode(nextNode);
@@ -195,8 +188,7 @@ public class GuideNode extends Node{
     /**
      * Returns the guide index of to use when looking for the specified key.
      */
-    private int findGuideIndex(TreeTuple key)
-    {
+    private int findGuideIndex(TreeTuple key) {
         return this.bTree.findGuideIndex(this, key);
     }
 }

@@ -1,6 +1,5 @@
 package ru.spbau.mit.dbmsau.table;
 
-import static org.hamcrest.CoreMatchers.*;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -11,7 +10,7 @@ public class RecordManagerSelectTest extends TestTableTest {
         initSQLDumpLoad("create_insert_test.sql");
 
         String[][] shouldBe = new String[][]{
-                {"1","abc"}, {"3","cde"}, {"5","efg"}
+                {"1", "abc"}, {"3", "cde"}, {"5", "efg"}
         };
 
         compareTestContent(shouldBe);
@@ -31,10 +30,12 @@ public class RecordManagerSelectTest extends TestTableTest {
             ArrayList<String> columns = new ArrayList<>();
             ArrayList<String> values = new ArrayList<>();
 
-            columns.add("id");values.add(shouldBe[i][0]);
-            columns.add("name");values.add(shouldBe[i][1]);
+            columns.add("id");
+            values.add(shouldBe[i][0]);
+            columns.add("name");
+            values.add(shouldBe[i][1]);
 
-            context.getRecordManager().insert(context.getTableManager().getTable("test"), columns, values);
+            context.getTableRecordManager().insert(context.getTableManager().getTable("test"), columns, values);
         }
 
         compareTestContent(shouldBe);

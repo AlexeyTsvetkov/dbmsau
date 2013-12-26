@@ -2,11 +2,9 @@ package ru.spbau.mit.dbmsau.table;
 
 import ru.spbau.mit.dbmsau.Context;
 import ru.spbau.mit.dbmsau.ContextContainer;
-import ru.spbau.mit.dbmsau.table.exception.SemanticError;
 import ru.spbau.mit.dbmsau.table.exception.TableManagerException;
 
 import java.util.HashMap;
-import java.util.List;
 
 abstract public class TableManager extends ContextContainer {
     protected HashMap<String, Table> tables = new HashMap<>();

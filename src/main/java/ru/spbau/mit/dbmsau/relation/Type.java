@@ -1,4 +1,4 @@
-package ru.spbau.mit.dbmsau.table;
+package ru.spbau.mit.dbmsau.relation;
 
 public class Type {
     public static final int UNDEFINED_LENGTH = -1;
@@ -11,7 +11,7 @@ public class Type {
 
     private static final int INTEGER_SIZE = 4;
 
-    private static final String[] identifiers = new String[]{ TYPE_IDENTIFIER_INTEGER, TYPE_IDENTIFIER_VARCHAR };
+    private static final String[] identifiers = new String[]{TYPE_IDENTIFIER_INTEGER, TYPE_IDENTIFIER_VARCHAR};
 
     private static final Type INTEGER_TYPE = new Type(TYPE_INTEGER, UNDEFINED_LENGTH);
 

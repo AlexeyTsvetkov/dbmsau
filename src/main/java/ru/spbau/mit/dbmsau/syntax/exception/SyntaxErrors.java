@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SyntaxErrors extends UserError {
-    private List< String > errors;
+    private List<String> errors;
 
     public SyntaxErrors(List<String> errors) {
         this.errors = errors;

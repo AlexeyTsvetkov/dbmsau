@@ -10,8 +10,8 @@ import java.util.*;
 
 public class FileIndexManager extends IndexManager {
     private static final String INDEX_FILE_EXTENSION = ".idx";
-    private HashMap<String,ArrayList<Index>> indexesByTables = new HashMap<>();
-    private HashMap<String,Index> indexesByNames = new HashMap<>();
+    private HashMap<String, ArrayList<Index>> indexesByTables = new HashMap<>();
+    private HashMap<String, Index> indexesByNames = new HashMap<>();
 
     public FileIndexManager(Context context) {
         super(context);
@@ -31,8 +31,8 @@ public class FileIndexManager extends IndexManager {
 
         try {
             saveIndexToFile(index);
-        } catch(IOException e) {
-             throw new IndexManagerException("Can't save index");
+        } catch (IOException e) {
+            throw new IndexManagerException("Can't save index");
         }
 
         addIndex(index);

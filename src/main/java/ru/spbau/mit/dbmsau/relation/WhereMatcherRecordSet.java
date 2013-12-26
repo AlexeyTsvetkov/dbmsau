@@ -1,26 +1,24 @@
-package ru.spbau.mit.dbmsau.table;
-
-import java.util.Iterator;
+package ru.spbau.mit.dbmsau.relation;
 
 public class WhereMatcherRecordSet extends RecordSet {
     private RecordSet content;
     private WhereMatcher matcher;
-    private TableRecord nextResult;
+    private RelationRecord nextResult;
 
     public WhereMatcherRecordSet(RecordSet content, WhereMatcher matcher) {
+        super(content.getRelation());
         this.content = content;
         this.matcher = matcher;
     }
 
     @Override
-    public Iterator<TableRecord> iterator() {
-        content.iterator();
-        return this;
+    public void moveFirst() {
+        content.moveFirst();
     }
 
     private void walkUntilNext() {
         while (nextResult == null && content.hasNext()) {
-            TableRecord candidate = content.next();
+            RelationRecord candidate = content.next();
             if (matcher.matches(candidate)) {
                 nextResult = candidate;
             }
@@ -34,10 +32,10 @@ public class WhereMatcherRecordSet extends RecordSet {
     }
 
     @Override
-    public TableRecord next() {
+    public RelationRecord next() {
         walkUntilNext();
 
-        TableRecord currentResult = nextResult;
+        RelationRecord currentResult = nextResult;
         nextResult = null;
 
         return currentResult;

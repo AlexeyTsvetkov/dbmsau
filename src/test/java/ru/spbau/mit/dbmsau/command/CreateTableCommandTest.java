@@ -1,17 +1,17 @@
 package ru.spbau.mit.dbmsau.command;
 
-import static org.hamcrest.CoreMatchers.*;
 import org.junit.Test;
 import ru.spbau.mit.dbmsau.BaseTest;
 import ru.spbau.mit.dbmsau.Context;
-import ru.spbau.mit.dbmsau.table.Column;
+import ru.spbau.mit.dbmsau.relation.Column;
+import ru.spbau.mit.dbmsau.relation.Type;
 import ru.spbau.mit.dbmsau.table.StubTableManager;
 import ru.spbau.mit.dbmsau.table.TableManager;
-import ru.spbau.mit.dbmsau.table.Type;
 import ru.spbau.mit.dbmsau.table.exception.SemanticError;
-import ru.spbau.mit.dbmsau.table.exception.TableManagerException;
 
 import java.util.ArrayList;
+
+import static org.hamcrest.CoreMatchers.is;
 
 public class CreateTableCommandTest extends BaseTest {
     @Test

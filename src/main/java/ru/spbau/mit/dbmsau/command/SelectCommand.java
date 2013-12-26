@@ -1,11 +1,13 @@
 package ru.spbau.mit.dbmsau.command;
 
 import ru.spbau.mit.dbmsau.command.exception.CommandExecutionException;
-import ru.spbau.mit.dbmsau.table.*;
+import ru.spbau.mit.dbmsau.relation.RecordSet;
+import ru.spbau.mit.dbmsau.relation.RelationRecord;
+import ru.spbau.mit.dbmsau.relation.WhereMatcher;
+import ru.spbau.mit.dbmsau.table.Table;
 
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
 public class SelectCommand extends AbstractSQLCommand {
     private String table;
@@ -22,21 +24,19 @@ public class SelectCommand extends AbstractSQLCommand {
 
     public SQLCommandResult execute() throws CommandExecutionException {
         Table table = getTable(getTableName());
-        RecordSet result = getContext().getRecordManager().select(table, matcher);
+        RecordSet result = getContext().getTableRecordManager().select(table, matcher);
 
-        return new SQLCommandResult(new RecordSetCSVIterator(result, table));
+        return new SQLCommandResult(new RecordSetCSVIterator(result));
     }
 
     private class RecordSetCSVIterator implements Iterator<String> {
         private RecordSet recordSet;
-        private Table table;
         private boolean wasHeader = false;
 
-        private RecordSetCSVIterator(RecordSet recordSet, Table table) {
+        private RecordSetCSVIterator(RecordSet recordSet) {
             this.recordSet = recordSet;
-            this.table = table;
 
-            recordSet.iterator();
+            recordSet.moveFirst();
         }
 
         @Override
@@ -55,19 +55,19 @@ public class SelectCommand extends AbstractSQLCommand {
 
                 LinkedList<String> header = new LinkedList<>();
 
-                for(int i = 0; i < table.getColumns().size(); i++) {
-                    header.add(table.getColumns().get(i).getName());
+                for (int i = 0; i < recordSet.getRelation().getColumnsCount(); i++) {
+                    header.add(recordSet.getRelation().getColumnName(i));
                 }
 
                 return joinCSV(header);
             }
 
-            TableRecord record = recordSet.next();
+            RelationRecord record = recordSet.next();
 
             LinkedList<String> row = new LinkedList<>();
 
-            for(int i = 0; i < table.getColumns().size(); i++) {
-                row.add(record.getValueAsString(table.getColumns().get(i).getName()));
+            for (int i = 0; i < recordSet.getRelation().getColumnsCount(); i++) {
+                row.add(record.getValueAsString(i));
             }
 
             return joinCSV(row);

@@ -1,9 +1,7 @@
 package ru.spbau.mit.dbmsau.index;
 
-import ru.spbau.mit.dbmsau.table.RecordSet;
+import ru.spbau.mit.dbmsau.relation.RecordSet;
 import ru.spbau.mit.dbmsau.table.Table;
-
-import java.util.List;
 
 abstract public class Index {
     public static final int EQUALITY_MATCHING_TYPE = 0;
@@ -31,5 +29,6 @@ abstract public class Index {
     }
 
     abstract public boolean isMatchingFor(int[] queryColumnIndexes, int matchingType);
+
     abstract public RecordSet buildRecordSetMatchingEqualityCondition(int[] queryColumnIndexes, String[] values);
 }

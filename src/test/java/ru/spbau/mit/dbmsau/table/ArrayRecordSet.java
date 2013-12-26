@@ -1,19 +1,20 @@
 package ru.spbau.mit.dbmsau.table;
 
-import java.util.Iterator;
+import ru.spbau.mit.dbmsau.relation.RecordSet;
+import ru.spbau.mit.dbmsau.relation.RelationRecord;
 
 public class ArrayRecordSet extends RecordSet {
-    private TableRecord[] records;
+    private RelationRecord[] records;
     private int currentIndex = 0;
 
-    public ArrayRecordSet(TableRecord[] records) {
+    public ArrayRecordSet(RelationRecord[] records) {
+        super(null);
         this.records = records;
     }
 
     @Override
-    public Iterator<TableRecord> iterator() {
+    public void moveFirst() {
         currentIndex = 0;
-        return this;
     }
 
     @Override
@@ -22,7 +23,7 @@ public class ArrayRecordSet extends RecordSet {
     }
 
     @Override
-    public TableRecord next() {
+    public RelationRecord next() {
         return records[currentIndex++];
     }
 

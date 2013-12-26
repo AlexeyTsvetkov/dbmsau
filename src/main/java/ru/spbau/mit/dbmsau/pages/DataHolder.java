@@ -40,8 +40,7 @@ public class DataHolder {
         return byteBuffer.getInt(byteNumber);
     }
 
-    public String getString(int beginOffset, int maxLength)
-    {
+    public String getString(int beginOffset, int maxLength) {
         int maxOffset = beginOffset + maxLength;
 
         int end = beginOffset;
@@ -63,8 +62,7 @@ public class DataHolder {
         return new String(content);
     }
 
-    public DataHolder putString(int beginOffset, String value, int maxLength)
-    {
+    public DataHolder putString(int beginOffset, String value, int maxLength) {
         if (value.length() > maxLength) {
             value = value.substring(0, maxLength);
         }
@@ -100,8 +98,7 @@ public class DataHolder {
         return this;
     }
 
-    public byte[] getBytes()
-    {
+    public byte[] getBytes() {
         return bytes;
     }
 }

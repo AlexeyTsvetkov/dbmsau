@@ -1,9 +1,11 @@
 package ru.spbau.mit.dbmsau.table;
 
+import ru.spbau.mit.dbmsau.relation.Type;
 import ru.spbau.mit.dbmsau.table.exception.SemanticError;
 
 import java.util.AbstractSet;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 public class SemanticValidator {
@@ -30,8 +32,8 @@ public class SemanticValidator {
         AbstractSet<String> columnSet = new HashSet<>(columns.size());
 
 
-        for(String column : columns) {
-            if(columnSet.contains(column)) {
+        for (String column : columns) {
+            if (columnSet.contains(column)) {
                 String message = String.format("Column `%s` referenced more than once", column);
                 throw new SemanticError(message);
             }
@@ -47,11 +49,16 @@ public class SemanticValidator {
             throw new SemanticError(message);
         }
 
-        List<String> columns = table.getColumnsNames();
+        List<String> columns = new LinkedList<>();
+
+        for (int i = 0; i < table.getColumnsCount(); i++) {
+            columns.add(table.getColumnName(i));
+        }
+
         assertColumnsUnique(columns);
     }
 
-    public boolean checkColumns(Table table, List<String> columns, List<String> values)  {
+    public boolean checkColumns(Table table, List<String> columns, List<String> values) {
         if (columns.size() != values.size()) {
             throw new SemanticError("Columns and values size are not equal");
         }
@@ -59,11 +66,11 @@ public class SemanticValidator {
         for (int i = 0; i < columns.size(); i++) {
 
             String column = columns.get(i);
-            String value  = values.get(i);
+            String value = values.get(i);
 
             assertColumnExists(table, column);
 
-            Type type = table.getColumnType(column);
+            Type type = table.getColumnType(table.getColumnIndex(column));
             assertTypesCompatible(type, column, value);
         }
 

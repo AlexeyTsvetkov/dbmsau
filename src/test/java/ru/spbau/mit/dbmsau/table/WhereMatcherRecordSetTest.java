@@ -1,9 +1,13 @@
 package ru.spbau.mit.dbmsau.table;
 
-import static org.hamcrest.CoreMatchers.*;
 import org.junit.Test;
 import ru.spbau.mit.dbmsau.BaseTest;
-import ru.spbau.mit.dbmsau.syntax.StubTableRecord;
+import ru.spbau.mit.dbmsau.relation.RelationRecord;
+import ru.spbau.mit.dbmsau.relation.WhereMatcher;
+import ru.spbau.mit.dbmsau.relation.WhereMatcherRecordSet;
+import ru.spbau.mit.dbmsau.syntax.StubRelationRecord;
+
+import static org.hamcrest.CoreMatchers.is;
 
 public class WhereMatcherRecordSetTest extends BaseTest {
 
@@ -14,11 +18,11 @@ public class WhereMatcherRecordSetTest extends BaseTest {
 
         Table table = context.getTableManager().getTable("test");
 
-        TableRecord[] records = new TableRecord[]{
-            new StubTableRecord(table, new String[]{"1", "abc"}),
-            new StubTableRecord(table, new String[]{"2", "name"}),
-            new StubTableRecord(table, new String[]{"3", "name"}),
-            new StubTableRecord(table, new String[]{"1", "def"}),
+        RelationRecord[] records = new RelationRecord[]{
+                new StubRelationRecord(table, new String[]{"1", "abc"}),
+                new StubRelationRecord(table, new String[]{"2", "name"}),
+                new StubRelationRecord(table, new String[]{"3", "name"}),
+                new StubRelationRecord(table, new String[]{"1", "def"}),
         };
 
         WhereMatcherRecordSet recordSet = new WhereMatcherRecordSet(
@@ -26,23 +30,23 @@ public class WhereMatcherRecordSetTest extends BaseTest {
                 new StubMatcher()
         );
 
-        recordSet.iterator();
+        recordSet.moveFirst();
 
         assertTrue(recordSet.hasNext());
-        TableRecord next = recordSet.next();
-        assertThat(next.getValueAsString("name"), is("abc"));
+        RelationRecord next = recordSet.next();
+        assertThat(next.getValueAsString(TEST_COLUMN_INDEX_NAME), is("abc"));
 
         assertTrue(recordSet.hasNext());
         next = recordSet.next();
-        assertThat(next.getValueAsString("name"), is("def"));
+        assertThat(next.getValueAsString(TEST_COLUMN_INDEX_NAME), is("def"));
 
         assertFalse(recordSet.hasNext());
     }
 
     private class StubMatcher implements WhereMatcher {
         @Override
-        public boolean matches(TableRecord record) {
-            return record.getValueAsString("id").equals("1");
+        public boolean matches(RelationRecord record) {
+            return record.getValueAsString(TEST_COLUMN_INDEX_ID).equals("1");
         }
     }
 }

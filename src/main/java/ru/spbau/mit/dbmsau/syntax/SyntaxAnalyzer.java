@@ -1,4 +1,5 @@
 package ru.spbau.mit.dbmsau.syntax;
+
 import ru.spbau.mit.dbmsau.command.AbstractSQLCommand;
 import ru.spbau.mit.dbmsau.syntax.ast.ASTNode;
 import ru.spbau.mit.dbmsau.syntax.exception.LexicalError;
@@ -7,9 +8,8 @@ import ru.spbau.mit.dbmsau.syntax.exception.SyntaxFatalError;
 
 import java.io.InputStream;
 import java.util.Iterator;
-import java.util.List;
 
-public class SyntaxAnalyzer implements Iterable< AbstractSQLCommand >, Iterator< AbstractSQLCommand > {
+public class SyntaxAnalyzer implements Iterable<AbstractSQLCommand>, Iterator<AbstractSQLCommand> {
 
     private Parser parser;
     private ASTNode nextStatementNode = null;
@@ -28,7 +28,7 @@ public class SyntaxAnalyzer implements Iterable< AbstractSQLCommand >, Iterator<
 
     @Override
     public boolean hasNext() {
-        nextStatementNode = (ASTNode)nextParserResult();
+        nextStatementNode = (ASTNode) nextParserResult();
 
         return nextStatementNode != null;
     }
