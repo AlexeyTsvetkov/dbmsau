@@ -1,4 +1,4 @@
-package ru.spbau.mit.dbmsau.syntax;
+package ru.spbau.mit.dbmsau.relation;
 
 import ru.spbau.mit.dbmsau.relation.Relation;
 import ru.spbau.mit.dbmsau.relation.RelationRecord;
@@ -12,7 +12,7 @@ public class StubRelationRecord extends RelationRecord {
         columnsValues = new String[relation.getColumnsCount()];
     }
 
-    public StubRelationRecord(Table table, String[] columnsValues) {
+    public StubRelationRecord(Relation table, String... columnsValues) {
         this(table);
         this.columnsValues = columnsValues;
     }

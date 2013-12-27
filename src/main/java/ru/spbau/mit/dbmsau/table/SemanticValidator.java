@@ -1,5 +1,7 @@
 package ru.spbau.mit.dbmsau.table;
 
+import ru.spbau.mit.dbmsau.relation.ColumnAccessor;
+import ru.spbau.mit.dbmsau.relation.Relation;
 import ru.spbau.mit.dbmsau.relation.Type;
 import ru.spbau.mit.dbmsau.table.exception.SemanticError;
 
@@ -58,7 +60,7 @@ public class SemanticValidator {
         assertColumnsUnique(columns);
     }
 
-    public boolean checkColumns(Table table, List<String> columns, List<String> values) {
+    public boolean checkColumnsForInsert(Table table, List<String> columns, List<String> values) {
         if (columns.size() != values.size()) {
             throw new SemanticError("Columns and values size are not equal");
         }
@@ -75,6 +77,23 @@ public class SemanticValidator {
         }
 
         assertColumnsUnique(columns);
+
+        return true;
+    }
+
+    public boolean checkColumnAccessor(Relation relation, ColumnAccessor accessor) {
+        if (accessor.getColumnIndex(relation) == null) {
+            throw new SemanticError(String.format("Unknown column `%s`", accessor.toString()));
+        }
+
+        return true;
+    }
+
+    public boolean checkColumnsAccessors(Relation relation, List<ColumnAccessor> accessors) {
+
+        for (ColumnAccessor accessor : accessors) {
+            checkColumnAccessor(relation, accessor);
+        }
 
         return true;
     }

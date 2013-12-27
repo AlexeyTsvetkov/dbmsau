@@ -1,5 +1,6 @@
 import java_cup.runtime.*;
 import java.util.LinkedList;
+
 import ru.spbau.mit.dbmsau.syntax.ast.*;
 import ru.spbau.mit.dbmsau.syntax.exception.SyntaxFatalError;
 
@@ -63,6 +64,9 @@ non terminal LinkedList< ComparisonNode > comparisons;
 non terminal ComparisonNode               comparison_expr;
 non terminal TerminalNode                 comparison_sign;
 
+non terminal LinkedList< ColumnAccessorNode >   column_accessors;
+non terminal ColumnAccessorNode                 column_accessor;
+
 non terminal CreateTableStatementNode     create_table_statement;
 non terminal LinkedList< ColumnDescriptionNode > columns_descriptions_list;
 non terminal ColumnDescriptionNode        column_description;
@@ -89,8 +93,8 @@ statement ::= create_table_statement:e1 {: RESULT = e1; :}
               QUIT:e1 {: RESULT = null; :}
              ;
 
-select_statement ::= SELECT ASTERISK FROM IDENT:tableFrom where_clause:filter
-                    {: RESULT = new SelectStatementNode(tableFrom, filter); :}
+select_statement ::= SELECT column_accessors:accessors FROM IDENT:tableFrom where_clause:filter
+                    {: RESULT = new SelectStatementNode(accessors, tableFrom, filter); :}
                   ;
 
 insert_statement ::= INSERT INTO IDENT:tableName LEFTPAR columns_list:cList RIGHTPAR VALUES
@@ -126,6 +130,22 @@ comparison_sign ::= EQUALS:eq
             {: RESULT = ls; :}
         ;
 
+column_accessors ::= column_accessor:e1
+                  {: RESULT = new LinkedList<>(); RESULT.add(e1); :}
+                  |
+                  column_accessor:e1 COMMA:e2 column_accessors:e3
+                  {: RESULT = e3; RESULT.addFirst(e1); :}
+                  |
+                  ASTERISK
+                  {: RESULT = null; :}
+                  ;
+
+column_accessor ::= IDENT:ident
+                    {: RESULT = new ColumnAccessorNode(ident); :}
+                   |
+                    IDENT:tableIdent DOT:dot IDENT:columnIdent
+                    {: RESULT = new ColumnAccessorNode(tableIdent, columnIdent); :}
+                   ;
 columns_list ::= idents_list:e1 {: RESULT = e1; :};
 
 idents_list ::= IDENT:e1

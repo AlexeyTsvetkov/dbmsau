@@ -2,10 +2,12 @@ package ru.spbau.mit.dbmsau.syntax;
 
 import ru.spbau.mit.dbmsau.command.*;
 import ru.spbau.mit.dbmsau.relation.Column;
+import ru.spbau.mit.dbmsau.relation.ColumnAccessor;
 import ru.spbau.mit.dbmsau.relation.Type;
 import ru.spbau.mit.dbmsau.relation.WhereMatcher;
 import ru.spbau.mit.dbmsau.syntax.ast.*;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -62,7 +64,30 @@ public class SQLStatementsVisitor extends ASTNodeVisitor {
             matcher = new ASTWhereMatcher(where);
         }
 
-        setLastCommand(new SelectCommand(table, matcher));
+        ArrayList<ColumnAccessor> columnAccessors = null;
+
+        if (node.getAccessors() != null) {
+            columnAccessors = new ArrayList<>();
+            for (ColumnAccessorNode columnAccessorNode : node.getAccessors()) {
+                ColumnAccessor accessor;
+
+                if (columnAccessorNode.getTableIdent() != null) {
+                    accessor = new ColumnAccessor(
+                            columnAccessorNode.getTableIdent().getLexemeValue(),
+                            columnAccessorNode.getColumnIdent().getLexemeValue()
+                    );
+                } else {
+                    accessor = new ColumnAccessor(
+                            null,
+                            columnAccessorNode.getColumnIdent().getLexemeValue()
+                    );
+                }
+
+                columnAccessors.add(accessor);
+            }
+        }
+
+        setLastCommand(new SelectCommand(columnAccessors, table, matcher));
     }
 
     @Override

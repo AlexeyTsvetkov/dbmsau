@@ -11,13 +11,18 @@ import ru.spbau.mit.dbmsau.index.FileIndexManager;
 import ru.spbau.mit.dbmsau.pages.PageManager;
 import ru.spbau.mit.dbmsau.pages.StubPageManager;
 import ru.spbau.mit.dbmsau.pages.exception.PageManagerInitException;
+import ru.spbau.mit.dbmsau.relation.Column;
+import ru.spbau.mit.dbmsau.relation.Type;
 import ru.spbau.mit.dbmsau.syntax.SyntaxAnalyzer;
 import ru.spbau.mit.dbmsau.table.FileTableManager;
+import ru.spbau.mit.dbmsau.table.Table;
 import ru.spbau.mit.dbmsau.table.TableManager;
 import ru.spbau.mit.dbmsau.table.TableRecordManager;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class BaseTest extends Assert {
     protected static final int TEST_COLUMN_INDEX_ID = 0;
@@ -35,7 +40,7 @@ public class BaseTest extends Assert {
         Context context = new Context(tempFolder.getRoot().getPath());
         context.setPageManager(buildPageManager(context));
         context.setTableManager(buildTableManager(context));
-        context.setTableRecordManager(new TableRecordManager(context));
+        context.setTableRecordManager(buildTableRecordManager(context));
         context.setIndexManager(new FileIndexManager(context));
 
         try {
@@ -53,6 +58,10 @@ public class BaseTest extends Assert {
 
     protected TableManager buildTableManager(Context context) {
         return new FileTableManager(context);
+    }
+
+    protected TableRecordManager buildTableRecordManager(Context context) {
+        return new TableRecordManager(context);
     }
 
 
@@ -88,5 +97,17 @@ public class BaseTest extends Assert {
                 command.execute();
             }
         }
+    }
+
+    protected Table buildTestTable() {
+        return new Table(
+            "test",
+            new ArrayList<>(
+                Arrays.asList(
+                    new Column("test", "id", Type.getIntegerType()),
+                    new Column("test", "name", Type.getType("varchar", 50))
+                )
+            )
+        );
     }
 }

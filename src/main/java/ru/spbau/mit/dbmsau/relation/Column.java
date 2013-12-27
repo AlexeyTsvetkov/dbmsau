@@ -29,7 +29,14 @@ public class Column {
         return tableName;
     }
 
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
     public String toString() {
+        if (tableName != null) {
+            return tableName + "." + name + ":" + type.toString();
+        }
         return name + ":" + type.toString();
     }
 }

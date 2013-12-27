@@ -58,11 +58,14 @@ public class FileTableManagerTest extends BaseTest {
 
         assertThat(table.getColumnsCount(), is(2));
 
-        assertThat(table.getColumnDescription(TEST_COLUMN_INDEX_ID), is("id:integer"));
-        assertThat(table.getColumnDescription(TEST_COLUMN_INDEX_NAME), is("name:varchar(50)"));
+        assertThat(table.getColumnDescription(TEST_COLUMN_INDEX_ID), is("test.id:integer"));
+        assertThat(table.getColumnDescription(TEST_COLUMN_INDEX_NAME), is("test.name:varchar(50)"));
 
         assertThat(table.getColumnIndex("id"), is(TEST_COLUMN_INDEX_ID));
         assertThat(table.getColumnIndex("name"), is(TEST_COLUMN_INDEX_NAME));
+
+        assertThat(table.getColumnIndex("test", "id"), is(TEST_COLUMN_INDEX_ID));
+        assertThat(table.getColumnIndex("test", "name"), is(TEST_COLUMN_INDEX_NAME));
     }
 
     @Override

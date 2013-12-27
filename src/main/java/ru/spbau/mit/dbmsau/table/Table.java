@@ -13,8 +13,16 @@ public class Table extends Relation {
     private int[] columnsOffsets;
     private int recordSize;
 
+    private static ArrayList<Column> processColumns(ArrayList<Column> columns, String tableName) {
+        for (Column column : columns) {
+            column.setTableName(tableName);
+        }
+
+        return columns;
+    }
+
     public Table(String name, ArrayList<Column> columns) {
-        super(columns);
+        super(processColumns(columns, name));
         this.name = name;
         initColumns();
     }

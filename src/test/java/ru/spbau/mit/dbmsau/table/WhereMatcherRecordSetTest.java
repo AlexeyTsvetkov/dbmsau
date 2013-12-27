@@ -5,7 +5,7 @@ import ru.spbau.mit.dbmsau.BaseTest;
 import ru.spbau.mit.dbmsau.relation.RelationRecord;
 import ru.spbau.mit.dbmsau.relation.WhereMatcher;
 import ru.spbau.mit.dbmsau.relation.WhereMatcherRecordSet;
-import ru.spbau.mit.dbmsau.syntax.StubRelationRecord;
+import ru.spbau.mit.dbmsau.relation.StubRelationRecord;
 
 import static org.hamcrest.CoreMatchers.is;
 
@@ -26,7 +26,7 @@ public class WhereMatcherRecordSetTest extends BaseTest {
         };
 
         WhereMatcherRecordSet recordSet = new WhereMatcherRecordSet(
-                new ArrayRecordSet(records),
+                new ArrayRecordSet(table, records),
                 new StubMatcher()
         );
 

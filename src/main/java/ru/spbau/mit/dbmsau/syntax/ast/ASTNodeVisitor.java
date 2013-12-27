@@ -32,6 +32,10 @@ abstract public class ASTNodeVisitor {
         throw new NotImplementedException();
     }
 
+    public void visit(ColumnAccessorNode node) {
+        throw new NotImplementedException();
+    }
+
     protected String getTerminalValue(ASTNode node) {
         node.accept(this);
         return curTerminalValue;

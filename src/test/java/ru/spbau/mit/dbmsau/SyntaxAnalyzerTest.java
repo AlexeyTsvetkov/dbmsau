@@ -6,11 +6,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import ru.spbau.mit.dbmsau.command.*;
+import ru.spbau.mit.dbmsau.relation.ColumnAccessor;
 import ru.spbau.mit.dbmsau.syntax.ASTWhereMatcher;
 import ru.spbau.mit.dbmsau.syntax.SyntaxAnalyzer;
 import ru.spbau.mit.dbmsau.syntax.exception.SyntaxErrors;
 
 import java.util.Iterator;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 
@@ -90,6 +92,19 @@ public class SyntaxAnalyzerTest extends Assert {
 
         ASTWhereMatcher matcher = (ASTWhereMatcher) PrivateAccessor.getField(command, "matcher");
         assertNotNull(matcher);
+    }
+
+    @Test
+    public void testSelectAccessors() throws Exception {
+        SelectCommand command = (SelectCommand) getFirstResult("SELECT test.name, id FROM test;");
+
+        assertThat(command.getTableName(), is("test"));
+
+        List<ColumnAccessor> columnAccessorList = (List<ColumnAccessor>) PrivateAccessor.getField(command, "columnAccessors");
+        assertNotNull(columnAccessorList);
+
+        assertThat(columnAccessorList.get(0).toString(), is("test.name"));
+        assertThat(columnAccessorList.get(1).toString(), is("id"));
     }
 
     @Test

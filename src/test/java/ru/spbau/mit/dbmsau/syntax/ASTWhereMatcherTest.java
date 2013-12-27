@@ -3,6 +3,7 @@ package ru.spbau.mit.dbmsau.syntax;
 import org.junit.Test;
 import ru.spbau.mit.dbmsau.BaseTest;
 import ru.spbau.mit.dbmsau.relation.RelationRecord;
+import ru.spbau.mit.dbmsau.relation.StubRelationRecord;
 import ru.spbau.mit.dbmsau.syntax.ast.ComparisonNode;
 import ru.spbau.mit.dbmsau.syntax.ast.TerminalNode;
 
