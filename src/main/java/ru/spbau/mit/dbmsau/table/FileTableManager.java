@@ -20,12 +20,14 @@ public class FileTableManager extends TableManager {
 
     @Override
     public void init() {
-        File[] files = context.getRootDir().listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(TABLE_FILE_EXTENSION);
+        File[] files = context.getRootDir().listFiles(
+            new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.endsWith(TABLE_FILE_EXTENSION);
+                }
             }
-        });
+        );
 
         for (File f : files) {
             Table table = loadTableFromFile(f);
@@ -81,9 +83,11 @@ public class FileTableManager extends TableManager {
     }
 
     private void saveTableToFile(Table table) throws IOException {
-        PrintStream os = new PrintStream(new FileOutputStream(
+        PrintStream os = new PrintStream(
+            new FileOutputStream(
                 context.getRootDir().getPath() + "/" + table.getName() + TABLE_FILE_EXTENSION
-        ));
+            )
+        );
 
         os.println(table.getName());
         os.println(Integer.valueOf(table.getFullPagesListHeadPageId()).toString() + " " + table.getNotFullPagesListHeadPageId());

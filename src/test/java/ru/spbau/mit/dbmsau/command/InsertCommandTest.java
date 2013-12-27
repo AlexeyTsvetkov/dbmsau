@@ -85,8 +85,8 @@ public class InsertCommandTest extends BaseTest {
     @Before
     public void setUp() throws Exception {
         FileUtils.copyFile(
-                FileUtils.toFile(TableRecordManager.class.getResource("test.tbl")),
-                tempFolder.newFile("test.tbl")
+            FileUtils.toFile(TableRecordManager.class.getResource("test.tbl")),
+            tempFolder.newFile("test.tbl")
         );
         super.setUp();
     }

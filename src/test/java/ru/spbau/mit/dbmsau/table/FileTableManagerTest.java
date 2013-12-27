@@ -45,8 +45,8 @@ public class FileTableManagerTest extends BaseTest {
     @Test
     public void testLoading() throws Exception {
         FileUtils.copyFile(
-                FileUtils.toFile(getClass().getResource("test.tbl")),
-                tempFolder.newFile("test.tbl")
+            FileUtils.toFile(getClass().getResource("test.tbl")),
+            tempFolder.newFile("test.tbl")
         );
 
         setUpContext();

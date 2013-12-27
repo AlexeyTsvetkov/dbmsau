@@ -10,7 +10,7 @@ public class RecordManagerSelectTest extends TestTableTest {
         initSQLDumpLoad("create_insert_test.sql");
 
         String[][] shouldBe = new String[][]{
-                {"1", "abc"}, {"3", "cde"}, {"5", "efg"}
+            {"1", "abc"}, {"3", "cde"}, {"5", "efg"}
         };
 
         compareTestContent(shouldBe);

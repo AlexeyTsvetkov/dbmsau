@@ -21,24 +21,24 @@ public class FileIndexManagerTest extends BaseTest {
 
     private void createTestIndex() throws Exception {
         context.getIndexManager().createIndex(
-                TEST_INDEX_NAME,
-                getTestTable(),
-                Arrays.asList("id", "name")
+            TEST_INDEX_NAME,
+            getTestTable(),
+            Arrays.asList("id", "name")
         );
     }
 
     private void checkTestIndex() throws Exception {
         assertTrue(
-                context.getIndexManager().
-                        getIndexesForTable(getTestTable()).
-                        iterator().
-                        hasNext()
+            context.getIndexManager().
+                getIndexesForTable(getTestTable()).
+                iterator().
+                hasNext()
         );
 
         BTreeIndex index = (BTreeIndex) context.getIndexManager().
-                getIndexesForTable(getTestTable()).
-                iterator().
-                next();
+            getIndexesForTable(getTestTable()).
+            iterator().
+            next();
 
         assertThat(index.getName(), is(TEST_INDEX_NAME));
         assertThat(index.getRootPageId(), is(4));
@@ -46,10 +46,12 @@ public class FileIndexManagerTest extends BaseTest {
 
         assertArrayEquals(new int[]{0, 1}, index.getColumnIndexes());
 
-        assertTrue(FileUtils.contentEquals(
+        assertTrue(
+            FileUtils.contentEquals(
                 getResourceFileByName(TEST_INDEX_FILE_NAME),
                 new File(tempFolder.getRoot().getAbsolutePath() + "/" + TEST_INDEX_FILE_NAME)
-        ));
+            )
+        );
     }
 
     @Test
@@ -57,10 +59,10 @@ public class FileIndexManagerTest extends BaseTest {
         initSQLDumpLoad("create_insert_test.sql");
 
         assertFalse(
-                context.getIndexManager().
-                        getIndexesForTable(getTestTable()).
-                        iterator().
-                        hasNext()
+            context.getIndexManager().
+                getIndexesForTable(getTestTable()).
+                iterator().
+                hasNext()
         );
 
         createTestIndex();
@@ -80,13 +82,13 @@ public class FileIndexManagerTest extends BaseTest {
     @Test
     public void testLoading() throws Exception {
         FileUtils.copyFile(
-                FileUtils.toFile(getClass().getResource("test.tbl")),
-                tempFolder.newFile("test.tbl")
+            FileUtils.toFile(getClass().getResource("test.tbl")),
+            tempFolder.newFile("test.tbl")
         );
 
         FileUtils.copyFile(
-                FileUtils.toFile(getClass().getResource(TEST_INDEX_FILE_NAME)),
-                tempFolder.newFile(TEST_INDEX_FILE_NAME)
+            FileUtils.toFile(getClass().getResource(TEST_INDEX_FILE_NAME)),
+            tempFolder.newFile(TEST_INDEX_FILE_NAME)
         );
 
         setUpContext();

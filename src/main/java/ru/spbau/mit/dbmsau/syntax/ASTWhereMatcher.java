@@ -27,7 +27,7 @@ public class ASTWhereMatcher extends ASTNodeVisitor implements WhereMatcher {
     public void visit(ComparisonNode node) {
         int columnIndex = currentRecord.getRelation().getColumnIndex(node.getIdentifier().getLexemeValue());
         lastResult = currentRecord.
-                getValueAsString(columnIndex).
-                equals(node.getRValue().getLexemeValue());
+            getValueAsString(columnIndex).
+            equals(node.getRValue().getLexemeValue());
     }
 }

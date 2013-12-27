@@ -88,9 +88,11 @@ public class BaseTest extends Assert {
 
     protected void initSQLDumpLoad(String resourceName) throws Exception {
         if (resourceName != null) {
-            SyntaxAnalyzer analyzer = new SyntaxAnalyzer(new FileInputStream(
+            SyntaxAnalyzer analyzer = new SyntaxAnalyzer(
+                new FileInputStream(
                     getResourceFileByName(resourceName)
-            ));
+                )
+            );
 
             for (AbstractSQLCommand command : analyzer) {
                 command.setContext(context);

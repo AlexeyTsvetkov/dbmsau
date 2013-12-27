@@ -27,7 +27,7 @@ public class PagesList implements Iterable<Page> {
 
     public void initList() {
         context.getPageManager().releasePage(
-                initNewLastPage(context.getPageManager().getPageById(headPageId, true))
+            initNewLastPage(context.getPageManager().getPageById(headPageId, true))
         );
     }
 

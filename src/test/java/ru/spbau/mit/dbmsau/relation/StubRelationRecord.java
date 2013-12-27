@@ -1,9 +1,5 @@
 package ru.spbau.mit.dbmsau.relation;
 
-import ru.spbau.mit.dbmsau.relation.Relation;
-import ru.spbau.mit.dbmsau.relation.RelationRecord;
-import ru.spbau.mit.dbmsau.table.Table;
-
 public class StubRelationRecord extends RelationRecord {
     String[] columnsValues;
 

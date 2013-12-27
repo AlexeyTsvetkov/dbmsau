@@ -41,8 +41,8 @@ public class TableRecord extends RelationRecord {
     @Override
     public String getString(int columnIndex) {
         return record.getStringValue(
-                getColumnOffset(columnIndex),
-                getColumnLength(columnIndex)
+            getColumnOffset(columnIndex),
+            getColumnLength(columnIndex)
         );
     }
 

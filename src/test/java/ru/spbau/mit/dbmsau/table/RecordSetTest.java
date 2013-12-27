@@ -19,7 +19,7 @@ public class RecordSetTest extends TestTableTest {
         recordSet.remove();
 
         String[][] shouldBe = new String[][]{
-                {"1", "abc"}, {"5", "efg"}
+            {"1", "abc"}, {"5", "efg"}
         };
 
         compareTestContent(shouldBe);

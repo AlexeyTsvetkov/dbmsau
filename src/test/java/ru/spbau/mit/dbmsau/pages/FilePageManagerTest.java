@@ -54,10 +54,12 @@ public class FilePageManagerTest extends BaseTest {
         f.setAccessible(true);
 
         assertThat(
-                cache.size(),
-                is(Matchers.lessThanOrEqualTo(
-                        (Integer) f.get(null)
-                ))
+            cache.size(),
+            is(
+                Matchers.lessThanOrEqualTo(
+                    (Integer) f.get(null)
+                )
+            )
         );
     }
 

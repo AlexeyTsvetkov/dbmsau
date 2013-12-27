@@ -3,9 +3,9 @@ package ru.spbau.mit.dbmsau.table;
 import org.junit.Test;
 import ru.spbau.mit.dbmsau.BaseTest;
 import ru.spbau.mit.dbmsau.relation.RelationRecord;
+import ru.spbau.mit.dbmsau.relation.StubRelationRecord;
 import ru.spbau.mit.dbmsau.relation.WhereMatcher;
 import ru.spbau.mit.dbmsau.relation.WhereMatcherRecordSet;
-import ru.spbau.mit.dbmsau.relation.StubRelationRecord;
 
 import static org.hamcrest.CoreMatchers.is;
 
@@ -19,15 +19,15 @@ public class WhereMatcherRecordSetTest extends BaseTest {
         Table table = context.getTableManager().getTable("test");
 
         RelationRecord[] records = new RelationRecord[]{
-                new StubRelationRecord(table, new String[]{"1", "abc"}),
-                new StubRelationRecord(table, new String[]{"2", "name"}),
-                new StubRelationRecord(table, new String[]{"3", "name"}),
-                new StubRelationRecord(table, new String[]{"1", "def"}),
+            new StubRelationRecord(table, new String[]{"1", "abc"}),
+            new StubRelationRecord(table, new String[]{"2", "name"}),
+            new StubRelationRecord(table, new String[]{"3", "name"}),
+            new StubRelationRecord(table, new String[]{"1", "def"}),
         };
 
         WhereMatcherRecordSet recordSet = new WhereMatcherRecordSet(
-                new ArrayRecordSet(table, records),
-                new StubMatcher()
+            new ArrayRecordSet(table, records),
+            new StubMatcher()
         );
 
         recordSet.moveFirst();

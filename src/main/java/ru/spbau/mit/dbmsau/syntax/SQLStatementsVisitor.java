@@ -32,8 +32,8 @@ public class SQLStatementsVisitor extends ASTNodeVisitor {
         for (ColumnDescriptionNode columnDescriptionNode : node.getColumns()) {
             Integer typeLength = columnDescriptionNode.getType().getLength();
             Type typeDescription = Type.getType(
-                    columnDescriptionNode.getType().getTypeIdentifier(),
-                    typeLength == null ? Type.UNDEFINED_LENGTH : typeLength
+                columnDescriptionNode.getType().getTypeIdentifier(),
+                typeLength == null ? Type.UNDEFINED_LENGTH : typeLength
 
             );
             columnDescriptions.add(new Column(columnDescriptionNode.getIdentifier(), typeDescription));
@@ -73,13 +73,13 @@ public class SQLStatementsVisitor extends ASTNodeVisitor {
 
                 if (columnAccessorNode.getTableIdent() != null) {
                     accessor = new ColumnAccessor(
-                            columnAccessorNode.getTableIdent().getLexemeValue(),
-                            columnAccessorNode.getColumnIdent().getLexemeValue()
+                        columnAccessorNode.getTableIdent().getLexemeValue(),
+                        columnAccessorNode.getColumnIdent().getLexemeValue()
                     );
                 } else {
                     accessor = new ColumnAccessor(
-                            null,
-                            columnAccessorNode.getColumnIdent().getLexemeValue()
+                        null,
+                        columnAccessorNode.getColumnIdent().getLexemeValue()
                     );
                 }
 

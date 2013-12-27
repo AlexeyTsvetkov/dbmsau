@@ -63,12 +63,14 @@ public class FileIndexManager extends IndexManager {
     @Override
     public void init() {
         super.init();
-        File[] files = context.getRootDir().listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(INDEX_FILE_EXTENSION);
+        File[] files = context.getRootDir().listFiles(
+            new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.endsWith(INDEX_FILE_EXTENSION);
+                }
             }
-        });
+        );
 
         for (File f : files) {
             Index index = loadIndexFromFile(f);
@@ -102,9 +104,11 @@ public class FileIndexManager extends IndexManager {
     }
 
     private void saveIndexToFile(Index index) throws IOException {
-        PrintStream os = new PrintStream(new FileOutputStream(
+        PrintStream os = new PrintStream(
+            new FileOutputStream(
                 context.getRootDir().getPath() + "/" + index.getName() + INDEX_FILE_EXTENSION
-        ));
+            )
+        );
 
         os.println(index.getName());
         os.println(index.getTable().getName());

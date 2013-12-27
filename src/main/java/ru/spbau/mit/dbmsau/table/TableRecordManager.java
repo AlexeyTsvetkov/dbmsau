@@ -58,10 +58,10 @@ public class TableRecordManager extends ContextContainer {
 
     public RecordSet select(Table table) {
         return new FullScanRecordSet(
-                table,
-                buildPagesListByHeadPageId(table.getFullPagesListHeadPageId()),
-                buildPagesListByHeadPageId(table.getNotFullPagesListHeadPageId()),
-                context
+            table,
+            buildPagesListByHeadPageId(table.getFullPagesListHeadPageId()),
+            buildPagesListByHeadPageId(table.getNotFullPagesListHeadPageId()),
+            context
         );
     }
 

@@ -2,7 +2,6 @@ package ru.spbau.mit.dbmsau.command;
 
 import ru.spbau.mit.dbmsau.command.exception.CommandExecutionException;
 import ru.spbau.mit.dbmsau.relation.*;
-import ru.spbau.mit.dbmsau.table.SemanticValidator;
 import ru.spbau.mit.dbmsau.table.Table;
 
 import java.util.Iterator;

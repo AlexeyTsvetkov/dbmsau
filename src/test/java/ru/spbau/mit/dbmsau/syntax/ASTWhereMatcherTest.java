@@ -17,9 +17,9 @@ public class ASTWhereMatcherTest extends BaseTest {
         initSQLDumpLoad("create_insert_test.sql");
 
         ComparisonNode node = new ComparisonNode(
-                new TerminalNode("id"),
-                new TerminalNode("="),
-                new TerminalNode("2")
+            new TerminalNode("id"),
+            new TerminalNode("="),
+            new TerminalNode("2")
         );
 
         ASTWhereMatcher matcher = new ASTWhereMatcher(node);

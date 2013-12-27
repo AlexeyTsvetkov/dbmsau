@@ -1,24 +1,23 @@
 package ru.spbau.mit.dbmsau.command;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import junitx.util.PrivateAccessor;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import ru.spbau.mit.dbmsau.BaseTest;
 import ru.spbau.mit.dbmsau.Context;
 import ru.spbau.mit.dbmsau.relation.ColumnAccessor;
 import ru.spbau.mit.dbmsau.relation.Relation;
 import ru.spbau.mit.dbmsau.relation.StubRelation;
-import ru.spbau.mit.dbmsau.table.*;
+import ru.spbau.mit.dbmsau.table.StubTableManager;
+import ru.spbau.mit.dbmsau.table.StubTableRecordManager;
+import ru.spbau.mit.dbmsau.table.TableManager;
+import ru.spbau.mit.dbmsau.table.TableRecordManager;
 import ru.spbau.mit.dbmsau.table.exception.SemanticError;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 public class SelectCommandTest extends BaseTest {
 
@@ -63,12 +62,12 @@ public class SelectCommandTest extends BaseTest {
     }
 
     private int[] invokeBuildColumnIndexesToSelect(SelectCommand command) throws Throwable {
-        return (int[])PrivateAccessor.invoke(
-                command, "buildColumnsIndexesToSelect",
-                new Class[]{Relation.class},
-                new Object[]{
-                        buildStubRelation()
-                }
+        return (int[]) PrivateAccessor.invoke(
+            command, "buildColumnsIndexesToSelect",
+            new Class[]{Relation.class},
+            new Object[]{
+                buildStubRelation()
+            }
         );
     }
 
@@ -86,7 +85,7 @@ public class SelectCommandTest extends BaseTest {
         command.setContext(context);
 
         int[] result = invokeBuildColumnIndexesToSelect(command);
-        assertArrayEquals(result, new int[]{1,0,2});
+        assertArrayEquals(result, new int[]{1, 0, 2});
 
         command = new SelectCommand(
             null,
@@ -96,7 +95,7 @@ public class SelectCommandTest extends BaseTest {
         command.setContext(context);
 
         result = invokeBuildColumnIndexesToSelect(command);
-        assertArrayEquals(result, new int[]{0,1,2});
+        assertArrayEquals(result, new int[]{0, 1, 2});
     }
 
     @Test
@@ -105,13 +104,13 @@ public class SelectCommandTest extends BaseTest {
         thrown.expectMessage("Unknown column `abcee`");
 
         SelectCommand command = new SelectCommand(
-                Arrays.asList(
-                        new ColumnAccessor(null, "name"),
-                        new ColumnAccessor("test", "id"),
-                        new ColumnAccessor(null, "abcee")
-                ),
-                "test",
-                null
+            Arrays.asList(
+                new ColumnAccessor(null, "name"),
+                new ColumnAccessor("test", "id"),
+                new ColumnAccessor(null, "abcee")
+            ),
+            "test",
+            null
         );
         command.setContext(context);
 
@@ -137,7 +136,7 @@ public class SelectCommandTest extends BaseTest {
         Object[] queryOutput = Lists.newArrayList(result.iterator()).toArray();
 
         assertArrayEquals(
-            new String[] {
+            new String[]{
                 "test.name:varchar(50);test.id:integer",
                 "asd;1",
                 "def;2"
@@ -162,7 +161,7 @@ public class SelectCommandTest extends BaseTest {
         Object[] queryOutput = Lists.newArrayList(result.iterator()).toArray();
 
         assertArrayEquals(
-            new String[] {
+            new String[]{
                 "test.id:integer;test.name:varchar(50)",
                 "1;asd",
                 "2;def"
@@ -190,8 +189,8 @@ public class SelectCommandTest extends BaseTest {
     @Before
     public void setUp() throws Exception {
         FileUtils.copyFile(
-                FileUtils.toFile(TableRecordManager.class.getResource("test.tbl")),
-                tempFolder.newFile("test.tbl")
+            FileUtils.toFile(TableRecordManager.class.getResource("test.tbl")),
+            tempFolder.newFile("test.tbl")
         );
         super.setUp();
     }
