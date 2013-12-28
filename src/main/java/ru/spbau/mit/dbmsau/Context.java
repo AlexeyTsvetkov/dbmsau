@@ -38,7 +38,7 @@ public class Context {
 
     public Context(String path) {
         this.path = path;
-        this.semanticValidator = new SemanticValidator();
+        this.semanticValidator = SemanticValidator.getInstance();
     }
 
     public String getPath() {

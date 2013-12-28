@@ -1,10 +1,11 @@
 package ru.spbau.mit.dbmsau.syntax;
 
 import ru.spbau.mit.dbmsau.command.*;
+import ru.spbau.mit.dbmsau.command.where.ComparisonClause;
+import ru.spbau.mit.dbmsau.command.where.WhereExpression;
 import ru.spbau.mit.dbmsau.relation.Column;
 import ru.spbau.mit.dbmsau.relation.ColumnAccessor;
 import ru.spbau.mit.dbmsau.relation.Type;
-import ru.spbau.mit.dbmsau.relation.WhereMatcher;
 import ru.spbau.mit.dbmsau.syntax.ast.*;
 
 import java.util.ArrayList;
@@ -52,42 +53,65 @@ public class SQLStatementsVisitor extends ASTNodeVisitor {
         setLastCommand(new InsertCommand(node.getTableName().getLexemeValue(), columns, values));
     }
 
+    private ColumnAccessor buildColumnAccessorByNode(ColumnAccessorNode columnAccessorNode) {
+        ColumnAccessor accessor;
+
+        if (columnAccessorNode.getTableIdent() != null) {
+            accessor = new ColumnAccessor(
+                columnAccessorNode.getTableIdent().getLexemeValue(),
+                columnAccessorNode.getColumnIdent().getLexemeValue()
+            );
+        } else {
+            accessor = new ColumnAccessor(
+                null,
+                columnAccessorNode.getColumnIdent().getLexemeValue()
+            );
+        }
+
+        return accessor;
+    }
+
+    private WhereExpression buildWhereExpression(List<ComparisonNode> comparisonNodes) {
+        if (comparisonNodes == null) {
+            return null;
+        }
+
+        List<ComparisonClause> clauses = new ArrayList<>();
+
+        for (ComparisonNode node : comparisonNodes) {
+            clauses.add(
+                new ComparisonClause(
+                    buildColumnAccessorByNode(node.getColumnAccessor()),
+                    node.getRValue().getLexemeValue(),
+                    node.getSign()
+                )
+            );
+        }
+
+        return new WhereExpression(clauses);
+    }
+
     @Override
     public void visit(SelectStatementNode node) {
         String table = node.getTableFrom().getLexemeValue();
 
-        ASTNode where = node.getWhereClause();
 
-        WhereMatcher matcher = null;
+        ArrayList<ColumnAccessor> selectColumnAccessors = null;
 
-        if (where != null) {
-            matcher = new ASTWhereMatcher(where);
-        }
-
-        ArrayList<ColumnAccessor> columnAccessors = null;
-
+        //column accessors after 'SELECT' word
         if (node.getAccessors() != null) {
-            columnAccessors = new ArrayList<>();
+            selectColumnAccessors = new ArrayList<>();
             for (ColumnAccessorNode columnAccessorNode : node.getAccessors()) {
-                ColumnAccessor accessor;
-
-                if (columnAccessorNode.getTableIdent() != null) {
-                    accessor = new ColumnAccessor(
-                        columnAccessorNode.getTableIdent().getLexemeValue(),
-                        columnAccessorNode.getColumnIdent().getLexemeValue()
-                    );
-                } else {
-                    accessor = new ColumnAccessor(
-                        null,
-                        columnAccessorNode.getColumnIdent().getLexemeValue()
-                    );
-                }
-
-                columnAccessors.add(accessor);
+                selectColumnAccessors.add(buildColumnAccessorByNode(columnAccessorNode));
             }
         }
 
-        setLastCommand(new SelectCommand(columnAccessors, table, matcher));
+        setLastCommand(
+            new SelectCommand(
+                selectColumnAccessors, table,
+                buildWhereExpression(node.getWhereClause())
+            )
+        );
     }
 
     @Override

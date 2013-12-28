@@ -71,4 +71,8 @@ public class Type {
     public int getSize() {
         return size;
     }
+
+    public boolean isInteger() {
+        return getType() == TYPE_INTEGER;
+    }
 }

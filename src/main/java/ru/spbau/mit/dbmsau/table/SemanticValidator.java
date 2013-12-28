@@ -11,6 +11,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SemanticValidator {
+    private static SemanticValidator instance = new SemanticValidator();
+
+    public static SemanticValidator getInstance() {
+        return instance;
+    }
+
     private void assertTypesCompatible(Type type, String name, String value) {
         if (type.getType() == Type.TYPE_INTEGER) {
 

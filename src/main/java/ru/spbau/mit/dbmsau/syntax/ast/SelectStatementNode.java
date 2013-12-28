@@ -5,9 +5,9 @@ import java.util.List;
 public class SelectStatementNode extends ASTNode {
     private List<ColumnAccessorNode> accessors;
     private TerminalNode tableFrom;
-    private ASTNode whereClause;
+    private List<ComparisonNode> whereClause;
 
-    public SelectStatementNode(List<ColumnAccessorNode> accessors, TerminalNode tableFrom, ASTNode whereClause) {
+    public SelectStatementNode(List<ColumnAccessorNode> accessors, TerminalNode tableFrom, List<ComparisonNode> whereClause) {
         this.accessors = accessors;
         this.tableFrom = tableFrom;
         this.whereClause = whereClause;
@@ -17,7 +17,7 @@ public class SelectStatementNode extends ASTNode {
         return tableFrom;
     }
 
-    public ASTNode getWhereClause() {
+    public List<ComparisonNode> getWhereClause() {
         return whereClause;
     }
 

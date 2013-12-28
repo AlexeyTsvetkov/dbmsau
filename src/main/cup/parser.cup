@@ -59,7 +59,7 @@ non terminal LinkedList< TerminalNode >   columns_list;
 non terminal SelectStatementNode          select_statement;
 non terminal DeleteStatementNode          delete_statement;
 
-non terminal ASTNode                      where_clause;
+non terminal LinkedList< ComparisonNode > where_clause;
 non terminal LinkedList< ComparisonNode > comparisons;
 non terminal ComparisonNode               comparison_expr;
 non terminal TerminalNode                 comparison_sign;
@@ -106,7 +106,7 @@ delete_statement ::= DELETE FROM IDENT:tableName
                      {: RESULT = new DeleteStatementNode(tableName); :}
                    ;
 
-where_clause ::= WHERE comparison_expr:cmp
+where_clause ::= WHERE comparisons:cmp
                     {: RESULT = cmp; :}
                    |
                    empty
@@ -120,15 +120,26 @@ comparisons ::= comparison_expr:cmp
                 {: RESULT = cmps; RESULT.addFirst(cmp); :}
                 ;
 
-comparison_expr ::= IDENT:id comparison_sign:cmp value:val
-                    {: RESULT = new ComparisonNode(id, cmp, val); :}
+comparison_expr ::= column_accessor:accessor comparison_sign:cmp value:val
+                    {: RESULT = new ComparisonNode(accessor, cmp, val, false); :}
+                    |
+                    value:val comparison_sign:cmp column_accessor:accessor
+                    {: RESULT = new ComparisonNode(accessor, cmp, val, true); :}
                     ;
 
-comparison_sign ::= EQUALS:eq
-            {: RESULT = eq; :}
-        | LESS:ls
-            {: RESULT = ls; :}
-        ;
+comparison_sign ::= EQUALS:op
+                    {: RESULT = op; :}
+                    | LESS:op
+                    {: RESULT = op; :}
+                    | MORE:op
+                    {: RESULT = op; :}
+                    | NOTEQUAL:op
+                    {: RESULT = op; :}
+                    | LESSOREQUAL:op
+                    {: RESULT = op; :}
+                    | MOREOREQUAL:op
+                    {: RESULT = op; :}
+                    ;
 
 column_accessors ::= column_accessor:e1
                   {: RESULT = new LinkedList<>(); RESULT.add(e1); :}

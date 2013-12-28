@@ -1,7 +1,11 @@
 package ru.spbau.mit.dbmsau.command;
 
 import ru.spbau.mit.dbmsau.command.exception.CommandExecutionException;
-import ru.spbau.mit.dbmsau.relation.*;
+import ru.spbau.mit.dbmsau.command.where.WhereExpression;
+import ru.spbau.mit.dbmsau.relation.ColumnAccessor;
+import ru.spbau.mit.dbmsau.relation.RecordSet;
+import ru.spbau.mit.dbmsau.relation.Relation;
+import ru.spbau.mit.dbmsau.relation.RelationRecord;
 import ru.spbau.mit.dbmsau.table.Table;
 
 import java.util.Iterator;
@@ -11,12 +15,12 @@ import java.util.List;
 public class SelectCommand extends AbstractSQLCommand {
     private List<ColumnAccessor> columnAccessors;
     private String table;
-    private WhereMatcher matcher;
+    private WhereExpression where;
 
-    public SelectCommand(List<ColumnAccessor> columnAccessors, String table, WhereMatcher matcher) {
+    public SelectCommand(List<ColumnAccessor> columnAccessors, String table, WhereExpression where) {
         this.columnAccessors = columnAccessors;
         this.table = table;
-        this.matcher = matcher;
+        this.where = where;
     }
 
     public String getTableName() {
@@ -53,7 +57,9 @@ public class SelectCommand extends AbstractSQLCommand {
     public SQLCommandResult execute() throws CommandExecutionException {
         Table table = getTable(getTableName());
 
-        RecordSet result = getContext().getTableRecordManager().select(table, matcher);
+        where.prepareFor(table);
+
+        RecordSet result = getContext().getTableRecordManager().select(table, where);
 
         return new SQLCommandResult(new RecordSetCSVIterator(result, buildColumnsIndexesToSelect(table)));
     }
