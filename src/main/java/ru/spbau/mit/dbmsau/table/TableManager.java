@@ -17,8 +17,12 @@ abstract public class TableManager extends ContextContainer {
 
     }
 
+    public boolean tableExists(String name) {
+        return tables.containsKey(name);
+    }
+
     public Table getTable(String name) {
-        if (tables.containsKey(name)) {
+        if (tableExists(name)) {
             return tables.get(name);
         }
 

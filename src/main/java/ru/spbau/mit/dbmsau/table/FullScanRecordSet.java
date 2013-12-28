@@ -4,12 +4,13 @@ import ru.spbau.mit.dbmsau.Context;
 import ru.spbau.mit.dbmsau.pages.Page;
 import ru.spbau.mit.dbmsau.pages.PagesList;
 import ru.spbau.mit.dbmsau.pages.Record;
+import ru.spbau.mit.dbmsau.relation.RecordSet;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class RecordSet implements Iterable<TableRecord>, Iterator<TableRecord> {
+public class FullScanRecordSet extends RecordSet {
     private Table table;
     private PagesList fullPages, notFullPages;
     private Context context;
@@ -19,7 +20,9 @@ public class RecordSet implements Iterable<TableRecord>, Iterator<TableRecord> {
     private TableRecordsPage currentPage = null;
     private Iterator<Record> currentPageIterator = null;
 
-    public RecordSet(Table table, PagesList fullPages, PagesList notFullPages, Context context) {
+    public FullScanRecordSet(Table table, PagesList fullPages, PagesList notFullPages, Context context) {
+        super(table);
+
         this.table = table;
         this.fullPages = fullPages;
         this.notFullPages = notFullPages;
@@ -27,7 +30,7 @@ public class RecordSet implements Iterable<TableRecord>, Iterator<TableRecord> {
     }
 
     @Override
-    public Iterator<TableRecord> iterator() {
+    public void moveFirst() {
         pagesLists.clear();
 
         pagesLists.add(notFullPages);
@@ -35,7 +38,6 @@ public class RecordSet implements Iterable<TableRecord>, Iterator<TableRecord> {
 
         currentListIterator = pagesLists.poll().iterator();
         currentPageIterator = null;
-        return this;
     }
 
     private void moveUntilNext() {

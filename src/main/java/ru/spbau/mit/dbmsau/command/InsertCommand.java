@@ -33,10 +33,10 @@ public class InsertCommand extends AbstractSQLCommand {
     public SQLCommandResult execute() throws CommandExecutionException {
         Table table = getTable(getTableName());
 
-        getContext().getSemanticValidator().checkTypesCompatibility(table, getColumns(), getValues());
+        getContext().getSemanticValidator().checkColumnsForInsert(table, getColumns(), getValues());
 
         try {
-            getContext().getRecordManager().insert(table, getColumns(), getValues());
+            getContext().getTableRecordManager().insert(table, getColumns(), getValues());
         } catch (RecordManagerException e) {
             throw new CommandExecutionException("RME: " + e.getMessage());
         }

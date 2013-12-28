@@ -1,13 +1,13 @@
 package ru.spbau.mit.dbmsau.table;
 
-import static org.hamcrest.CoreMatchers.*;
-
 import org.junit.Test;
 import ru.spbau.mit.dbmsau.BaseTest;
 import ru.spbau.mit.dbmsau.pages.Record;
 import ru.spbau.mit.dbmsau.pages.RecordsPage;
 
 import java.util.ArrayList;
+
+import static org.hamcrest.CoreMatchers.is;
 
 public class RecordManagerInsertTest extends BaseTest {
     private String getNameValue(int row, RecordsPage p) {
@@ -29,7 +29,7 @@ public class RecordManagerInsertTest extends BaseTest {
 
         Table table = getTestTable();
 
-        context.getRecordManager().insert(table, columns, values);
+        context.getTableRecordManager().insert(table, columns, values);
 
         TableRecordsPage p = new TableRecordsPage(getTestTable(), context.getPageManager().getPageById(3, false));
 
@@ -88,7 +88,7 @@ public class RecordManagerInsertTest extends BaseTest {
         while (!p.isFull()) {
             values.set(0, Integer.valueOf(value).toString());
             values.set(1, Integer.valueOf(-value).toString());
-            context.getRecordManager().insert(table, columns, values);
+            context.getTableRecordManager().insert(table, columns, values);
             value++;
         }
 
@@ -97,7 +97,7 @@ public class RecordManagerInsertTest extends BaseTest {
             assertThat(getNameValue(i, p), is(Integer.valueOf(-i).toString()));
         }
 
-        context.getRecordManager().insert(table, columns, values);
+        context.getTableRecordManager().insert(table, columns, values);
 
         p = new TableRecordsPage(table, context.getPageManager().getPageById(4, false));
 

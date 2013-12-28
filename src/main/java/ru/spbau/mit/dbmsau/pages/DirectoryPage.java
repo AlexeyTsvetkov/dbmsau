@@ -8,7 +8,7 @@ public class DirectoryPage extends RecordsPage {
     }
 
     public Boolean isDirectoryEmpty() {
-        return getMaxRecordsCount() == getFreeSlotsCount()+1;
+        return getMaxRecordsCount() == getFreeSlotsCount() + 1;
     }
 
     public Boolean isDirectoryFull() {

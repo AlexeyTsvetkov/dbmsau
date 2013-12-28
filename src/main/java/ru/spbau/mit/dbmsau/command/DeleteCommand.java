@@ -16,7 +16,7 @@ public class DeleteCommand extends AbstractSQLCommand {
     @Override
     public SQLCommandResult execute() throws CommandExecutionException {
 
-        getContext().getRecordManager().delete(getTable(getTableName()));
+        getContext().getTableRecordManager().delete(getTable(getTableName()));
 
         return new SQLCommandResult();
     }

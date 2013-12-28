@@ -1,43 +1,79 @@
 package ru.spbau.mit.dbmsau.command;
 
 import ru.spbau.mit.dbmsau.command.exception.CommandExecutionException;
-import ru.spbau.mit.dbmsau.table.Column;
-import ru.spbau.mit.dbmsau.table.RecordSet;
+import ru.spbau.mit.dbmsau.command.where.WhereExpression;
+import ru.spbau.mit.dbmsau.relation.ColumnAccessor;
+import ru.spbau.mit.dbmsau.relation.RecordSet;
+import ru.spbau.mit.dbmsau.relation.Relation;
+import ru.spbau.mit.dbmsau.relation.RelationRecord;
 import ru.spbau.mit.dbmsau.table.Table;
-import ru.spbau.mit.dbmsau.table.TableRecord;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 public class SelectCommand extends AbstractSQLCommand {
+    private List<ColumnAccessor> columnAccessors;
     private String table;
+    private WhereExpression where;
 
-    public SelectCommand(String table) {
+    public SelectCommand(List<ColumnAccessor> columnAccessors, String table, WhereExpression where) {
+        this.columnAccessors = columnAccessors;
         this.table = table;
+        this.where = where;
     }
 
     public String getTableName() {
         return table;
     }
 
+    private List<ColumnAccessor> getColumnAccessors() {
+        return columnAccessors;
+    }
+
+    private int[] buildColumnsIndexesToSelect(Relation relation) {
+        int[] columnsIndexesToSelect;
+
+        if (getColumnAccessors() != null) {
+            getContext().getSemanticValidator().checkColumnsAccessors(relation, getColumnAccessors());
+
+            columnsIndexesToSelect = new int[getColumnAccessors().size()];
+            int index = 0;
+
+            for (ColumnAccessor accessor : getColumnAccessors()) {
+                columnsIndexesToSelect[index++] = accessor.getColumnIndex(relation);
+            }
+        } else {
+            columnsIndexesToSelect = new int[relation.getColumnsCount()];
+
+            for (int i = 0; i < columnsIndexesToSelect.length; i++) {
+                columnsIndexesToSelect[i] = i;
+            }
+        }
+
+        return columnsIndexesToSelect;
+    }
+
     public SQLCommandResult execute() throws CommandExecutionException {
         Table table = getTable(getTableName());
-        RecordSet result = getContext().getRecordManager().select(table);
 
-        return new SQLCommandResult(new RecordSetCSVIterator(result, table));
+        where.prepareFor(table);
+
+        RecordSet result = getContext().getTableRecordManager().select(table, where);
+
+        return new SQLCommandResult(new RecordSetCSVIterator(result, buildColumnsIndexesToSelect(table)));
     }
 
     private class RecordSetCSVIterator implements Iterator<String> {
         private RecordSet recordSet;
-        private Table table;
         private boolean wasHeader = false;
+        private int[] columnsIndexesToSelect;
 
-        private RecordSetCSVIterator(RecordSet recordSet, Table table) {
+        private RecordSetCSVIterator(RecordSet recordSet, int[] columnsIndexesToSelect) {
             this.recordSet = recordSet;
-            this.table = table;
+            this.columnsIndexesToSelect = columnsIndexesToSelect;
 
-            recordSet.iterator();
+            recordSet.moveFirst();
         }
 
         @Override
@@ -56,19 +92,19 @@ public class SelectCommand extends AbstractSQLCommand {
 
                 LinkedList<String> header = new LinkedList<>();
 
-                for(int i = 0; i < table.getColumns().size(); i++) {
-                    header.add(table.getColumns().get(i).getName());
+                for (int columnIndex : columnsIndexesToSelect) {
+                    header.add(recordSet.getRelation().getColumnDescription(columnIndex));
                 }
 
                 return joinCSV(header);
             }
 
-            TableRecord record = recordSet.next();
+            RelationRecord record = recordSet.next();
 
             LinkedList<String> row = new LinkedList<>();
 
-            for(int i = 0; i < table.getColumns().size(); i++) {
-                row.add(record.getValueAsString(table.getColumns().get(i).getName()));
+            for (int columnIndex : columnsIndexesToSelect) {
+                row.add(record.getValueAsString(columnIndex));
             }
 
             return joinCSV(row);

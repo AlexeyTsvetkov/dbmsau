@@ -9,9 +9,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
-import java.util.LinkedList;
 
 public class FilePageManager extends PageManager {
     private static final String dataFilename = "data.db";
@@ -20,16 +20,16 @@ public class FilePageManager extends PageManager {
     private static final int MAX_PAGES_IN_CACHE = 50;
 
     private RandomAccessFile dataFile;
-    private Map< Integer, Page > cache = new HashMap<>();
+    private Map<Integer, Page> cache = new HashMap<>();
     private PagesList emptyPagesList;
-    private Queue< Page > usageOrder = new LinkedList<>();
+    private Queue<Page> usageOrder = new LinkedList<>();
 
     public FilePageManager(Context context) {
         super(context);
     }
 
     public PageManager init() throws PageManagerInitException {
-        String currentDataFilename =  context.getPath() + "/" +dataFilename;
+        String currentDataFilename = context.getPath() + "/" + dataFilename;
 
         File file = new File(currentDataFilename);
 
@@ -62,7 +62,7 @@ public class FilePageManager extends PageManager {
     }
 
     private long getOffsetByPageId(int id) {
-        return ((long)id)* ((long)PAGE_SIZE);
+        return ((long) id) * ((long) PAGE_SIZE);
     }
 
     protected Page doGetPageById(int id) {
@@ -70,7 +70,7 @@ public class FilePageManager extends PageManager {
             return cache.get(id);
         }
 
-        if(cache.size() >= MAX_PAGES_IN_CACHE) {
+        if (cache.size() >= MAX_PAGES_IN_CACHE) {
             this.shrinkCache(MAX_PAGES_IN_CACHE - 1);
         }
 
@@ -87,7 +87,7 @@ public class FilePageManager extends PageManager {
             return;
         }
 
-        while(this.cache.size() > desiredSize) {
+        while (this.cache.size() > desiredSize) {
             Page firstInFirstOut = usageOrder.poll();
 
             int pageId = firstInFirstOut.getId();
@@ -97,7 +97,7 @@ public class FilePageManager extends PageManager {
                 continue;
             }
 
-            if(this.cache.containsKey(pageId)) {
+            if (this.cache.containsKey(pageId)) {
                 this.cache.remove(pageId);
             }
             try {
@@ -135,7 +135,7 @@ public class FilePageManager extends PageManager {
 
         if (pageId == null) {
             try {
-                int nextPageId = (int)(dataFile.length() / (long)PAGE_SIZE);
+                int nextPageId = (int) (dataFile.length() / (long) PAGE_SIZE);
                 dataFile.setLength(dataFile.length() + PAGE_SIZE * RESERVE_PAGES_COUNT);
 
                 for (int i = 0; i < RESERVE_PAGES_COUNT; i++) {

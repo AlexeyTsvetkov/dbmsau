@@ -1,5 +1,6 @@
 import java_cup.runtime.*;
 import java.util.LinkedList;
+
 import ru.spbau.mit.dbmsau.syntax.ast.*;
 import ru.spbau.mit.dbmsau.syntax.exception.SyntaxFatalError;
 
@@ -38,7 +39,7 @@ init with {:
 :};
 
 terminal TerminalNode QUIT;
-terminal TerminalNode CREATE,TABLE,INSERT,INTO,VALUES,SELECT,FROM,DELETE;
+terminal TerminalNode CREATE,TABLE,INSERT,INTO,VALUES,SELECT,FROM,DELETE,WHERE;
 terminal TerminalNode LEFTPAR,RIGHTPAR,LEFTBRACKET,RIGHTBRACKET;
 terminal TerminalNode OR,DIV,MOD,AND,MAIN,COMMA,EQUALS,COLON,NOT,NOTEQUAL,LESS,LESSOREQUAL,MORE,MOREOREQUAL,PLUS,MINUS,ASTERISK,DIVIDE,DOT;
 terminal TerminalNode INTEGER_LITERAL;
@@ -57,6 +58,14 @@ non terminal LinkedList< TerminalNode >   columns_list;
 
 non terminal SelectStatementNode          select_statement;
 non terminal DeleteStatementNode          delete_statement;
+
+non terminal LinkedList< ComparisonNode > where_clause;
+non terminal LinkedList< ComparisonNode > comparisons;
+non terminal ComparisonNode               comparison_expr;
+non terminal TerminalNode                 comparison_sign;
+
+non terminal LinkedList< ColumnAccessorNode >   column_accessors;
+non terminal ColumnAccessorNode                 column_accessor;
 
 non terminal CreateTableStatementNode     create_table_statement;
 non terminal LinkedList< ColumnDescriptionNode > columns_descriptions_list;
@@ -84,8 +93,8 @@ statement ::= create_table_statement:e1 {: RESULT = e1; :}
               QUIT:e1 {: RESULT = null; :}
              ;
 
-select_statement ::= SELECT ASTERISK FROM IDENT:tableFrom
-                    {: RESULT = new SelectStatementNode(tableFrom); :}
+select_statement ::= SELECT column_accessors:accessors FROM IDENT:tableFrom where_clause:filter
+                    {: RESULT = new SelectStatementNode(accessors, tableFrom, filter); :}
                   ;
 
 insert_statement ::= INSERT INTO IDENT:tableName LEFTPAR columns_list:cList RIGHTPAR VALUES
@@ -97,6 +106,57 @@ delete_statement ::= DELETE FROM IDENT:tableName
                      {: RESULT = new DeleteStatementNode(tableName); :}
                    ;
 
+where_clause ::= WHERE comparisons:cmp
+                    {: RESULT = cmp; :}
+                   |
+                   empty
+                    {: RESULT = null; :}
+                   ;
+
+comparisons ::= comparison_expr:cmp
+                {: RESULT = new LinkedList<>(); RESULT.add(cmp); :}
+                |
+                comparison_expr:cmp AND comparisons:cmps
+                {: RESULT = cmps; RESULT.addFirst(cmp); :}
+                ;
+
+comparison_expr ::= column_accessor:accessor comparison_sign:cmp value:val
+                    {: RESULT = new ComparisonNode(accessor, cmp, val, false); :}
+                    |
+                    value:val comparison_sign:cmp column_accessor:accessor
+                    {: RESULT = new ComparisonNode(accessor, cmp, val, true); :}
+                    ;
+
+comparison_sign ::= EQUALS:op
+                    {: RESULT = op; :}
+                    | LESS:op
+                    {: RESULT = op; :}
+                    | MORE:op
+                    {: RESULT = op; :}
+                    | NOTEQUAL:op
+                    {: RESULT = op; :}
+                    | LESSOREQUAL:op
+                    {: RESULT = op; :}
+                    | MOREOREQUAL:op
+                    {: RESULT = op; :}
+                    ;
+
+column_accessors ::= column_accessor:e1
+                  {: RESULT = new LinkedList<>(); RESULT.add(e1); :}
+                  |
+                  column_accessor:e1 COMMA:e2 column_accessors:e3
+                  {: RESULT = e3; RESULT.addFirst(e1); :}
+                  |
+                  ASTERISK
+                  {: RESULT = null; :}
+                  ;
+
+column_accessor ::= IDENT:ident
+                    {: RESULT = new ColumnAccessorNode(ident); :}
+                   |
+                    IDENT:tableIdent DOT:dot IDENT:columnIdent
+                    {: RESULT = new ColumnAccessorNode(tableIdent, columnIdent); :}
+                   ;
 columns_list ::= idents_list:e1 {: RESULT = e1; :};
 
 idents_list ::= IDENT:e1

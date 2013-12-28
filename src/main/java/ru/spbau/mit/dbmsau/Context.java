@@ -1,12 +1,14 @@
 package ru.spbau.mit.dbmsau;
 
+import ru.spbau.mit.dbmsau.index.FileIndexManager;
+import ru.spbau.mit.dbmsau.index.IndexManager;
 import ru.spbau.mit.dbmsau.pages.FilePageManager;
 import ru.spbau.mit.dbmsau.pages.PageManager;
 import ru.spbau.mit.dbmsau.pages.exception.PageManagerInitException;
 import ru.spbau.mit.dbmsau.table.FileTableManager;
-import ru.spbau.mit.dbmsau.table.RecordManager;
 import ru.spbau.mit.dbmsau.table.SemanticValidator;
 import ru.spbau.mit.dbmsau.table.TableManager;
+import ru.spbau.mit.dbmsau.table.TableRecordManager;
 
 import java.io.File;
 
@@ -14,7 +16,8 @@ public class Context {
     private String path;
     private PageManager pageManager;
     private TableManager tableManager;
-    private RecordManager recordManager;
+    private TableRecordManager tableRecordManager;
+    private IndexManager indexManager;
     private SemanticValidator semanticValidator;
 
     public static Context loadContextFromPath(String path) {
@@ -22,7 +25,8 @@ public class Context {
         try {
             obj.pageManager = new FilePageManager(obj);
             obj.tableManager = new FileTableManager(obj);
-            obj.recordManager = new RecordManager(obj);
+            obj.tableRecordManager = new TableRecordManager(obj);
+            obj.indexManager = new FileIndexManager(obj);
 
             obj.init();
         } catch (Exception e) {
@@ -34,7 +38,7 @@ public class Context {
 
     public Context(String path) {
         this.path = path;
-        this.semanticValidator = new SemanticValidator();
+        this.semanticValidator = SemanticValidator.getInstance();
     }
 
     public String getPath() {
@@ -65,12 +69,20 @@ public class Context {
         this.tableManager = tableManager;
     }
 
-    public RecordManager getRecordManager() {
-        return recordManager;
+    public TableRecordManager getTableRecordManager() {
+        return tableRecordManager;
     }
 
-    public void setRecordManager(RecordManager recordManager) {
-        this.recordManager = recordManager;
+    public void setTableRecordManager(TableRecordManager tableRecordManager) {
+        this.tableRecordManager = tableRecordManager;
+    }
+
+    public IndexManager getIndexManager() {
+        return indexManager;
+    }
+
+    public void setIndexManager(IndexManager indexManager) {
+        this.indexManager = indexManager;
     }
 
     public SemanticValidator getSemanticValidator() {
@@ -80,7 +92,8 @@ public class Context {
     public void init() throws PageManagerInitException {
         getPageManager().init();
         getTableManager().init();
-        getRecordManager().init();
+        getTableRecordManager().init();
+        getIndexManager().init();
     }
 
     public void onQuit() throws Exception {

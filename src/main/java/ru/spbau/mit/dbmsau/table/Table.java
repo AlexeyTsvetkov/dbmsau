@@ -1,22 +1,29 @@
 package ru.spbau.mit.dbmsau.table;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import ru.spbau.mit.dbmsau.relation.Column;
+import ru.spbau.mit.dbmsau.relation.Relation;
 
-public class Table {
+import java.util.ArrayList;
+
+public class Table extends Relation {
     private String name;
-    private ArrayList< Column > columns;
     private int fullPagesListHeadPageId;
     private int notFullPagesListHeadPageId;
 
-    private HashMap< String, Integer > columnsMap = new HashMap<>();
     private int[] columnsOffsets;
     private int recordSize;
 
-    public Table(String name, ArrayList<Column> columns) {
-        this.name = name;
-        this.columns = columns;
+    private static ArrayList<Column> processColumns(ArrayList<Column> columns, String tableName) {
+        for (Column column : columns) {
+            column.setTableName(tableName);
+        }
 
+        return columns;
+    }
+
+    public Table(String name, ArrayList<Column> columns) {
+        super(processColumns(columns, name));
+        this.name = name;
         initColumns();
     }
 
@@ -27,61 +34,26 @@ public class Table {
     }
 
     private void initColumns() {
-        for (int i = 0; i < columns.size(); i++) {
-            columnsMap.put(columns.get(i).getName().toLowerCase(), i);
-        }
-
         columnsOffsets = new int[columns.size()];
         columnsOffsets[0] = 0;
 
         for (int i = 1; i < columns.size(); i++) {
-            columnsOffsets[i] = columnsOffsets[i-1] + columns.get(i-1).getType().getSize();
+            columnsOffsets[i] = columnsOffsets[i - 1] + columns.get(i - 1).getType().getSize();
         }
 
-        recordSize = columnsOffsets[columns.size()-1] + columns.get(columns.size()-1).getType().getSize();
-
+        recordSize = columnsOffsets[columns.size() - 1] + columns.get(columns.size() - 1).getType().getSize();
     }
 
     public String getName() {
         return name;
     }
 
-    public ArrayList<Column> getColumns() {
-        return columns;
-    }
-
     public int getRecordSize() {
         return recordSize;
     }
 
-    public Integer getColumnNumberByName(String name) {
-        return columnsMap.get(name);
-    }
-
-    public boolean hasColumn(String name) {
-        return getColumnNumberByName(name) != null;
-    }
-
-    public Column getColumnByName(String name) {
-        Integer number = getColumnNumberByName(name);
-
-        if (number == null) {
-            return null;
-        }
-
-        return columns.get(number);
-    }
-
-    public int getColumnOffset(int number) {
-        return columnsOffsets[number];
-    }
-
-    public Type getColumnTypeByNumber(int number) {
-        return columns.get(number).getType();
-    }
-
-    public int getColumnOffsetByName(String name) {
-        return getColumnOffset(getColumnNumberByName(name));
+    public int getColumnOffset(int index) {
+        return columnsOffsets[index];
     }
 
     public int getFullPagesListHeadPageId() {

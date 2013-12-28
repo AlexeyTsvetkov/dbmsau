@@ -1,38 +1,104 @@
 package ru.spbau.mit.dbmsau.table;
 
+import ru.spbau.mit.dbmsau.relation.ColumnAccessor;
+import ru.spbau.mit.dbmsau.relation.Relation;
+import ru.spbau.mit.dbmsau.relation.Type;
 import ru.spbau.mit.dbmsau.table.exception.SemanticError;
 
+import java.util.AbstractSet;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 public class SemanticValidator {
-    private boolean checkType(Type type, String name, String value) {
+    private static SemanticValidator instance = new SemanticValidator();
+
+    public static SemanticValidator getInstance() {
+        return instance;
+    }
+
+    private void assertTypesCompatible(Type type, String name, String value) {
         if (type.getType() == Type.TYPE_INTEGER) {
+
             try {
                 Integer.parseInt(value);
-                return true;
             } catch (NumberFormatException e) {
-                throw new SemanticError("`" + name + "` should be and integer");
+                String message = String.format("`%s` should be an integer", name);
+                throw new SemanticError(message);
             }
+        }
+    }
+
+    private void assertColumnExists(Table table, String column) {
+        if (!table.hasColumn(column)) {
+            String message = String.format("No such column `%s`", column);
+            throw new SemanticError(message);
+        }
+    }
+
+    public void assertColumnsUnique(List<String> columns) {
+        AbstractSet<String> columnSet = new HashSet<>(columns.size());
+
+
+        for (String column : columns) {
+            if (columnSet.contains(column)) {
+                String message = String.format("Column `%s` referenced more than once", column);
+                throw new SemanticError(message);
+            }
+
+            columnSet.add(column);
+        }
+    }
+
+    public void checkCreateTable(Table table, TableManager tableManager) throws SemanticError {
+        String name = table.getName();
+        if (tableManager.tableExists(name)) {
+            String message = String.format("Table `%s` already exists", name);
+            throw new SemanticError(message);
+        }
+
+        List<String> columns = new LinkedList<>();
+
+        for (int i = 0; i < table.getColumnsCount(); i++) {
+            columns.add(table.getColumnName(i));
+        }
+
+        assertColumnsUnique(columns);
+    }
+
+    public boolean checkColumnsForInsert(Table table, List<String> columns, List<String> values) {
+        if (columns.size() != values.size()) {
+            throw new SemanticError("Columns and values size are not equal");
+        }
+
+        for (int i = 0; i < columns.size(); i++) {
+
+            String column = columns.get(i);
+            String value = values.get(i);
+
+            assertColumnExists(table, column);
+
+            Type type = table.getColumnType(table.getColumnIndex(column));
+            assertTypesCompatible(type, column, value);
+        }
+
+        assertColumnsUnique(columns);
+
+        return true;
+    }
+
+    public boolean checkColumnAccessor(Relation relation, ColumnAccessor accessor) {
+        if (accessor.getColumnIndex(relation) == null) {
+            throw new SemanticError(String.format("Unknown column `%s`", accessor.toString()));
         }
 
         return true;
     }
 
-    public boolean checkTypesCompatibility(Table table, List<String> columns,  List<String> values)  {
-        if (columns.size() != values.size()) {
-            throw new SemanticError("Columns and values size are not equal");
-        }
+    public boolean checkColumnsAccessors(Relation relation, List<ColumnAccessor> accessors) {
 
-        for (String column : columns) {
-            if (!table.hasColumn(column)) {
-                throw new SemanticError("No such column `" +  column + "`");
-            }
-        }
-
-        for (int i = 0; i < columns.size(); i++) {
-            int columnNumber = table.getColumnNumberByName(columns.get(i));
-            Type type = table.getColumnTypeByNumber(columnNumber);
-            checkType(type, columns.get(i), values.get(i));
+        for (ColumnAccessor accessor : accessors) {
+            checkColumnAccessor(relation, accessor);
         }
 
         return true;

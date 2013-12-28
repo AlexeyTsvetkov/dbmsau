@@ -1,12 +1,10 @@
 package ru.spbau.mit.dbmsau.table;
 
 import ru.spbau.mit.dbmsau.BaseTest;
+import ru.spbau.mit.dbmsau.relation.RecordSet;
+import ru.spbau.mit.dbmsau.relation.RelationRecord;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-
-import static org.hamcrest.CoreMatchers.is;
 
 public class TestTableTest extends BaseTest {
     private String[] joinArray(String[][] a) {
@@ -29,17 +27,18 @@ public class TestTableTest extends BaseTest {
 
     protected void compareTestContent(String[][] shouldBe) {
 
-        Iterator<TableRecord> recordSet = context.getRecordManager().select(context.getTableManager().getTable("test")).iterator();
+        RecordSet recordSet = context.getTableRecordManager().select(context.getTableManager().getTable("test"));
+        recordSet.moveFirst();
 
         String[][] result = new String[shouldBe.length][2];
 
         for (int i = 0; i < shouldBe.length; i++) {
             assertTrue(recordSet.hasNext());
 
-            TableRecord next = recordSet.next();
+            RelationRecord next = recordSet.next();
 
-            result[i][0] = next.getValueAsString("id");
-            result[i][1] = next.getValueAsString("name");
+            result[i][0] = next.getValueAsString(TEST_COLUMN_INDEX_ID);
+            result[i][1] = next.getValueAsString(TEST_COLUMN_INDEX_NAME);
         }
 
         assertFalse(recordSet.hasNext());

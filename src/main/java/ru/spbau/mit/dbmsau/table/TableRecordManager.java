@@ -4,13 +4,15 @@ import ru.spbau.mit.dbmsau.Context;
 import ru.spbau.mit.dbmsau.ContextContainer;
 import ru.spbau.mit.dbmsau.pages.Page;
 import ru.spbau.mit.dbmsau.pages.PagesList;
+import ru.spbau.mit.dbmsau.relation.RecordSet;
+import ru.spbau.mit.dbmsau.relation.WhereMatcher;
+import ru.spbau.mit.dbmsau.relation.WhereMatcherRecordSet;
 import ru.spbau.mit.dbmsau.table.exception.RecordManagerException;
 
-import java.util.Iterator;
 import java.util.List;
 
-public class RecordManager extends ContextContainer {
-    public RecordManager(Context context) {
+public class TableRecordManager extends ContextContainer {
+    public TableRecordManager(Context context) {
         super(context);
     }
 
@@ -32,7 +34,7 @@ public class RecordManager extends ContextContainer {
         TableRecord newRecord = recordsPage.getClearTableRecord();
 
         for (int i = 0; i < columns.size(); i++) {
-            newRecord.setValue(columns.get(i), values.get(i));
+            newRecord.setValueFromString(table.getColumnIndex(columns.get(i)), values.get(i));
         }
 
         context.getPageManager().releasePage(recordsPage);
@@ -44,23 +46,33 @@ public class RecordManager extends ContextContainer {
         }
     }
 
+    public RecordSet select(Table table, WhereMatcher matcher) {
+        RecordSet result = select(table);
+
+        if (matcher != null) {
+            result = new WhereMatcherRecordSet(result, matcher);
+        }
+
+        return result;
+    }
+
     public RecordSet select(Table table) {
-        return new RecordSet(
-                table,
-                buildPagesListByHeadPageId(table.getFullPagesListHeadPageId()),
-                buildPagesListByHeadPageId(table.getNotFullPagesListHeadPageId()),
-                context
+        return new FullScanRecordSet(
+            table,
+            buildPagesListByHeadPageId(table.getFullPagesListHeadPageId()),
+            buildPagesListByHeadPageId(table.getNotFullPagesListHeadPageId()),
+            context
         );
     }
 
     public void delete(Table table) {
         RecordSet recordSet = select(table);
 
-        Iterator<TableRecord> iterator = recordSet.iterator();
+        recordSet.moveFirst();
 
-        while (iterator.hasNext()) {
-            iterator.next();
-            iterator.remove();
+        while (recordSet.hasNext()) {
+            recordSet.next();
+            recordSet.remove();
         }
     }
 

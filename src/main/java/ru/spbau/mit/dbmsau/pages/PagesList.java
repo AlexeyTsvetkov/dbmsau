@@ -27,7 +27,7 @@ public class PagesList implements Iterable<Page> {
 
     public void initList() {
         context.getPageManager().releasePage(
-                initNewLastPage(context.getPageManager().getPageById(headPageId, true))
+            initNewLastPage(context.getPageManager().getPageById(headPageId, true))
         );
     }
 
@@ -198,7 +198,7 @@ public class PagesList implements Iterable<Page> {
         @Override
         public boolean hasNext() {
             walkUntilNext();
-            return  currentPage != null && currentSlot != SLOT_NOT_FOUND;
+            return currentPage != null && currentSlot != SLOT_NOT_FOUND;
         }
 
         @Override
@@ -210,7 +210,7 @@ public class PagesList implements Iterable<Page> {
         @Override
         public void remove() {
             //deleteElement returns true when pages swapped
-            if (deleteElement(currentPage.getId(), currentSlot-1)) {
+            if (deleteElement(currentPage.getId(), currentSlot - 1)) {
                 currentSlot = firstUsedSlotIndex(currentPage);
             }
         }

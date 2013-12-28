@@ -1,4 +1,5 @@
 package ru.spbau.mit.dbmsau;
+
 import org.junit.Assert;
 import org.junit.Test;
 
