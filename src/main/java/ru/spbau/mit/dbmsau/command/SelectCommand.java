@@ -10,16 +10,15 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class SelectCommand extends AbstractSQLCommand {
+public class SelectCommand extends ConditionalCommand {
     private List<ColumnAccessor> columnAccessors;
     private String table;
-    private WhereExpression where;
     private JoinDescription join;
 
     public SelectCommand(List<ColumnAccessor> columnAccessors, String table, WhereExpression where) {
+        super(where);
         this.columnAccessors = columnAccessors;
         this.table = table;
-        this.where = where;
     }
 
     public SelectCommand(List<ColumnAccessor> columnAccessors, String table, WhereExpression where, JoinDescription join) {
@@ -86,15 +85,14 @@ public class SelectCommand extends AbstractSQLCommand {
     }
 
     public SQLCommandResult execute() throws CommandExecutionException {
-        RecordSet result = prepareRecordSet();
-        Relation relation = result.getRelation();
+        RecordSet result = filterRecordSet(prepareRecordSet());
 
-        if (where != null) {
-            where.prepareFor(relation);
-            result = filterRecordSet(result, where);
-        }
-
-        return new SQLCommandResult(new RecordSetCSVIterator(result, buildColumnsIndexesToSelect(relation)));
+        return new SQLCommandResult(
+            new RecordSetCSVIterator(
+                result,
+                buildColumnsIndexesToSelect(result.getRelation())
+            )
+        );
     }
 
     private class RecordSetCSVIterator implements Iterator<String> {

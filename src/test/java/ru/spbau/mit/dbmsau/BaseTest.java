@@ -83,17 +83,25 @@ public class BaseTest extends Assert {
     }
 
     protected File getResourceFileByName(String resourceName) {
-        return FileUtils.toFile(getClass().getResource(resourceName));
+        return getResourceFileByName(getClass(), resourceName);
     }
 
-    protected void initSQLDumpLoad(String resourceName) throws Exception {
+    protected File getResourceFileByName(Class classObj, String resourceName) {
+        return FileUtils.toFile(classObj.getResource(resourceName));
+    }
+
+    protected void initSQLDumpLoad(Class classObj, String resourceName) throws Exception {
         if (resourceName != null) {
             initSQLDumpLoad(
                 new FileInputStream(
-                    getResourceFileByName(resourceName)
+                    getResourceFileByName(classObj, resourceName)
                 )
             );
         }
+    }
+
+    protected void initSQLDumpLoad(String resourceName) throws Exception {
+        initSQLDumpLoad(getClass(), resourceName);
     }
 
     protected void initSQLDumpLoad(InputStream stream) throws Exception {

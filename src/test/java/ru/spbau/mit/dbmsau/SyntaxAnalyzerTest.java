@@ -86,16 +86,22 @@ public class SyntaxAnalyzerTest extends Assert {
         assertNull(PrivateAccessor.getField(command, "join"));
     }
 
+    private List<ComparisonClause> getClausesFromConditionalCommand(ConditionalCommand command) throws Exception {
+        WhereExpression where = (WhereExpression) PrivateAccessor.getField(command, "where");
+        assertNotNull(where);
+
+        List<ComparisonClause> clauses = (List<ComparisonClause>) PrivateAccessor.getField(where, "clauses");
+
+        return clauses;
+    }
+
     @Test
     public void testSelectWhere() throws Exception {
         SelectCommand command = (SelectCommand) getFirstResult("SELECT * FROM test WHERE id=2;");
 
         assertThat(command.getTableName(), is("test"));
 
-        WhereExpression where = (WhereExpression) PrivateAccessor.getField(command, "where");
-        assertNotNull(where);
-
-        List<ComparisonClause> clauses = (List<ComparisonClause>) PrivateAccessor.getField(where, "clauses");
+        List<ComparisonClause> clauses = getClausesFromConditionalCommand(command);
         assertThat(clauses.size(), is(1));
         ComparisonClause clause = clauses.get(0);
 
@@ -114,10 +120,7 @@ public class SyntaxAnalyzerTest extends Assert {
 
         assertThat(command.getTableName(), is("test"));
 
-        WhereExpression where = (WhereExpression) PrivateAccessor.getField(command, "where");
-        assertNotNull(where);
-
-        List<ComparisonClause> clauses = (List<ComparisonClause>) PrivateAccessor.getField(where, "clauses");
+        List<ComparisonClause> clauses = getClausesFromConditionalCommand(command);
         assertThat(clauses.size(), is(6));
 
         assertThat(clauses.get(0).toString(), is("id<=2"));
@@ -152,10 +155,7 @@ public class SyntaxAnalyzerTest extends Assert {
         assertThat(join.getLeft().toString(), is("test.id"));
         assertThat(join.getRight().toString(), is("test.name"));
 
-        WhereExpression where = (WhereExpression) PrivateAccessor.getField(command, "where");
-        assertNotNull(where);
-
-        List<ComparisonClause> clauses = (List<ComparisonClause>) PrivateAccessor.getField(where, "clauses");
+        List<ComparisonClause> clauses = getClausesFromConditionalCommand(command);
         assertThat(clauses.size(), is(1));
 
         assertThat(clauses.get(0).toString(), is("id=2"));
@@ -173,6 +173,17 @@ public class SyntaxAnalyzerTest extends Assert {
         DeleteCommand command = (DeleteCommand) getFirstResult("delete FROM test;");
 
         assertThat(command.getTableName(), is("test"));
+    }
+
+    @Test
+    public void testDeleteWhere() throws Exception {
+        DeleteCommand command = (DeleteCommand) getFirstResult("delete FROM test WHERE id=2;");
+
+        assertThat(command.getTableName(), is("test"));
+
+        List<ComparisonClause> clauses = getClausesFromConditionalCommand(command);
+        assertThat(clauses.size(), is(1));
+        assertThat(clauses.get(0).toString(), is("id=2"));
     }
 
     @Test

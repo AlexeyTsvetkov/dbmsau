@@ -53,17 +53,6 @@ public class TableRecordManager extends ContextContainer {
         );
     }
 
-    public void delete(Table table) {
-        RecordSet recordSet = select(table);
-
-        recordSet.moveFirst();
-
-        while (recordSet.hasNext()) {
-            recordSet.next();
-            recordSet.remove();
-        }
-    }
-
     private PagesList buildPagesListByHeadPageId(int headPageId) {
         return new PagesList(headPageId, context);
     }

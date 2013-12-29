@@ -104,8 +104,8 @@ insert_statement ::= INSERT INTO IDENT:tableName LEFTPAR columns_list:cList RIGH
                         {: RESULT = new InsertStatementNode(tableName, cList, vList); :}
                     ;
 
-delete_statement ::= DELETE FROM IDENT:tableName
-                     {: RESULT = new DeleteStatementNode(tableName); :}
+delete_statement ::= DELETE FROM IDENT:tableName where_clause:where
+                     {: RESULT = new DeleteStatementNode(tableName, where); :}
                    ;
 
 

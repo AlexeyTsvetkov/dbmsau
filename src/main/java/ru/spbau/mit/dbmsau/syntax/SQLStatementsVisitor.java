@@ -127,6 +127,6 @@ public class SQLStatementsVisitor extends ASTNodeVisitor {
 
     @Override
     public void visit(DeleteStatementNode node) {
-        setLastCommand(new DeleteCommand(node.getTableName().getLexemeValue()));
+        setLastCommand(new DeleteCommand(node.getTableName().getLexemeValue(), buildWhereExpression(node.getWhereClause())));
     }
 }
