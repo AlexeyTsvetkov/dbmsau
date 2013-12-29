@@ -21,12 +21,13 @@ import ru.spbau.mit.dbmsau.table.TableRecordManager;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class BaseTest extends Assert {
-    protected static final int TEST_COLUMN_INDEX_ID = 0;
-    protected static final int TEST_COLUMN_INDEX_NAME = 1;
+    public static final int TEST_COLUMN_INDEX_ID = 0;
+    public static final int TEST_COLUMN_INDEX_NAME = 1;
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -64,7 +65,6 @@ public class BaseTest extends Assert {
         return new TableRecordManager(context);
     }
 
-
     @Before
     public void setUp() throws Exception {
         setUpContext();
@@ -88,20 +88,26 @@ public class BaseTest extends Assert {
 
     protected void initSQLDumpLoad(String resourceName) throws Exception {
         if (resourceName != null) {
-            SyntaxAnalyzer analyzer = new SyntaxAnalyzer(
+            initSQLDumpLoad(
                 new FileInputStream(
                     getResourceFileByName(resourceName)
                 )
             );
-
-            for (AbstractSQLCommand command : analyzer) {
-                command.setContext(context);
-                command.execute();
-            }
         }
     }
 
-    protected Table buildTestTable() {
+    protected void initSQLDumpLoad(InputStream stream) throws Exception {
+        SyntaxAnalyzer analyzer = new SyntaxAnalyzer(
+            stream
+        );
+
+        for (AbstractSQLCommand command : analyzer) {
+            command.setContext(context);
+            command.execute();
+        }
+    }
+
+    public static Table buildTestTable() {
         return new Table(
             "test",
             new ArrayList<>(

@@ -3,6 +3,9 @@ package ru.spbau.mit.dbmsau.command;
 import ru.spbau.mit.dbmsau.Context;
 import ru.spbau.mit.dbmsau.command.exception.CommandExecutionException;
 import ru.spbau.mit.dbmsau.exception.UserError;
+import ru.spbau.mit.dbmsau.relation.RecordSet;
+import ru.spbau.mit.dbmsau.relation.WhereMatcher;
+import ru.spbau.mit.dbmsau.relation.WhereMatcherRecordSet;
 import ru.spbau.mit.dbmsau.table.Table;
 
 abstract public class AbstractSQLCommand {
@@ -24,6 +27,10 @@ abstract public class AbstractSQLCommand {
         }
 
         return table;
+    }
+
+    protected RecordSet filterRecordSet(RecordSet recordSet, WhereMatcher matcher) {
+        return new WhereMatcherRecordSet(recordSet, matcher);
     }
 
     abstract public SQLCommandResult execute() throws CommandExecutionException;

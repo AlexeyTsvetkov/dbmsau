@@ -2,10 +2,8 @@ package ru.spbau.mit.dbmsau.command;
 
 import ru.spbau.mit.dbmsau.command.exception.CommandExecutionException;
 import ru.spbau.mit.dbmsau.command.where.WhereExpression;
-import ru.spbau.mit.dbmsau.relation.ColumnAccessor;
-import ru.spbau.mit.dbmsau.relation.RecordSet;
-import ru.spbau.mit.dbmsau.relation.Relation;
-import ru.spbau.mit.dbmsau.relation.RelationRecord;
+import ru.spbau.mit.dbmsau.relation.*;
+import ru.spbau.mit.dbmsau.table.SemanticValidator;
 import ru.spbau.mit.dbmsau.table.Table;
 
 import java.util.Iterator;
@@ -16,11 +14,17 @@ public class SelectCommand extends AbstractSQLCommand {
     private List<ColumnAccessor> columnAccessors;
     private String table;
     private WhereExpression where;
+    private JoinDescription join;
 
     public SelectCommand(List<ColumnAccessor> columnAccessors, String table, WhereExpression where) {
         this.columnAccessors = columnAccessors;
         this.table = table;
         this.where = where;
+    }
+
+    public SelectCommand(List<ColumnAccessor> columnAccessors, String table, WhereExpression where, JoinDescription join) {
+        this(columnAccessors, table, where);
+        this.join = join;
     }
 
     public String getTableName() {
@@ -54,14 +58,43 @@ public class SelectCommand extends AbstractSQLCommand {
         return columnsIndexesToSelect;
     }
 
-    public SQLCommandResult execute() throws CommandExecutionException {
+    private RecordSet prepareRecordSet() {
         Table table = getTable(getTableName());
+        RecordSet result = getContext().getTableRecordManager().select(table);
 
-        where.prepareFor(table);
+        if (join != null) {
+            Table secondTable = getTable(join.getTableName());
 
-        RecordSet result = getContext().getTableRecordManager().select(table, where);
+            SemanticValidator validator = getContext().getSemanticValidator();
+            validator.checkColumnAccessor(table, join.getLeft());
+            validator.checkColumnAccessor(secondTable, join.getRight());
 
-        return new SQLCommandResult(new RecordSetCSVIterator(result, buildColumnsIndexesToSelect(table)));
+            JoinedRelation relation = new JoinedRelation(
+                table, secondTable,
+                join.getLeft().getColumnIndex(table),
+                join.getRight().getColumnIndex(secondTable)
+            );
+
+            result = new NestedLoopJoinRecordSet(
+                relation,
+                result,
+                getContext().getTableRecordManager().select(secondTable)
+            );
+        }
+
+        return result;
+    }
+
+    public SQLCommandResult execute() throws CommandExecutionException {
+        RecordSet result = prepareRecordSet();
+        Relation relation = result.getRelation();
+
+        if (where != null) {
+            where.prepareFor(relation);
+            result = filterRecordSet(result, where);
+        }
+
+        return new SQLCommandResult(new RecordSetCSVIterator(result, buildColumnsIndexesToSelect(relation)));
     }
 
     private class RecordSetCSVIterator implements Iterator<String> {

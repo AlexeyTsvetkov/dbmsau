@@ -1,12 +1,8 @@
-package ru.spbau.mit.dbmsau.table;
-
-import ru.spbau.mit.dbmsau.relation.RecordSet;
-import ru.spbau.mit.dbmsau.relation.Relation;
-import ru.spbau.mit.dbmsau.relation.RelationRecord;
+package ru.spbau.mit.dbmsau.relation;
 
 public class ArrayRecordSet extends RecordSet {
     private RelationRecord[] records;
-    private int currentIndex = 0;
+    private int currentIndex = -1;
 
     public ArrayRecordSet(Relation relation, RelationRecord... records) {
         super(relation);

@@ -39,7 +39,7 @@ init with {:
 :};
 
 terminal TerminalNode QUIT;
-terminal TerminalNode CREATE,TABLE,INSERT,INTO,VALUES,SELECT,FROM,DELETE,WHERE;
+terminal TerminalNode CREATE,TABLE,INSERT,INTO,VALUES,SELECT,FROM,DELETE,WHERE,JOIN,ON;
 terminal TerminalNode LEFTPAR,RIGHTPAR,LEFTBRACKET,RIGHTBRACKET;
 terminal TerminalNode OR,DIV,MOD,AND,MAIN,COMMA,EQUALS,COLON,NOT,NOTEQUAL,LESS,LESSOREQUAL,MORE,MOREOREQUAL,PLUS,MINUS,ASTERISK,DIVIDE,DOT;
 terminal TerminalNode INTEGER_LITERAL;
@@ -58,6 +58,8 @@ non terminal LinkedList< TerminalNode >   columns_list;
 
 non terminal SelectStatementNode          select_statement;
 non terminal DeleteStatementNode          delete_statement;
+
+non terminal JoinNode                     join_table;
 
 non terminal LinkedList< ComparisonNode > where_clause;
 non terminal LinkedList< ComparisonNode > comparisons;
@@ -93,8 +95,8 @@ statement ::= create_table_statement:e1 {: RESULT = e1; :}
               QUIT:e1 {: RESULT = null; :}
              ;
 
-select_statement ::= SELECT column_accessors:accessors FROM IDENT:tableFrom where_clause:filter
-                    {: RESULT = new SelectStatementNode(accessors, tableFrom, filter); :}
+select_statement ::= SELECT column_accessors:accessors FROM IDENT:tableFrom join_table:join where_clause:filter
+                    {: RESULT = new SelectStatementNode(accessors, tableFrom, filter, join); :}
                   ;
 
 insert_statement ::= INSERT INTO IDENT:tableName LEFTPAR columns_list:cList RIGHTPAR VALUES
@@ -105,6 +107,14 @@ insert_statement ::= INSERT INTO IDENT:tableName LEFTPAR columns_list:cList RIGH
 delete_statement ::= DELETE FROM IDENT:tableName
                      {: RESULT = new DeleteStatementNode(tableName); :}
                    ;
+
+
+join_table  ::= JOIN IDENT:table ON column_accessor:ca1 EQUALS column_accessor:ca2
+                {: RESULT = new JoinNode(table, ca1, ca2); :}
+                |
+                empty
+                {: RESULT = null; :}
+              ;
 
 where_clause ::= WHERE comparisons:cmp
                     {: RESULT = cmp; :}

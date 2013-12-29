@@ -106,10 +106,21 @@ public class SQLStatementsVisitor extends ASTNodeVisitor {
             }
         }
 
+        JoinDescription join = null;
+
+        if (node.getJoin() != null) {
+            join = new JoinDescription(
+                node.getJoin().getTable().getLexemeValue(),
+                buildColumnAccessorByNode(node.getJoin().getLeft()),
+                buildColumnAccessorByNode(node.getJoin().getRight())
+            );
+        }
+
         setLastCommand(
             new SelectCommand(
                 selectColumnAccessors, table,
-                buildWhereExpression(node.getWhereClause())
+                buildWhereExpression(node.getWhereClause()),
+                join
             )
         );
     }

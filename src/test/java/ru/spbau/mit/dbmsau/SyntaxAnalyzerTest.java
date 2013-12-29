@@ -83,6 +83,7 @@ public class SyntaxAnalyzerTest extends Assert {
         SelectCommand command = (SelectCommand) getFirstResult("SELECT * FROM test;");
 
         assertThat(command.getTableName(), is("test"));
+        assertNull(PrivateAccessor.getField(command, "join"));
     }
 
     @Test
@@ -139,6 +140,25 @@ public class SyntaxAnalyzerTest extends Assert {
 
         assertThat(columnAccessorList.get(0).toString(), is("test.name"));
         assertThat(columnAccessorList.get(1).toString(), is("id"));
+    }
+
+    @Test
+    public void testJoin() throws Exception {
+        SelectCommand command = (SelectCommand) getFirstResult("SELECT * FROM test JOIN test ON test.id = test.name WHERE id=2;");
+
+        JoinDescription join = (JoinDescription) PrivateAccessor.getField(command, "join");
+
+        assertThat(join.getTableName(), is("test"));
+        assertThat(join.getLeft().toString(), is("test.id"));
+        assertThat(join.getRight().toString(), is("test.name"));
+
+        WhereExpression where = (WhereExpression) PrivateAccessor.getField(command, "where");
+        assertNotNull(where);
+
+        List<ComparisonClause> clauses = (List<ComparisonClause>) PrivateAccessor.getField(where, "clauses");
+        assertThat(clauses.size(), is(1));
+
+        assertThat(clauses.get(0).toString(), is("id=2"));
     }
 
     @Test

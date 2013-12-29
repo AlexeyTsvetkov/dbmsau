@@ -5,8 +5,6 @@ import ru.spbau.mit.dbmsau.ContextContainer;
 import ru.spbau.mit.dbmsau.pages.Page;
 import ru.spbau.mit.dbmsau.pages.PagesList;
 import ru.spbau.mit.dbmsau.relation.RecordSet;
-import ru.spbau.mit.dbmsau.relation.WhereMatcher;
-import ru.spbau.mit.dbmsau.relation.WhereMatcherRecordSet;
 import ru.spbau.mit.dbmsau.table.exception.RecordManagerException;
 
 import java.util.List;
@@ -44,16 +42,6 @@ public class TableRecordManager extends ContextContainer {
         } else {
             buildPagesListByHeadPageId(table.getFullPagesListHeadPageId()).put(recordsPage.getId());
         }
-    }
-
-    public RecordSet select(Table table, WhereMatcher matcher) {
-        RecordSet result = select(table);
-
-        if (matcher != null) {
-            result = new WhereMatcherRecordSet(result, matcher);
-        }
-
-        return result;
     }
 
     public RecordSet select(Table table) {
