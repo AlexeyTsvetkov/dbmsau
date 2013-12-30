@@ -2,11 +2,15 @@ package ru.spbau.mit.dbmsau.command;
 
 import com.google.common.collect.Lists;
 import com.sun.deploy.util.StringUtils;
+import junitx.util.PrivateAccessor;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import ru.spbau.mit.dbmsau.BaseTest;
+import ru.spbau.mit.dbmsau.index.IndexJoinRecordSet;
+import ru.spbau.mit.dbmsau.index.StubIndexManager;
 import ru.spbau.mit.dbmsau.relation.ColumnAccessor;
+import ru.spbau.mit.dbmsau.relation.RecordSet;
 import ru.spbau.mit.dbmsau.relation.TestChildrenTable;
 
 import java.io.ByteArrayInputStream;
@@ -32,8 +36,25 @@ public class SelectCommandJoinTest extends BaseTest {
         return result;
     }
 
-    @Test
-    public void testJoin() throws Exception {
+    private void testJoinResult(SelectCommand command) throws Exception {
+        command.setContext(context);
+        SQLCommandResult result = command.execute();
+
+        assertTrue(result.isIterable());
+
+        Object[] resultOutput = queryResultOutput(result);
+
+        Arrays.sort(resultOutput);
+        String[] should = shouldBe();
+        Arrays.sort(should);
+
+        assertArrayEquals(
+            should,
+            resultOutput
+        );
+    }
+
+    private SelectCommand buildSelectJoinCommand() {
         SelectCommand command = new SelectCommand(
             Arrays.asList(TestChildrenTable.getResultColumnAccessors()),
             "test",
@@ -44,19 +65,50 @@ public class SelectCommandJoinTest extends BaseTest {
                 new ColumnAccessor(TestChildrenTable.TABLE_NAME, TestChildrenTable.COLUMN_NAME_TEST_ID)
             )
         );
-
         command.setContext(context);
-        SQLCommandResult result = command.execute();
 
-        assertTrue(result.isIterable());
+        return command;
+    }
 
-        Object[] resultOutput = queryResultOutput(result);
+    @Test
+    public void testJoin() throws Exception {
+        SelectCommand command = buildSelectJoinCommand();
 
+        testJoinResult(command);
+    }
 
-        assertArrayEquals(
-            shouldBe(),
-            resultOutput
+    private void checkIndexJoin() throws Throwable {
+        SelectCommand command = buildSelectJoinCommand();
+
+        RecordSet recordSet = (RecordSet) PrivateAccessor.invoke(command, "prepareRecordSet", null, null);
+
+        assertTrue(recordSet instanceof IndexJoinRecordSet);
+
+        testJoinResult(command);
+    }
+
+    @Test
+    public void testIndexJoin() throws Throwable {
+        context.setIndexManager(new StubIndexManager(context));
+        context.getIndexManager().createIndex(
+            "test_index",
+            context.getTableManager().getTable("test"),
+            Arrays.asList("id")
         );
+
+        checkIndexJoin();
+    }
+
+    @Test
+    public void testIndexJoinReverse() throws Throwable {
+        context.setIndexManager(new StubIndexManager(context));
+        context.getIndexManager().createIndex(
+            "test_index",
+            context.getTableManager().getTable("test_children"),
+            Arrays.asList("test_id")
+        );
+
+        checkIndexJoin();
     }
 
     @Override

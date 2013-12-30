@@ -2,6 +2,7 @@ package ru.spbau.mit.dbmsau.command;
 
 import ru.spbau.mit.dbmsau.command.exception.CommandExecutionException;
 import ru.spbau.mit.dbmsau.command.where.WhereExpression;
+import ru.spbau.mit.dbmsau.index.IndexJoinRecordSet;
 import ru.spbau.mit.dbmsau.relation.*;
 import ru.spbau.mit.dbmsau.table.SemanticValidator;
 import ru.spbau.mit.dbmsau.table.Table;
@@ -57,29 +58,57 @@ public class SelectCommand extends ConditionalCommand {
         return columnsIndexesToSelect;
     }
 
+    private boolean tableHasIndexForColumn(Table table, int columnIndex) {
+        return getContext().getIndexManager().findAppropriateIndex(table, new int[]{columnIndex}) != null;
+    }
+
+    private RecordSet createJoinRecordSet(Table table1, Table table2) {
+        SemanticValidator validator = getContext().getSemanticValidator();
+        validator.checkColumnAccessor(table1, join.getLeft());
+        validator.checkColumnAccessor(table2, join.getRight());
+
+        int leftColumnIndex = join.getLeft().getColumnIndex(table1);
+        int rightColumnIndex = join.getRight().getColumnIndex(table2);
+
+        if (tableHasIndexForColumn(table1, leftColumnIndex)) {
+            //very sad :(
+            Table tmp = table1;
+            table1 = table2;
+            table2 = tmp;
+
+            int tmpInt = leftColumnIndex;
+            leftColumnIndex = rightColumnIndex;
+            rightColumnIndex = tmpInt;
+        }
+
+        JoinedRelation relation = new JoinedRelation(
+            table1, table2,
+            leftColumnIndex, rightColumnIndex
+        );
+
+        RecordSet leftPart = getContext().getTableRecordManager().select(table1);
+
+        if (tableHasIndexForColumn(table2, rightColumnIndex)) {
+            return new IndexJoinRecordSet(
+                relation,
+                leftPart,
+                getContext().getIndexManager().findAppropriateIndex(table2, new int[]{rightColumnIndex})
+            );
+        } else {
+            return new NestedLoopJoinRecordSet(
+                relation,
+                leftPart,
+                getContext().getTableRecordManager().select(table2)
+            );
+        }
+    }
+
     private RecordSet prepareRecordSet() {
         Table table = getTable(getTableName());
         RecordSet result;
 
         if (join != null) {
-            result = getContext().getTableRecordManager().select(table);
-            Table secondTable = getTable(join.getTableName());
-
-            SemanticValidator validator = getContext().getSemanticValidator();
-            validator.checkColumnAccessor(table, join.getLeft());
-            validator.checkColumnAccessor(secondTable, join.getRight());
-
-            JoinedRelation relation = new JoinedRelation(
-                table, secondTable,
-                join.getLeft().getColumnIndex(table),
-                join.getRight().getColumnIndex(secondTable)
-            );
-
-            result = new NestedLoopJoinRecordSet(
-                relation,
-                result,
-                getContext().getTableRecordManager().select(secondTable)
-            );
+            result = createJoinRecordSet(table, getTable(join.getTableName()));
         } else {
             result = createAppropriateRecordSet(table);
         }
