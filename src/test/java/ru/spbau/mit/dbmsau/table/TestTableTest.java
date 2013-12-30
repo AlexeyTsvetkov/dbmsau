@@ -1,6 +1,7 @@
 package ru.spbau.mit.dbmsau.table;
 
 import ru.spbau.mit.dbmsau.BaseTest;
+import ru.spbau.mit.dbmsau.relation.MemoryRelationRecord;
 import ru.spbau.mit.dbmsau.relation.RecordSet;
 import ru.spbau.mit.dbmsau.relation.RelationRecord;
 
@@ -46,5 +47,17 @@ public class TestTableTest extends BaseTest {
         compareResult(shouldBe, result);
 
         checkBusyPages();
+    }
+
+    protected void insertShouldBe(String[][] shouldBe) throws Exception {
+        Table table = context.getTableManager().getTable("test");
+        MemoryRelationRecord record = new MemoryRelationRecord(table);
+
+        for (int i = 0; i < shouldBe.length; i++) {
+            record.setValueFromString(TEST_COLUMN_INDEX_ID, shouldBe[i][0]);
+            record.setValueFromString(TEST_COLUMN_INDEX_NAME, shouldBe[i][1]);
+
+            context.getTableRecordManager().insert(table, record);
+        }
     }
 }

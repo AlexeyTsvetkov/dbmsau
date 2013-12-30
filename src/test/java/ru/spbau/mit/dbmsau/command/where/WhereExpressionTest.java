@@ -3,8 +3,8 @@ package ru.spbau.mit.dbmsau.command.where;
 import org.junit.Test;
 import ru.spbau.mit.dbmsau.BaseTest;
 import ru.spbau.mit.dbmsau.relation.ColumnAccessor;
+import ru.spbau.mit.dbmsau.relation.MemoryRelationRecord;
 import ru.spbau.mit.dbmsau.relation.Relation;
-import ru.spbau.mit.dbmsau.relation.StubRelationRecord;
 
 import java.util.Arrays;
 
@@ -23,7 +23,7 @@ public class WhereExpressionTest extends BaseTest {
         Relation relation = buildTestTable();
 
         expression.prepareFor(relation);
-        StubRelationRecord record = new StubRelationRecord(relation);
+        MemoryRelationRecord record = new MemoryRelationRecord(relation);
         record.setValue(TEST_COLUMN_INDEX_ID, 1);
         record.setValue(TEST_COLUMN_INDEX_NAME, "abc");
 

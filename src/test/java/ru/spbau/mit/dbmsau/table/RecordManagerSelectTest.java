@@ -2,8 +2,6 @@ package ru.spbau.mit.dbmsau.table;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
-
 public class RecordManagerSelectTest extends TestTableTest {
     @Test
     public void testSelect() throws Exception {
@@ -26,17 +24,9 @@ public class RecordManagerSelectTest extends TestTableTest {
         for (int i = 0; i < shouldBe.length; i++) {
             shouldBe[i][0] = Integer.valueOf(i).toString();
             shouldBe[i][1] = Integer.valueOf(-i).toString();
-
-            ArrayList<String> columns = new ArrayList<>();
-            ArrayList<String> values = new ArrayList<>();
-
-            columns.add("id");
-            values.add(shouldBe[i][0]);
-            columns.add("name");
-            values.add(shouldBe[i][1]);
-
-            context.getTableRecordManager().insert(context.getTableManager().getTable("test"), columns, values);
         }
+
+        insertShouldBe(shouldBe);
 
         compareTestContent(shouldBe);
         compareTestContent(shouldBe);

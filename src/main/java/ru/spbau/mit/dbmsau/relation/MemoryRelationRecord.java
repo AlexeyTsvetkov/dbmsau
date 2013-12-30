@@ -1,14 +1,18 @@
 package ru.spbau.mit.dbmsau.relation;
 
-public class StubRelationRecord extends RelationRecord {
+public class MemoryRelationRecord extends RelationRecord {
     String[] columnsValues;
 
-    public StubRelationRecord(Relation relation) {
+    public MemoryRelationRecord(Relation relation) {
         super(relation);
         columnsValues = new String[relation.getColumnsCount()];
+
+        for (int i = 0; i < columnsValues.length; i++) {
+            columnsValues[i] = "";
+        }
     }
 
-    public StubRelationRecord(Relation table, String... columnsValues) {
+    public MemoryRelationRecord(Relation table, String... columnsValues) {
         this(table);
         this.columnsValues = columnsValues;
     }

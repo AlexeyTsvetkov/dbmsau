@@ -2,6 +2,7 @@ package ru.spbau.mit.dbmsau.index;
 
 import ru.spbau.mit.dbmsau.index.exception.IndexException;
 import ru.spbau.mit.dbmsau.relation.RecordSet;
+import ru.spbau.mit.dbmsau.relation.RelationRecord;
 import ru.spbau.mit.dbmsau.table.Table;
 import ru.spbau.mit.dbmsau.table.TableRecord;
 
@@ -41,6 +42,21 @@ public class BTreeIndex extends Index {
         }
 
         return new BTReeRecordSet(matchingValues);
+    }
+
+    @Override
+    public void processNewRecord(TableRecord record) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean isDuplicateViolation(RelationRecord record) {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void processDeletedRecord(TableRecord record) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     private int[] getInverseQueryColumnIndexes(int[] queryColumnIndexes) {

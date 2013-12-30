@@ -78,10 +78,10 @@ public class TestChildrenTable {
     };
 
     private static RecordSet buildRecordSetByContent(Relation relation, String[][] content) {
-        StubRelationRecord[] resultContent = new StubRelationRecord[testContent.length];
+        MemoryRelationRecord[] resultContent = new MemoryRelationRecord[testContent.length];
 
         for (int i = 0; i < testContent.length; i++) {
-            resultContent[i] = new StubRelationRecord(relation, content[i]);
+            resultContent[i] = new MemoryRelationRecord(relation, content[i]);
         }
 
         return new ArrayRecordSet(

@@ -16,10 +16,10 @@ public class WhereMatcherRecordSetTest extends BaseTest {
         Table table = context.getTableManager().getTable("test");
 
         RelationRecord[] records = new RelationRecord[]{
-            new StubRelationRecord(table, "1", "abc"),
-            new StubRelationRecord(table, "2", "name"),
-            new StubRelationRecord(table, "3", "name"),
-            new StubRelationRecord(table, "1", "def"),
+            new MemoryRelationRecord(table, "1", "abc"),
+            new MemoryRelationRecord(table, "2", "name"),
+            new MemoryRelationRecord(table, "3", "name"),
+            new MemoryRelationRecord(table, "1", "def"),
         };
 
         WhereMatcherRecordSet recordSet = new WhereMatcherRecordSet(

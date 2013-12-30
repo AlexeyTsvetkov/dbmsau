@@ -3,8 +3,6 @@ package ru.spbau.mit.dbmsau.table;
 import org.junit.Test;
 import ru.spbau.mit.dbmsau.relation.RecordSet;
 
-import java.util.ArrayList;
-
 
 public class RecordSetTest extends TestTableTest {
     @Test
@@ -36,17 +34,9 @@ public class RecordSetTest extends TestTableTest {
         for (int i = 0; i < n; i++) {
             shouldBe[i][0] = Integer.valueOf(i).toString();
             shouldBe[i][1] = Integer.valueOf(-i).toString();
-
-            ArrayList<String> columns = new ArrayList<>();
-            ArrayList<String> values = new ArrayList<>();
-
-            columns.add("id");
-            values.add(shouldBe[i][0]);
-            columns.add("name");
-            values.add(shouldBe[i][1]);
-
-            context.getTableRecordManager().insert(context.getTableManager().getTable("test"), columns, values);
         }
+
+        insertShouldBe(shouldBe);
 
         RecordSet recordSet = context.getTableRecordManager().select(context.getTableManager().getTable("test"));
         recordSet.moveFirst();

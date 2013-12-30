@@ -4,6 +4,7 @@ import org.junit.Test;
 import ru.spbau.mit.dbmsau.BaseTest;
 import ru.spbau.mit.dbmsau.pages.Record;
 import ru.spbau.mit.dbmsau.pages.RecordsPage;
+import ru.spbau.mit.dbmsau.relation.MemoryRelationRecord;
 
 import java.util.ArrayList;
 
@@ -18,6 +19,17 @@ public class RecordManagerInsertTest extends BaseTest {
         return context.getTableManager().getTable("test");
     }
 
+    private void insert(ArrayList<String> columns, ArrayList<String> values) throws Exception {
+        Table table = getTestTable();
+        MemoryRelationRecord record = new MemoryRelationRecord(getTestTable());
+
+        for (int i = 0; i < columns.size(); i++) {
+            record.setValueFromString(table.getColumnIndex(columns.get(i)), values.get(i));
+        }
+
+        context.getTableRecordManager().insert(table, record);
+    }
+
     private void checkOneInsertIntoTestTable(int idValue, String nameValue) throws Exception {
         ArrayList<String> columns = new ArrayList<>();
         ArrayList<String> values = new ArrayList<>();
@@ -27,9 +39,7 @@ public class RecordManagerInsertTest extends BaseTest {
         columns.add("name");
         values.add(nameValue);
 
-        Table table = getTestTable();
-
-        context.getTableRecordManager().insert(table, columns, values);
+        insert(columns, values);
 
         TableRecordsPage p = new TableRecordsPage(getTestTable(), context.getPageManager().getPageById(3, false));
 
@@ -88,7 +98,7 @@ public class RecordManagerInsertTest extends BaseTest {
         while (!p.isFull()) {
             values.set(0, Integer.valueOf(value).toString());
             values.set(1, Integer.valueOf(-value).toString());
-            context.getTableRecordManager().insert(table, columns, values);
+            insert(columns, values);
             value++;
         }
 
@@ -97,7 +107,7 @@ public class RecordManagerInsertTest extends BaseTest {
             assertThat(getNameValue(i, p), is(Integer.valueOf(-i).toString()));
         }
 
-        context.getTableRecordManager().insert(table, columns, values);
+        insert(columns, values);
 
         p = new TableRecordsPage(table, context.getPageManager().getPageById(4, false));
 

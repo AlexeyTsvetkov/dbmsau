@@ -20,6 +20,8 @@ public class FullScanRecordSet extends RecordSet {
     private TableRecordsPage currentPage = null;
     private Iterator<Record> currentPageIterator = null;
 
+    private TableRecord last = null;
+
     public FullScanRecordSet(Table table, PagesList fullPages, PagesList notFullPages, Context context) {
         super(table);
 
@@ -66,7 +68,7 @@ public class FullScanRecordSet extends RecordSet {
     public TableRecord next() {
         moveUntilNext();
 
-        return new TableRecord(currentPageIterator.next(), table);
+        return last = new TableRecord(currentPageIterator.next(), table);
     }
 
     private boolean isFullPagesListProcessing() {
@@ -75,6 +77,8 @@ public class FullScanRecordSet extends RecordSet {
 
     @Override
     public void remove() {
+        context.getIndexManager().processDeletedRecord(table, last);
+
         currentPageIterator.remove();
 
         //if page from full pages list -- move it to not full page list
