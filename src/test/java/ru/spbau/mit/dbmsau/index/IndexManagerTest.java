@@ -20,7 +20,7 @@ public class IndexManagerTest extends BaseTest {
             getIndexManager().
             buildIndexedRecordSetIfPossible(
                 getTestTable(),
-                new String[]{"name", "id"},
+                new int[]{TEST_COLUMN_INDEX_NAME, TEST_COLUMN_INDEX_ID},
                 new String[]{"abc", "1"}
             );
 
@@ -31,7 +31,7 @@ public class IndexManagerTest extends BaseTest {
             getIndexManager().
             buildIndexedRecordSetIfPossible(
                 getTestTable(),
-                new String[]{"id", "secondname"},
+                new int[]{TEST_COLUMN_INDEX_ID, 2},
                 new String[]{"1", "abc"}
             );
 
@@ -42,7 +42,7 @@ public class IndexManagerTest extends BaseTest {
             getIndexManager().
             buildIndexedRecordSetIfPossible(
                 getTestTable(),
-                new String[]{"name", "secondname"},
+                new int[]{1, 2},
                 new String[]{"1", "abc"}
             );
 

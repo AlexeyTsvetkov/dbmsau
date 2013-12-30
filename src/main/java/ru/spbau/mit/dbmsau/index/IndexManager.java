@@ -8,7 +8,6 @@ import ru.spbau.mit.dbmsau.relation.RelationRecord;
 import ru.spbau.mit.dbmsau.table.Table;
 import ru.spbau.mit.dbmsau.table.TableRecord;
 
-import java.util.Arrays;
 import java.util.List;
 
 abstract public class IndexManager extends ContextContainer {
@@ -21,13 +20,21 @@ abstract public class IndexManager extends ContextContainer {
 
     }
 
-    public RecordSet buildIndexedRecordSetIfPossible(Table table, String[] candidatesColumns, String[] values) {
-        int[] columnIndexes = table.getColumnIndexesByNames(Arrays.asList(candidatesColumns));
-
+    public Index findAppropriateIndex(Table table, int[] columnsIndexes) {
         for (Index index : getIndexesForTable(table)) {
-            if (index.isMatchingFor(columnIndexes, Index.EQUALITY_MATCHING_TYPE)) {
-                return index.buildRecordSetMatchingEqualityCondition(columnIndexes, values);
+            if (index.isMatchingFor(columnsIndexes, Index.EQUALITY_MATCHING_TYPE)) {
+                return index;
             }
+        }
+
+        return null;
+    }
+
+    public RecordSet buildIndexedRecordSetIfPossible(Table table, int[] candidatesColumnsIndexes, String[] values) {
+        Index index = findAppropriateIndex(table, candidatesColumnsIndexes);
+
+        if (index != null) {
+            return index.buildRecordSetMatchingEqualityCondition(candidatesColumnsIndexes, values);
         }
 
         return null;

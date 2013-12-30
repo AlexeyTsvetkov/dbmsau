@@ -59,9 +59,10 @@ public class SelectCommand extends ConditionalCommand {
 
     private RecordSet prepareRecordSet() {
         Table table = getTable(getTableName());
-        RecordSet result = getContext().getTableRecordManager().select(table);
+        RecordSet result;
 
         if (join != null) {
+            result = getContext().getTableRecordManager().select(table);
             Table secondTable = getTable(join.getTableName());
 
             SemanticValidator validator = getContext().getSemanticValidator();
@@ -79,6 +80,8 @@ public class SelectCommand extends ConditionalCommand {
                 result,
                 getContext().getTableRecordManager().select(secondTable)
             );
+        } else {
+            result = createAppropriateRecordSet(table);
         }
 
         return result;

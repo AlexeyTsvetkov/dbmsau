@@ -109,6 +109,18 @@ public class ComparisonClause implements WhereMatcher {
         return "#";
     }
 
+    public String getValue() {
+        return value;
+    }
+
+    public int getColumnIndex() {
+        return columnIndex;
+    }
+
+    public boolean isEquals() {
+        return signType == SIGN_EQUALS;
+    }
+
     public String toString() {
         return accessor.toString() + signString() + value;
     }
