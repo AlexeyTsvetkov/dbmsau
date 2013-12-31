@@ -27,18 +27,18 @@ public class StubIndexManager extends IndexManager {
         }
 
         @Override
-        public boolean isMatchingFor(int[] queryColumnIndexes, int matchingType) {
-            return getColumnIndexes()[0] == queryColumnIndexes[0];
+        public boolean isMatchingFor(IndexQuery query) {
+            return query.isThereColumn(columnIndexes[0]);
         }
 
         @Override
-        public RecordSet buildRecordSetMatchingEqualityCondition(int[] queryColumnIndexes, final String[] values) {
+        public RecordSet buildRecordSet(final IndexQuery query) {
             return new WhereMatcherRecordSet(
                 context.getTableRecordManager().select(table),
                 new WhereMatcher() {
                     @Override
                     public boolean matches(RelationRecord record) {
-                        return record.getValueAsString(getColumnIndexes()[0]).equals(values[0]);
+                        return record.getInteger(getColumnIndexes()[0]) == (query.getRange(columnIndexes[0]).getFrom());
                     }
 
                     @Override

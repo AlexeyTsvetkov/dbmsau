@@ -43,7 +43,7 @@ public class ConditionalCommandTest extends BaseTest {
         RecordSet recordSet = command.createAppropriateRecordSet(table);
         assertFalse(recordSet instanceof FullScanRecordSet);
 
-        assertThat(recordSet.toString(), is("1, 5"));
+        assertThat(recordSet.toString(), is("[1,1], [5,5]"));
     }
 
     private class StubConditionalCommand extends ConditionalCommand {

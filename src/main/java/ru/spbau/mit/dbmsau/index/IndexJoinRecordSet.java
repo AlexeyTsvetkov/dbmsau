@@ -32,9 +32,12 @@ public class IndexJoinRecordSet extends BaseRecordSet {
                 }
 
                 currentFirstRecord = firstRecordSet.next();
-                secondRecordSet = index.buildRecordSetMatchingEqualityCondition(
-                    new int[]{secondColumnIndex},
-                    new String[]{currentFirstRecord.getValueAsString(firstColumnIndex)}
+                secondRecordSet = index.buildRecordSet(
+                    new IndexQuery(
+                        new int[]{secondColumnIndex},
+                        new String[]{"="},
+                        new String[]{currentFirstRecord.getValueAsString(firstColumnIndex)}
+                    )
                 );
                 secondRecordSet.moveFirst();
             }

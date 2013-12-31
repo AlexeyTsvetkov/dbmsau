@@ -86,9 +86,9 @@ abstract public class IndexManager extends ContextContainer {
         indexesByNames.put(index.getName(), index);
     }
 
-    public Index findAppropriateIndex(Table table, int[] columnsIndexes) {
+    public Index findAppropriateIndex(Table table, IndexQuery query) {
         for (Index index : getIndexesForTable(table)) {
-            if (index.isMatchingFor(columnsIndexes, Index.EQUALITY_MATCHING_TYPE)) {
+            if (index.isMatchingFor(query)) {
                 return index;
             }
         }
@@ -96,11 +96,18 @@ abstract public class IndexManager extends ContextContainer {
         return null;
     }
 
-    public RecordSet buildIndexedRecordSetIfPossible(Table table, int[] candidatesColumnsIndexes, String[] values) {
-        Index index = findAppropriateIndex(table, candidatesColumnsIndexes);
+    public Index findAppropriateIndex(Table table, int columnIndex) {
+        return findAppropriateIndex(
+            table,
+            new IndexQuery(new int[]{columnIndex}, new String[]{"="}, new String[]{"-1"})
+        );
+    }
+
+    public RecordSet buildIndexedRecordSetIfPossible(Table table, IndexQuery query) {
+        Index index = findAppropriateIndex(table, query);
 
         if (index != null) {
-            return index.buildRecordSetMatchingEqualityCondition(candidatesColumnsIndexes, values);
+            return index.buildRecordSet(query);
         }
 
         return null;

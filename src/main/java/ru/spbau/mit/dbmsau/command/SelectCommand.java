@@ -52,7 +52,7 @@ public class SelectCommand extends ConditionalCommand {
     }
 
     private boolean tableHasIndexForColumn(Table table, int columnIndex) {
-        return getContext().getIndexManager().findAppropriateIndex(table, new int[]{columnIndex}) != null;
+        return getContext().getIndexManager().findAppropriateIndex(table, columnIndex) != null;
     }
 
     private RecordSet createJoinRecordSet(Table table1, Table table2) {
@@ -85,7 +85,7 @@ public class SelectCommand extends ConditionalCommand {
             return new IndexJoinRecordSet(
                 relation,
                 leftPart,
-                getContext().getIndexManager().findAppropriateIndex(table2, new int[]{rightColumnIndex})
+                getContext().getIndexManager().findAppropriateIndex(table2, rightColumnIndex)
             );
         } else {
             return new NestedLoopJoinRecordSet(

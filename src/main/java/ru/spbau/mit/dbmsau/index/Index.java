@@ -6,7 +6,12 @@ import ru.spbau.mit.dbmsau.table.Table;
 import ru.spbau.mit.dbmsau.table.TableRecord;
 
 abstract public class Index {
-    public static final int EQUALITY_MATCHING_TYPE = 0;
+    public static final int MATCHING_TYPE_EQUALITY = 0;
+    public static final int MATCHING_TYPE_LESS = 1;
+    public static final int MATCHING_TYPE_GREATER = 2;
+    public static final int MATCHING_TYPE_LESS_OR_EQUAL = 3;
+    public static final int MATCHING_TYPE_GREATER_OR_EQUAL = 4;
+
 
     protected String name;
     protected Table table;
@@ -34,9 +39,9 @@ abstract public class Index {
 
     }
 
-    abstract public boolean isMatchingFor(int[] queryColumnIndexes, int matchingType);
+    abstract public boolean isMatchingFor(IndexQuery query);
 
-    abstract public RecordSet buildRecordSetMatchingEqualityCondition(int[] queryColumnIndexes, String[] values);
+    abstract public RecordSet buildRecordSet(IndexQuery query);
 
     abstract public void processNewRecord(TableRecord record);
 

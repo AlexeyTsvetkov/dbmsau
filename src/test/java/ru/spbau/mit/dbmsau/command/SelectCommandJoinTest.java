@@ -1,9 +1,9 @@
 package ru.spbau.mit.dbmsau.command;
 
 import com.google.common.collect.Lists;
-import org.apache.commons.lang3.StringUtils;
 import junitx.util.PrivateAccessor;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import ru.spbau.mit.dbmsau.BaseTest;

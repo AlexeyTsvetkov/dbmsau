@@ -3,6 +3,7 @@ package ru.spbau.mit.dbmsau.command;
 import ru.spbau.mit.dbmsau.command.where.ComparisonClause;
 import ru.spbau.mit.dbmsau.command.where.WhereExpression;
 import ru.spbau.mit.dbmsau.index.Index;
+import ru.spbau.mit.dbmsau.index.IndexQuery;
 import ru.spbau.mit.dbmsau.relation.RecordSet;
 import ru.spbau.mit.dbmsau.relation.WhereMatcherRecordSet;
 import ru.spbau.mit.dbmsau.table.Table;
@@ -44,23 +45,24 @@ abstract public class ConditionalCommand extends AbstractSQLCommand {
         }
 
         int[] candidatesIndexes = new int[indexCandidates.size()];
+        String[] ops = new String[indexCandidates.size()];
+        String[] values = new String[indexCandidates.size()];
 
         for (int i = 0; i < candidatesIndexes.length; i++) {
             candidatesIndexes[i] = indexCandidates.get(i).getColumnIndex();
+            ops[i] = indexCandidates.get(i).getSignString();
+            values[i] = indexCandidates.get(i).getValue();
         }
 
-        Index index = getContext().getIndexManager().findAppropriateIndex(table, candidatesIndexes);
+        IndexQuery query = new IndexQuery(candidatesIndexes, ops, values);
+
+        Index index = getContext().getIndexManager().findAppropriateIndex(table, query);
 
         if (index == null) {
             return buildFullScanRecordSet(table);
         }
 
-        String[] values = new String[indexCandidates.size()];
-        for (int i = 0; i < values.length; i++) {
-            values[i] = indexCandidates.get(i).getValue();
-        }
-
-        return index.buildRecordSetMatchingEqualityCondition(candidatesIndexes, values);
+        return index.buildRecordSet(query);
     }
 
     protected RecordSet createAppropriateFilteredRecordSet(Table table) {

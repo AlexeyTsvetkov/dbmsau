@@ -20,30 +20,67 @@ public class IndexManagerTest extends BaseTest {
             getIndexManager().
             buildIndexedRecordSetIfPossible(
                 getTestTable(),
-                new int[]{TEST_COLUMN_INDEX_NAME, TEST_COLUMN_INDEX_ID},
-                new String[]{"abc", "1"}
+                new IndexQuery(
+                    new int[]{TEST_COLUMN_INDEX_NAME, TEST_COLUMN_INDEX_ID},
+                    new String[]{"=", "="},
+                    new String[]{"5", "1"}
+                )
             );
 
         assertNotNull(indexedRecordSet);
-        assertThat(indexedRecordSet.toString(), is("1, abc"));
+        assertThat(indexedRecordSet.toString(), is("[1,1], [5,5]"));
 
         indexedRecordSet = context.
             getIndexManager().
             buildIndexedRecordSetIfPossible(
                 getTestTable(),
-                new int[]{TEST_COLUMN_INDEX_ID, 2},
-                new String[]{"1", "abc"}
+                new IndexQuery(
+                    new int[]{TEST_COLUMN_INDEX_ID, 2},
+                    new String[]{"=", "="},
+                    new String[]{"1", "6"}
+                )
             );
 
         assertNotNull(indexedRecordSet);
-        assertThat(indexedRecordSet.toString(), is("1"));
+        assertThat(indexedRecordSet.toString(), is("[1,1]"));
 
         indexedRecordSet = context.
             getIndexManager().
             buildIndexedRecordSetIfPossible(
                 getTestTable(),
-                new int[]{1, 2},
-                new String[]{"1", "abc"}
+                new IndexQuery(
+                    new int[]{TEST_COLUMN_INDEX_ID, TEST_COLUMN_INDEX_ID},
+                    new String[]{">=", "<="},
+                    new String[]{"1", "6"}
+                )
+            );
+
+        assertNotNull(indexedRecordSet);
+        assertThat(indexedRecordSet.toString(), is("[1,6]"));
+
+        indexedRecordSet = context.
+            getIndexManager().
+            buildIndexedRecordSetIfPossible(
+                getTestTable(),
+                new IndexQuery(
+                    new int[]{TEST_COLUMN_INDEX_ID, TEST_COLUMN_INDEX_ID},
+                    new String[]{">=", "<"},
+                    new String[]{"1", "6"}
+                )
+            );
+
+        assertNotNull(indexedRecordSet);
+        assertThat(indexedRecordSet.toString(), is("[1,5]"));
+
+        indexedRecordSet = context.
+            getIndexManager().
+            buildIndexedRecordSetIfPossible(
+                getTestTable(),
+                new IndexQuery(
+                    new int[]{1, 2},
+                    new String[]{"=", "="},
+                    new String[]{"1", "7"}
+                )
             );
 
         assertNull(indexedRecordSet);

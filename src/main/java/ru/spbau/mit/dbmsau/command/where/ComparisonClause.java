@@ -90,7 +90,7 @@ public class ComparisonClause implements WhereMatcher {
         throw new UnsupportedOperationException();
     }
 
-    private String signString() {
+    public String getSignString() {
         switch (signType) {
             case SIGN_EQUALS:
                 return "=";
@@ -117,11 +117,11 @@ public class ComparisonClause implements WhereMatcher {
         return columnIndex;
     }
 
-    public boolean isEquals() {
-        return signType == SIGN_EQUALS;
+    public boolean isNotNotEquals() {
+        return signType != SIGN_NOT_EQUALS;
     }
 
     public String toString() {
-        return accessor.toString() + signString() + value;
+        return accessor.toString() + getSignString() + value;
     }
 }

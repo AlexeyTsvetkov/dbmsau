@@ -39,7 +39,7 @@ public class WhereExpression implements WhereMatcher {
                 clauses, new Predicate<ComparisonClause>() {
                 @Override
                 public boolean apply(ComparisonClause input) {
-                    return input.isEquals();
+                    return input.isNotNotEquals();
                 }
             }
             )
