@@ -30,6 +30,10 @@ abstract public class Index {
         return columnIndexes;
     }
 
+    public void initFirstTime() {
+
+    }
+
     abstract public boolean isMatchingFor(int[] queryColumnIndexes, int matchingType);
 
     abstract public RecordSet buildRecordSetMatchingEqualityCondition(int[] queryColumnIndexes, String[] values);

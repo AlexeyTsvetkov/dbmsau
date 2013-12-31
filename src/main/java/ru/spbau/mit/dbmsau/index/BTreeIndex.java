@@ -59,6 +59,12 @@ public class BTreeIndex extends Index {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
+    public void initFirstTime() {
+        super.initFirstTime();
+
+    }
+
     private int[] getInverseQueryColumnIndexes(int[] queryColumnIndexes) {
         int[] inverseQueryColumnIndexes = new int[table.getColumnsCount()];
         Arrays.fill(inverseQueryColumnIndexes, -1);

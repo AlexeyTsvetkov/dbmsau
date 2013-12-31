@@ -44,6 +44,19 @@ abstract public class IndexManager extends ContextContainer {
         }
 
         addIndex(index);
+
+        index.initFirstTime();
+
+        insertAllRecordsToIndex(index, table);
+    }
+
+    private void insertAllRecordsToIndex(Index index, Table table) {
+        RecordSet recordSet = context.getTableRecordManager().select(table);
+        recordSet.moveFirst();
+
+        while (recordSet.hasNext()) {
+            index.processNewRecord((TableRecord) recordSet.next());
+        }
     }
 
     protected Index buildIndex(String name, Table table, int[] columnIndexes) {
