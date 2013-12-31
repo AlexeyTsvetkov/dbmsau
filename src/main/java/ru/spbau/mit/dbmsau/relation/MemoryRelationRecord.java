@@ -12,9 +12,13 @@ public class MemoryRelationRecord extends RelationRecord {
         }
     }
 
-    public MemoryRelationRecord(Relation table, String... columnsValues) {
-        this(table);
+    public MemoryRelationRecord(Relation relation, String... columnsValues) {
+        this(relation);
         this.columnsValues = columnsValues;
+    }
+
+    public MemoryRelationRecord(RelationRecord record) {
+        this(record.getRelation(), record.getValues());
     }
 
     @Override

@@ -129,4 +129,24 @@ public class SQLStatementsVisitor extends ASTNodeVisitor {
     public void visit(DeleteStatementNode node) {
         setLastCommand(new DeleteCommand(node.getTableName().getLexemeValue(), buildWhereExpression(node.getWhereClause())));
     }
+
+    @Override
+    public void visit(UpdateStatementNode node) {
+        List<ColumnAccessor> columnAccessors = new ArrayList<>();
+        List<String> values = new ArrayList<>();
+
+        for (UpdateAssignmentNode assignmentNode : node.getAssignments()) {
+            columnAccessors.add(buildColumnAccessorByNode(assignmentNode.getColumnAccessor()));
+            values.add(assignmentNode.getValue().getLexemeValue());
+        }
+
+        setLastCommand(
+            new UpdateCommand(
+                node.getTableName().getLexemeValue(),
+                columnAccessors,
+                values,
+                buildWhereExpression(node.getWhere())
+            )
+        );
+    }
 }

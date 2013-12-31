@@ -18,10 +18,7 @@ public class DeleteCommand extends ConditionalCommand {
 
     @Override
     public SQLCommandResult execute() throws CommandExecutionException {
-        RecordSet recordSet = filterRecordSet(
-            createAppropriateRecordSet(getTable(getTableName()))
-        );
-
+        RecordSet recordSet = createAppropriateFilteredRecordSet(getTable(getTableName()));
         recordSet.moveFirst();
 
         while (recordSet.hasNext()) {

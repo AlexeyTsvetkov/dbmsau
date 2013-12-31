@@ -34,6 +34,22 @@ public abstract class RelationRecord {
         return relation;
     }
 
+    public String[] getValues() {
+        String[] result = new String[relation.getColumnsCount()];
+
+        for (int i = 0; i < result.length; i++) {
+            result[i] = getValueAsString(i);
+        }
+
+        return result;
+    }
+
+    public void copyValuesFrom(RelationRecord record) {
+        for (int i = 0; i < relation.getColumnsCount(); i++) {
+            setValueFromString(i, record.getValueAsString(i));
+        }
+    }
+
     abstract public int getInteger(int columnIndex);
 
     abstract public String getString(int columnIndex);

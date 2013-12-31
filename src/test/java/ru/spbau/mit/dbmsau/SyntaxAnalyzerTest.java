@@ -192,4 +192,51 @@ public class SyntaxAnalyzerTest extends Assert {
         thrown.expectMessage("Syntax error at: 'values' at line 1, column 13");
         getFirstResult("delete FROM values;");
     }
+
+    @Test
+    public void testUpdate() throws Exception {
+        UpdateCommand command = (UpdateCommand) getFirstResult("UPDATE TEST SET id = 1,test.name='b';");
+
+        assertThat((String) PrivateAccessor.getField(command, "tableName"), is("test"));
+
+        List<ColumnAccessor> columnAccessors = (List<ColumnAccessor>) PrivateAccessor.getField(command, "columnAccessors");
+        assertThat(columnAccessors.size(), is(2));
+        assertThat(columnAccessors.get(0).toString(), is("id"));
+        assertThat(columnAccessors.get(1).toString(), is("test.name"));
+
+        List<String> values = (List<String>) PrivateAccessor.getField(command, "values");
+        assertThat(values.size(), is(2));
+        assertThat(values.get(0), is("1"));
+        assertThat(values.get(1), is("b"));
+
+        assertNull(PrivateAccessor.getField(command, "where"));
+    }
+
+    @Test
+    public void testUpdateWhere() throws Exception {
+        UpdateCommand command = (UpdateCommand) getFirstResult("UPDATE test SET id = 1,test.name='b' WHERE id=2;");
+
+        assertThat((String) PrivateAccessor.getField(command, "tableName"), is("test"));
+
+        List<ColumnAccessor> columnAccessors = (List<ColumnAccessor>) PrivateAccessor.getField(command, "columnAccessors");
+        assertThat(columnAccessors.size(), is(2));
+        assertThat(columnAccessors.get(0).toString(), is("id"));
+        assertThat(columnAccessors.get(1).toString(), is("test.name"));
+
+        List<String> values = (List<String>) PrivateAccessor.getField(command, "values");
+        assertThat(values.size(), is(2));
+        assertThat(values.get(0), is("1"));
+        assertThat(values.get(1), is("b"));
+
+        List<ComparisonClause> clauses = getClausesFromConditionalCommand(command);
+        assertThat(clauses.size(), is(1));
+        assertThat(clauses.get(0).toString(), is("id=2"));
+    }
+
+    @Test
+    public void testUpdateSyntaxError() throws Exception {
+        thrown.expect(SyntaxErrors.class);
+        thrown.expectMessage("Syntax error at: 'where' at line 1, column 22");
+        getFirstResult("UPDATE TEST SET A=0, WHERE a=1");
+    }
 }

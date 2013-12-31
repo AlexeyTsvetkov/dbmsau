@@ -39,14 +39,7 @@ public class SelectCommand extends ConditionalCommand {
         int[] columnsIndexesToSelect;
 
         if (getColumnAccessors() != null) {
-            getContext().getSemanticValidator().checkColumnsAccessors(relation, getColumnAccessors());
-
-            columnsIndexesToSelect = new int[getColumnAccessors().size()];
-            int index = 0;
-
-            for (ColumnAccessor accessor : getColumnAccessors()) {
-                columnsIndexesToSelect[index++] = accessor.getColumnIndex(relation);
-            }
+            columnsIndexesToSelect = getColumnIndexesOf(relation, getColumnAccessors());
         } else {
             columnsIndexesToSelect = new int[relation.getColumnsCount()];
 

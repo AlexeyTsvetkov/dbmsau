@@ -62,4 +62,10 @@ abstract public class ConditionalCommand extends AbstractSQLCommand {
 
         return index.buildRecordSetMatchingEqualityCondition(candidatesIndexes, values);
     }
+
+    protected RecordSet createAppropriateFilteredRecordSet(Table table) {
+        return filterRecordSet(
+            createAppropriateRecordSet(table)
+        );
+    }
 }
