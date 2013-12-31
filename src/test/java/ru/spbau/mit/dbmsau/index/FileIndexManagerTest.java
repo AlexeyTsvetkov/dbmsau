@@ -47,9 +47,10 @@ public class FileIndexManagerTest extends BaseTest {
         assertArrayEquals(new int[]{0, 1}, index.getColumnIndexes());
 
         assertTrue(
-            FileUtils.contentEquals(
+            FileUtils.contentEqualsIgnoreEOL(
                 getResourceFileByName(TEST_INDEX_FILE_NAME),
-                new File(tempFolder.getRoot().getAbsolutePath() + "/" + TEST_INDEX_FILE_NAME)
+                new File(tempFolder.getRoot().getAbsolutePath() + "/" + TEST_INDEX_FILE_NAME),
+                null
             )
         );
     }
