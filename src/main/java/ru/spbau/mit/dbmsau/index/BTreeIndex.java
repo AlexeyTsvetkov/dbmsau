@@ -127,7 +127,6 @@ public class BTreeIndex extends Index {
 
         @Override
         public void moveFirst() {
-            System.out.println("used!!!");
             currentVal = btree.get(TreeTuple.getOneIntTuple(ranges[0].getFrom()));
         }
 
