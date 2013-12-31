@@ -43,11 +43,11 @@ abstract public class Index {
 
     abstract public RecordSet buildRecordSet(IndexQuery query);
 
+    abstract public RecordSet buildRecordSetForJoin(int onValue);
+
     abstract public void processNewRecord(TableRecord record);
 
     abstract public boolean isDuplicateViolation(RelationRecord record);
 
     abstract public void processDeletedRecord(TableRecord record);
-
-
 }

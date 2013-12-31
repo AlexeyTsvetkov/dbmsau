@@ -6,6 +6,7 @@ import ru.spbau.mit.dbmsau.table.Table;
 import ru.spbau.mit.dbmsau.table.TableRecord;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class BTreeIndex extends Index {
     private int rootPageId;
@@ -40,6 +41,11 @@ public class BTreeIndex extends Index {
     }
 
     @Override
+    public RecordSet buildRecordSetForJoin(int onValue) {
+        return new BTReeRecordSet(new IndexQueryRange(onValue, onValue));
+    }
+
+    @Override
     public void processNewRecord(TableRecord record) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -61,9 +67,14 @@ public class BTreeIndex extends Index {
     }
 
     private class BTReeRecordSet extends RecordSet {
-        ArrayList<IndexQueryRange> ranges;
+        IndexQueryRange[] ranges;
 
         private BTReeRecordSet(ArrayList<IndexQueryRange> ranges) {
+            super(null);
+            this.ranges = ranges.toArray(new IndexQueryRange[ranges.size()]);
+        }
+
+        private BTReeRecordSet(IndexQueryRange... ranges) {
             super(null);
             this.ranges = ranges;
         }

@@ -31,14 +31,13 @@ public class StubIndexManager extends IndexManager {
             return query.isThereColumn(columnIndexes[0]);
         }
 
-        @Override
-        public RecordSet buildRecordSet(final IndexQuery query) {
+        private RecordSet buildStubRecordSetForValue(final int value) {
             return new WhereMatcherRecordSet(
                 context.getTableRecordManager().select(table),
                 new WhereMatcher() {
                     @Override
                     public boolean matches(RelationRecord record) {
-                        return record.getInteger(getColumnIndexes()[0]) == (query.getRange(columnIndexes[0]).getFrom());
+                        return record.getInteger(getColumnIndexes()[0]) == value;
                     }
 
                     @Override
@@ -47,6 +46,16 @@ public class StubIndexManager extends IndexManager {
                     }
                 }
             );
+        }
+
+        @Override
+        public RecordSet buildRecordSet(final IndexQuery query) {
+            return buildStubRecordSetForValue(query.getRange(columnIndexes[0]).getFrom());
+        }
+
+        @Override
+        public RecordSet buildRecordSetForJoin(int onValue) {
+            return buildStubRecordSetForValue(onValue);
         }
 
         @Override
