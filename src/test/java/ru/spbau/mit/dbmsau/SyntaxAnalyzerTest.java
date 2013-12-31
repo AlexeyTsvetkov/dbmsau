@@ -239,4 +239,27 @@ public class SyntaxAnalyzerTest extends Assert {
         thrown.expectMessage("Syntax error at: 'where' at line 1, column 22");
         getFirstResult("UPDATE TEST SET A=0, WHERE a=1");
     }
+
+    @Test
+    public void testCreateIndex() throws Exception {
+        CreateIndexCommand command = (CreateIndexCommand) getFirstResult(
+            "CREATE INDEX test_index ON test (id, name);"
+        );
+
+        assertThat((String) PrivateAccessor.getField(command, "name"), is("test_index"));
+        assertThat((String) PrivateAccessor.getField(command, "tableName"), is("test"));
+
+        List<String> columns = (List<String>) PrivateAccessor.getField(command, "columns");
+
+        assertThat(columns.size(), is(2));
+        assertThat(columns.get(0), is("id"));
+        assertThat(columns.get(1), is("name"));
+    }
+
+    @Test
+    public void testCreateIndexError() throws Exception {
+        thrown.expect(SyntaxErrors.class);
+        thrown.expectMessage("Syntax error at: ')' at line 1, column 34");
+        getFirstResult("CREATE INDEX test on test_index ()");
+    }
 }

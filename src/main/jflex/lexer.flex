@@ -65,6 +65,7 @@ DecDoubleLiteral = (0 | [1-9][0-9]*)  "." [0-9]+
 "UPDATE"         { return symbol(LexemeType.UPDATE); }
 "SET"            { return symbol(LexemeType.SET); }
 "ON"             { return symbol(LexemeType.ON); }
+"INDEX"             { return symbol(LexemeType.INDEX); }
 "NOT"            { return symbol(LexemeType.NOT); }
 "AND"            { return symbol(LexemeType.AND); }
 "OR"             { return symbol(LexemeType.OR); }

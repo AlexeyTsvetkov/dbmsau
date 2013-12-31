@@ -149,4 +149,15 @@ public class SQLStatementsVisitor extends ASTNodeVisitor {
             )
         );
     }
+
+    @Override
+    public void visit(CreateIndexStatementNode node) {
+        setLastCommand(
+            new CreateIndexCommand(
+                node.getIndexName().getLexemeValue(),
+                node.getTableName().getLexemeValue(),
+                convertTerminalsListToStringList(node.getColumns())
+            )
+        );
+    }
 }

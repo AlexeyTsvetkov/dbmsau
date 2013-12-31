@@ -39,7 +39,7 @@ init with {:
 :};
 
 terminal TerminalNode QUIT;
-terminal TerminalNode CREATE,TABLE,INSERT,INTO,VALUES,SELECT,FROM,DELETE,WHERE,JOIN,ON,UPDATE,SET;
+terminal TerminalNode CREATE,TABLE,INSERT,INTO,VALUES,SELECT,FROM,DELETE,WHERE,JOIN,ON,UPDATE,SET,INDEX;
 terminal TerminalNode LEFTPAR,RIGHTPAR,LEFTBRACKET,RIGHTBRACKET;
 terminal TerminalNode OR,DIV,MOD,AND,MAIN,COMMA,EQUALS,COLON,NOT,NOTEQUAL,LESS,LESSOREQUAL,MORE,MOREOREQUAL,PLUS,MINUS,ASTERISK,DIVIDE,DOT;
 terminal TerminalNode INTEGER_LITERAL;
@@ -77,6 +77,8 @@ non terminal LinkedList< ColumnDescriptionNode > columns_descriptions_list;
 non terminal ColumnDescriptionNode        column_description;
 non terminal TypeDescriptionNode          type_description;
 
+non terminal CreateIndexStatementNode     create_index_statement;
+
 non terminal TerminalNode                 empty;
 
 precedence left PLUS, MINUS;
@@ -97,6 +99,8 @@ statement ::= create_table_statement:e1 {: RESULT = e1; :}
              |
               update_statement:e1 {: RESULT = e1; :}
              |
+              create_index_statement:e1 {: RESULT = e1; :}
+             |
               QUIT:e1 {: RESULT = null; :}
              ;
 
@@ -108,6 +112,10 @@ insert_statement ::= INSERT INTO IDENT:tableName LEFTPAR columns_list:cList RIGH
                            LEFTPAR:e3 values_list:vList RIGHTPAR:e5
                         {: RESULT = new InsertStatementNode(tableName, cList, vList); :}
                     ;
+
+create_index_statement ::= CREATE INDEX IDENT:indexName ON IDENT:tableName LEFTPAR columns_list:cList RIGHTPAR
+                        {:  RESULT = new CreateIndexStatementNode(indexName, tableName, cList); :}
+                       ;
 
 delete_statement ::= DELETE FROM IDENT:tableName where_clause:where
                      {: RESULT = new DeleteStatementNode(tableName, where); :}
