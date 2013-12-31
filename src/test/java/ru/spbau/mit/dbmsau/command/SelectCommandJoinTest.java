@@ -1,7 +1,7 @@
 package ru.spbau.mit.dbmsau.command;
 
 import com.google.common.collect.Lists;
-import com.sun.deploy.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import junitx.util.PrivateAccessor;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
