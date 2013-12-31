@@ -18,4 +18,8 @@ public class TableRecordsPage extends RecordsPage {
     public TableRecord getClearTableRecord() {
         return new TableRecord(getClearRecord(), table);
     }
+
+    public TableRecord getTableRecordFromSlot(int slotIndex) {
+        return new TableRecord(getRecordFromSlot(slotIndex), table);
+    }
 }

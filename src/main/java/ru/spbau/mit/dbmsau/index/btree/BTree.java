@@ -3,18 +3,21 @@ package ru.spbau.mit.dbmsau.index.btree;
 import ru.spbau.mit.dbmsau.Context;
 import ru.spbau.mit.dbmsau.ContextContainer;
 import ru.spbau.mit.dbmsau.pages.Page;
+import ru.spbau.mit.dbmsau.relation.Relation;
+import ru.spbau.mit.dbmsau.relation.RelationRecord;
 import ru.spbau.mit.dbmsau.relation.Type;
+import ru.spbau.mit.dbmsau.table.TableRecord;
 
 import java.util.ArrayList;
 
 public class BTree extends ContextContainer {
-    public static final int NODE_ID_SIZE = 4;
+    public static final int NODE_ID_SIZE = 4; // int size
     private int rootId;
     private int keySize, valSize;
-    private ArrayList<Type> keyType, valType;
+    private Type[] keyType, valType;
     int size;
 
-    public BTree(ArrayList<Type> keyType, ArrayList<Type> valType, Context context) {
+    public BTree(Type[] keyType, Type[] valType, int rootId, Context context) {
         super(context);
 
         this.keyType = keyType;
@@ -29,10 +32,14 @@ public class BTree extends ContextContainer {
         }
 
         size = 0;
+        this.rootId = rootId;
+    }
 
-        Node root = getNewNode(true);
-        rootId = root.nodeId;
-        releaseNode(rootId);
+    public void initFirstTime()
+    {
+        Page page = context.getPageManager().getPageById(rootId, true);
+        Node root = LeafNode.getNewLeafNode(page, keySize, valSize, this);
+        releaseNode(root);
     }
 
     public void releaseNode(int nodeId) {
@@ -44,37 +51,27 @@ public class BTree extends ContextContainer {
     }
 
     public TreeTuple getNewNodeIdTuple(int nodeId) {
-        TreeTuple res = new TreeTuple(NODE_ID_SIZE);
-        res.setInteger(0, nodeId);
-
-        return res;
+        return TreeTuple.getOneIntTuple(nodeId);
     }
 
-    public TreeTuple getNewKeyTuple(ArrayList<Object> objects) {
-        return getTreeTupleFromList(keySize, keyType, objects);
+    public TreeTuple getNewKeyTuple(int[] columnIndexes, RelationRecord record){
+        return TreeTuple.getTupleFromRecord(keySize, keyType, columnIndexes, record);
     }
 
-    public TreeTuple getNewValueTuple(ArrayList<Object> objects) {
-        return getTreeTupleFromList(valSize, valType, objects);
+    public TreeTuple getNewValTuple(TableRecord record){
+        int pageId = record.getRecord().getPageId();
+        int slotIndex = record.getRecord().getSlotIndex();
+
+        return TreeTuple.getTwoIntTuple(pageId, slotIndex);
     }
 
-    private TreeTuple getTreeTupleFromList(int typeSize, ArrayList<Type> type, ArrayList<Object> objects) {
-        TreeTuple res = new TreeTuple(typeSize);
-
-        int offset = 0;
-        for (int i = 0; i < objects.size(); i++) {
-            if (type.get(i).getType() == Type.TYPE_INTEGER) {
-                res.setInteger(offset, (int) objects.get(i));
-            } else {
-                res.setString(offset, (String) objects.get(i), type.get(i).getLength());
-            }
-
-            offset += type.get(i).getSize();
-        }
-
-        return res;
+    public TreeTuple getNewKeyTuple(Object[] objects) {
+        return TreeTuple.getTupleFromList(keySize, keyType, objects);
     }
 
+    public TreeTuple getNewValueTuple(Object[] objects) {
+        return TreeTuple.getTupleFromList(valSize, valType, objects);
+    }
 
     public Node getNewNode(boolean isLeaf) {
         Page page = context.getPageManager().allocatePage();
@@ -105,12 +102,12 @@ public class BTree extends ContextContainer {
 
     private int cmp(TreeTuple first, TreeTuple second) {
         int offset = 0;
-        for (int i = 0; i < keyType.size(); i++) {
+        for (int i = 0; i < keyType.length; i++) {
             int cur = 0;
-            if (keyType.get(i).getType() == Type.TYPE_INTEGER) {
+            if (keyType[i].getType() == Type.TYPE_INTEGER) {
                 cur = first.getInteger(i) - second.getInteger(i);
             } else {
-                int maxLength = keyType.get(i).getLength();
+                int maxLength = keyType[i].getLength();
                 cur = first.getString(offset, maxLength).compareTo(second.getString(offset, maxLength));
             }
 
@@ -118,7 +115,7 @@ public class BTree extends ContextContainer {
                 return cur;
             }
 
-            offset += keyType.get(i).getSize();
+            offset += keyType[i].getSize();
         }
 
         return 0;
@@ -157,7 +154,7 @@ public class BTree extends ContextContainer {
         return -1;
     }
 
-    public TreeTuple put(TreeTuple key, TreeTuple value) {
+    public void put(TreeTuple key, TreeTuple value) {
         if (key == null) {
             throw new NullPointerException();
         }
@@ -166,9 +163,6 @@ public class BTree extends ContextContainer {
         if (!containsKey(key)) {
             size++;
         }
-
-        // Get previous value at the key.
-        TreeTuple ret = get(key);
 
         // Insert the new key/value into the tree.
         Node root = getNodeById(rootId, true);
@@ -190,9 +184,6 @@ public class BTree extends ContextContainer {
             releaseNode(newRoot);
             releaseNode(newNode);
         }
-
-        // Return the previous value.
-        return ret;
     }
 
     public boolean containsKey(TreeTuple key) {

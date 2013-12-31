@@ -53,7 +53,7 @@ public class FileIndexManager extends IndexManager {
 
             Table table = context.getTableManager().getTable(tableName);
 
-            return new BTreeIndex(name, table, columnIndexes, rootPageId);
+            return new BTreeIndex(name, table, columnIndexes, rootPageId, context);
         } catch (IOException e) {
             e.printStackTrace();
             return null;

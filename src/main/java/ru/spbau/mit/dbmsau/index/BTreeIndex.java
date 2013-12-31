@@ -1,19 +1,37 @@
 package ru.spbau.mit.dbmsau.index;
 
+import ru.spbau.mit.dbmsau.Context;
+import ru.spbau.mit.dbmsau.index.btree.BTree;
+import ru.spbau.mit.dbmsau.index.btree.TreeTuple;
 import ru.spbau.mit.dbmsau.relation.RecordSet;
 import ru.spbau.mit.dbmsau.relation.RelationRecord;
+import ru.spbau.mit.dbmsau.relation.Type;
 import ru.spbau.mit.dbmsau.table.Table;
 import ru.spbau.mit.dbmsau.table.TableRecord;
+import ru.spbau.mit.dbmsau.table.TableRecordsPage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class BTreeIndex extends Index {
     private int rootPageId;
+    private BTree btree;
+    private Context context;
 
-    public BTreeIndex(String name, Table table, int[] columnIndexes, int rootPageId) {
+    public BTreeIndex(String name, Table table, int[] columnIndexes, int rootPageId, Context context) {
         super(name, table, columnIndexes);
         this.rootPageId = rootPageId;
+        this.context = context;
+
+        // Construct BTree
+        Type[] valueTypes = new Type[]{Type.getIntegerType(), Type.getIntegerType()};
+        Type[] keyTypes = new Type[columnIndexes.length];
+
+        for(int i=0; i < columnIndexes.length; ++i){
+            keyTypes[i] = table.getColumnType(columnIndexes[i]);
+        }
+
+        btree = new BTree(keyTypes, valueTypes, rootPageId, context);
     }
 
     public int getRootPageId() {
@@ -47,12 +65,16 @@ public class BTreeIndex extends Index {
 
     @Override
     public void processNewRecord(TableRecord record) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        TreeTuple key = btree.getNewKeyTuple(columnIndexes, record);
+        TreeTuple val = btree.getNewValTuple(record);
+
+        btree.put(key, val);
     }
 
     @Override
     public boolean isDuplicateViolation(RelationRecord record) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        TreeTuple key = btree.getNewKeyTuple(columnIndexes, record);
+        return btree.containsKey(key);
     }
 
     @Override
@@ -63,19 +85,21 @@ public class BTreeIndex extends Index {
     @Override
     public void initFirstTime() {
         super.initFirstTime();
-
+        btree.initFirstTime();
     }
 
     private class BTReeRecordSet extends RecordSet {
         IndexQueryRange[] ranges;
+        private TableRecordsPage currentRecordPage;
+        private TreeTuple currentVal;
 
         private BTReeRecordSet(ArrayList<IndexQueryRange> ranges) {
-            super(null);
+            super(table);
             this.ranges = ranges.toArray(new IndexQueryRange[ranges.size()]);
         }
 
         private BTReeRecordSet(IndexQueryRange... ranges) {
-            super(null);
+            super(table);
             this.ranges = ranges;
         }
 
@@ -92,19 +116,31 @@ public class BTreeIndex extends Index {
             return result;
         }
 
+        private TableRecord getTableRecord(int pageId, int slotIndex) {
+            currentRecordPage = new TableRecordsPage(
+                table,
+                context.getPageManager().getPageById(pageId, false)
+            );
+
+            return currentRecordPage.getTableRecordFromSlot(slotIndex);
+        }
+
         @Override
         public void moveFirst() {
-            return;  //To change body of implemented methods use File | Settings | File Templates.
+            System.out.println("used!!!");
+            currentVal = btree.get(TreeTuple.getOneIntTuple(ranges[0].getFrom()));
         }
 
         @Override
         public boolean hasNext() {
-            return false;  //To change body of implemented methods use File | Settings | File Templates.
+            return currentVal!=null;
         }
 
         @Override
         public TableRecord next() {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            TableRecord res = getTableRecord(currentVal.getInteger(0), currentVal.getInteger(4));
+            currentVal = null;
+            return res;
         }
 
         @Override

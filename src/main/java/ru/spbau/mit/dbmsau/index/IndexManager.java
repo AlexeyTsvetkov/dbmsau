@@ -62,7 +62,7 @@ abstract public class IndexManager extends ContextContainer {
     protected Index buildIndex(String name, Table table, int[] columnIndexes) {
         //for BTree only
         int rootPageId = context.getPageManager().doAllocatePage();
-        return new BTreeIndex(name, table, columnIndexes, rootPageId);
+        return new BTreeIndex(name, table, columnIndexes, rootPageId, context);
     }
 
     public Iterable<Index> getIndexesForTable(Table table) {
