@@ -5,9 +5,9 @@ import ru.spbau.mit.dbmsau.syntax.LexerUtils;
 
 public class TerminalNode extends ASTNode {
     protected Object value;
-    protected Integer token;
+    protected int token;
 
-    public TerminalNode(Object value, Integer token, Integer leftLine, Integer leftColumn, Integer rightLine, Integer rightColumn) {
+    public TerminalNode(Object value, int token, int leftLine, int leftColumn, int rightLine, int rightColumn) {
         this.value = value;
         this.leftColumn = leftColumn;
         this.leftLine = leftLine;
@@ -17,7 +17,7 @@ public class TerminalNode extends ASTNode {
         this.token = token;
     }
 
-    public TerminalNode(Object value, Integer token, Integer leftLine, Integer leftColumn, Integer length) {
+    public TerminalNode(Object value, int token, int leftLine, int leftColumn, int length) {
         this.value = value;
         this.leftColumn = leftColumn;
         this.leftLine = leftLine;
