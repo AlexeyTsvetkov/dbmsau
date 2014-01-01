@@ -19,6 +19,7 @@ import ru.spbau.mit.dbmsau.table.Table;
 import ru.spbau.mit.dbmsau.table.TableManager;
 import ru.spbau.mit.dbmsau.table.TableRecordManager;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -113,6 +114,14 @@ public class BaseTest extends Assert {
             command.setContext(context);
             command.execute();
         }
+    }
+
+    protected void executeCommands(String sql) throws Exception {
+        if (!sql.endsWith(";")) {
+            sql = sql + ";";
+        }
+
+        initSQLDumpLoad(new ByteArrayInputStream(sql.getBytes()));
     }
 
     public static Table buildTestTable() {

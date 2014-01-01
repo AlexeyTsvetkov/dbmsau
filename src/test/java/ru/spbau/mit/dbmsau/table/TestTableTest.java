@@ -26,9 +26,7 @@ public class TestTableTest extends BaseTest {
         assertArrayEquals(shouldBeJoined, resultJoined);
     }
 
-    protected void compareTestContent(String[][] shouldBe) {
-
-        RecordSet recordSet = context.getTableRecordManager().select(context.getTableManager().getTable("test"));
+    protected void compareRecordSetTestContent(RecordSet recordSet, String[][] shouldBe) {
         recordSet.moveFirst();
 
         String[][] result = new String[shouldBe.length][2];
@@ -49,6 +47,13 @@ public class TestTableTest extends BaseTest {
         checkBusyPages();
     }
 
+    protected void compareTestContent(String[][] shouldBe) {
+        compareRecordSetTestContent(
+            context.getTableRecordManager().select(context.getTableManager().getTable("test")),
+            shouldBe
+        );
+    }
+
     protected void insertShouldBe(String[][] shouldBe) throws Exception {
         Table table = context.getTableManager().getTable("test");
         MemoryRelationRecord record = new MemoryRelationRecord(table);
@@ -59,5 +64,9 @@ public class TestTableTest extends BaseTest {
 
             context.getTableRecordManager().insert(table, record);
         }
+    }
+
+    protected Table getTestTable() {
+        return context.getTableManager().getTable("test");
     }
 }

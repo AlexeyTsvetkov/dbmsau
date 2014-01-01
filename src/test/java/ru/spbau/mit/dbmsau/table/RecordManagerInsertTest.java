@@ -1,7 +1,6 @@
 package ru.spbau.mit.dbmsau.table;
 
 import org.junit.Test;
-import ru.spbau.mit.dbmsau.BaseTest;
 import ru.spbau.mit.dbmsau.pages.Record;
 import ru.spbau.mit.dbmsau.pages.RecordsPage;
 import ru.spbau.mit.dbmsau.relation.MemoryRelationRecord;
@@ -10,13 +9,9 @@ import java.util.ArrayList;
 
 import static org.hamcrest.CoreMatchers.is;
 
-public class RecordManagerInsertTest extends BaseTest {
+public class RecordManagerInsertTest extends TestTableTest {
     private String getNameValue(int row, RecordsPage p) {
         return new Record(p, row).getStringValue(4, 50);
-    }
-
-    private Table getTestTable() {
-        return context.getTableManager().getTable("test");
     }
 
     private void insert(ArrayList<String> columns, ArrayList<String> values) throws Exception {
@@ -116,5 +111,25 @@ public class RecordManagerInsertTest extends BaseTest {
         assertThat(getNameValue(0, p), is(Integer.valueOf(-(i - 1)).toString()));
 
         checkBusyPages();
+    }
+
+    @Test
+    public void testTooManyInserts() throws Exception {
+        initSQLDumpLoad("create_test.sql");
+        int from = 1, to = 10000;
+        Table table = context.getTableManager().getTable("test");
+        MemoryRelationRecord record = new MemoryRelationRecord(table);
+
+        String[][] shouldBe = new String[to - from + 1][];
+
+        for (int i = from; i <= to; i++) {
+            shouldBe[i - from] = new String[]{Integer.valueOf(i).toString(), "PREF_" + Integer.valueOf(i).toString()};
+            record.setValue(TEST_COLUMN_INDEX_ID, i);
+            record.setValue(TEST_COLUMN_INDEX_NAME, shouldBe[i - from][1]);
+
+            context.getTableRecordManager().insert(table, record);
+        }
+
+        compareTestContent(shouldBe);
     }
 }

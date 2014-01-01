@@ -13,19 +13,34 @@ public class IndexQuery {
         assert queryColumnIndexes.length == values.length;
         assert ops.length == values.length;
 
-        int maxQueryColumnIndex = NumberUtils.max(queryColumnIndexes) + 1;
+        int maxQueryColumnIndex = NumberUtils.max(queryColumnIndexes);
 
+        init(maxQueryColumnIndex);
+
+        for (int i = 0; i < queryColumnIndexes.length; i++) {
+            this.matchingTypes[queryColumnIndexes[i]].add(getMatchingTypeForOperator(ops[i]));
+            this.values[queryColumnIndexes[i]].add(Integer.valueOf(values[i]));
+        }
+    }
+
+    public IndexQuery(int columnIndex, String op) {
+        init(columnIndex);
+        matchingTypes[columnIndex].add(getMatchingTypeForOperator(op));
+        values[columnIndex].add(0);
+    }
+
+    public IndexQuery(int columnIndex) {
+        this(columnIndex, "=");
+    }
+
+    private void init(int maxQueryColumnIndex) {
+        maxQueryColumnIndex += 1;
         this.matchingTypes = new ArrayList[maxQueryColumnIndex];
         this.values = new ArrayList[maxQueryColumnIndex];
 
         for (int i = 0; i < maxQueryColumnIndex; i++) {
             this.matchingTypes[i] = new ArrayList<>();
             this.values[i] = new ArrayList<>();
-        }
-
-        for (int i = 0; i < queryColumnIndexes.length; i++) {
-            this.matchingTypes[queryColumnIndexes[i]].add(getMatchingTypeForOperator(ops[i]));
-            this.values[queryColumnIndexes[i]].add(Integer.valueOf(values[i]));
         }
     }
 
@@ -64,6 +79,10 @@ public class IndexQuery {
         }
 
         return new IndexQueryRange(from, to);
+    }
+
+    public void setValue(int columnIndex, int value) {
+        values[columnIndex].set(0, value);
     }
 
     private int getMatchingTypeForOperator(String op) {
