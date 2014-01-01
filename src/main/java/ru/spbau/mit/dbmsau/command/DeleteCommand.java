@@ -17,15 +17,18 @@ public class DeleteCommand extends ConditionalCommand {
     }
 
     @Override
-    public SQLCommandResult execute() throws CommandExecutionException {
+    protected SQLCommandResult doExecute() throws CommandExecutionException {
         RecordSet recordSet = createAppropriateFilteredRecordSet(getTable(getTableName()));
         recordSet.moveFirst();
+
+        int rows = 0;
 
         while (recordSet.hasNext()) {
             recordSet.next();
             recordSet.remove();
+            rows++;
         }
 
-        return new SQLCommandResult();
+        return new SQLCommandResult(rows);
     }
 }

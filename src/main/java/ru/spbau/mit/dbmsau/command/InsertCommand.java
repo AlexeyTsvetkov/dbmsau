@@ -32,7 +32,7 @@ public class InsertCommand extends AbstractSQLCommand {
     }
 
     @Override
-    public SQLCommandResult execute() throws CommandExecutionException {
+    protected SQLCommandResult doExecute() throws CommandExecutionException {
         Table table = getTable(getTableName());
 
         getContext().getSemanticValidator().checkColumnsForInsert(table, columns, values);
@@ -49,6 +49,6 @@ public class InsertCommand extends AbstractSQLCommand {
             throw new CommandExecutionException("RME: " + e.getMessage());
         }
 
-        return new SQLCommandResult();
+        return new SQLCommandResult(1);
     }
 }

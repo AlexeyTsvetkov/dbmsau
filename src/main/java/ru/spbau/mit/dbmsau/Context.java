@@ -14,6 +14,7 @@ import java.io.File;
 
 public class Context {
     private String path;
+    private File pathFile;
     private PageManager pageManager;
     private TableManager tableManager;
     private TableRecordManager tableRecordManager;
@@ -37,7 +38,7 @@ public class Context {
     }
 
     public Context(String path) {
-        this.path = path;
+        setPath(path);
         this.semanticValidator = SemanticValidator.getInstance();
     }
 
@@ -51,6 +52,7 @@ public class Context {
 
     public void setPath(String path) {
         this.path = path;
+        this.pathFile = new File(path);
     }
 
     public PageManager getPageManager() {
@@ -90,6 +92,13 @@ public class Context {
     }
 
     public void init() throws PageManagerInitException {
+
+        if (!pathFile.exists()) {
+            if (!pathFile.mkdir()) {
+                throw new PageManagerInitException("can't create directory: " + pathFile.getPath());
+            }
+        }
+
         getPageManager().init();
         getTableManager().init();
         getTableRecordManager().init();

@@ -262,4 +262,21 @@ public class SyntaxAnalyzerTest extends Assert {
         thrown.expectMessage("Syntax error at: ')' at line 1, column 34");
         getFirstResult("CREATE INDEX test on test_index ()");
     }
+
+    @Test
+    public void testLoadDump() throws Exception {
+        LoadDumpCommand command = (LoadDumpCommand) getFirstResult(
+            "LOAD DUMP FOR test FROM '/home/test.dump'"
+        );
+
+        assertThat((String) PrivateAccessor.getField(command, "tableName"), is("test"));
+        assertThat((String) PrivateAccessor.getField(command, "path"), is("/home/test.dump"));
+    }
+
+    @Test
+    public void testLoadDumpError() throws Exception {
+        thrown.expect(SyntaxErrors.class);
+        thrown.expectMessage("Syntax error at: 'test' at line 1, column 11");
+        getFirstResult("LOAD DUMP test FROM '/home/test.dump'");
+    }
 }

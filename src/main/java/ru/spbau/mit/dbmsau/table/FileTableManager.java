@@ -85,7 +85,7 @@ public class FileTableManager extends TableManager {
     private void saveTableToFile(Table table) throws IOException {
         PrintStream os = new PrintStream(
             new FileOutputStream(
-                context.getRootDir().getPath() + "/" + table.getName() + TABLE_FILE_EXTENSION
+                context.getRootDir().getPath() + File.separator + table.getName() + TABLE_FILE_EXTENSION
             )
         );
 

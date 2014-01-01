@@ -49,7 +49,7 @@ public class FileIndexManagerTest extends BaseTest {
         assertTrue(
             FileUtils.contentEqualsIgnoreEOL(
                 getResourceFileByName(TEST_INDEX_FILE_NAME),
-                new File(tempFolder.getRoot().getAbsolutePath() + "/" + TEST_INDEX_FILE_NAME),
+                new File(tempFolder.getRoot().getAbsolutePath() + File.separator + TEST_INDEX_FILE_NAME),
                 null
             )
         );

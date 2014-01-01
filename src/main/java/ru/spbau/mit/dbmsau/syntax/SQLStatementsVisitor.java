@@ -160,4 +160,14 @@ public class SQLStatementsVisitor extends ASTNodeVisitor {
             )
         );
     }
+
+    @Override
+    public void visit(LoadDumpStatementNode node) {
+        setLastCommand(
+            new LoadDumpCommand(
+                node.getTableName().getLexemeValue(),
+                node.getPath().getLexemeValue()
+            )
+        );
+    }
 }

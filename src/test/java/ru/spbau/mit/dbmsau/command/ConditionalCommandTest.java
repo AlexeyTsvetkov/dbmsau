@@ -33,7 +33,7 @@ public class ConditionalCommandTest extends BaseTest {
                     new ComparisonClause(new ColumnAccessor("test", "id"), "1", "="),
                     new ComparisonClause(new ColumnAccessor("test", "name"), "2", ">"),
                     new ComparisonClause(new ColumnAccessor("test", "id"), "3", "<"),
-                    new ComparisonClause(new ColumnAccessor("test", "secondname"), "4", "="),
+                    new ComparisonClause(new ColumnAccessor("test", "secondname"), "abc", "="),
                     new ComparisonClause(new ColumnAccessor("test", "name"), "5", "=")
                 )
             )
@@ -57,7 +57,7 @@ public class ConditionalCommandTest extends BaseTest {
         }
 
         @Override
-        public SQLCommandResult execute() throws CommandExecutionException {
+        protected SQLCommandResult doExecute() throws CommandExecutionException {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
     }

@@ -49,7 +49,13 @@ public class App {
                         }
                     }
 
-                    System.out.println("ok");
+                    System.out.println(
+                        String.format(
+                            "OK, %d ms, %d rows affected",
+                            result.getExecutionTime(),
+                            result.getRowsAffected()
+                        )
+                    );
                 } else {
                     System.out.println("is not ok");
                 }
@@ -58,6 +64,7 @@ public class App {
             context.onQuit();
         } catch (Throwable e) {
             System.err.println(e.getMessage());
+            e.printStackTrace();
             System.exit(1);
         }
     }

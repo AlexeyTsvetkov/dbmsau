@@ -23,7 +23,7 @@ public class UpdateCommand extends ConditionalCommand {
     }
 
     @Override
-    public SQLCommandResult execute() throws CommandExecutionException {
+    protected SQLCommandResult doExecute() throws CommandExecutionException {
         Table table = getTable(tableName);
 
         int[] changesColumnIndexes = getColumnIndexesOf(table, columnAccessors);
@@ -33,7 +33,10 @@ public class UpdateCommand extends ConditionalCommand {
 
         MemoryRelationRecord record = new MemoryRelationRecord(table);
 
+        int rows = 0;
+
         while (recordSet.hasNext()) {
+            rows++;
             record.copyValuesFrom(recordSet.next());
 
             recordSet.remove();
@@ -49,6 +52,6 @@ public class UpdateCommand extends ConditionalCommand {
             }
         }
 
-        return new SQLCommandResult();
+        return new SQLCommandResult(rows);
     }
 }

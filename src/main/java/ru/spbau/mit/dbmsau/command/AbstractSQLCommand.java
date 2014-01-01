@@ -43,5 +43,15 @@ abstract public class AbstractSQLCommand {
         return columnsIndexes;
     }
 
-    abstract public SQLCommandResult execute() throws CommandExecutionException;
+    public SQLCommandResult execute() throws CommandExecutionException {
+        long start = System.currentTimeMillis();
+        SQLCommandResult result = doExecute();
+        long end = System.currentTimeMillis();
+
+        result.setExecutionTime(end - start);
+
+        return result;
+    }
+
+    abstract protected SQLCommandResult doExecute() throws CommandExecutionException;
 }

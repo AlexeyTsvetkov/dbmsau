@@ -17,7 +17,7 @@ public class SemanticValidator {
         return instance;
     }
 
-    private void assertTypesCompatible(Type type, String name, String value) {
+    public void assertTypesCompatible(Type type, String name, String value) {
         if (type.getType() == Type.TYPE_INTEGER) {
 
             try {
