@@ -125,6 +125,10 @@ public class ComparisonClause implements WhereMatcher {
         return signType != SIGN_NOT_EQUALS;
     }
 
+    public boolean isInteger() {
+        return isInteger;
+    }
+
     public String toString() {
         return accessor.toString() + getSignString() + value;
     }
