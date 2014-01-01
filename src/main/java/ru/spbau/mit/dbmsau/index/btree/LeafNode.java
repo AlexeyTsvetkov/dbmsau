@@ -52,11 +52,4 @@ public class LeafNode extends Node {
 
         return newLeaf;
     }
-
-    /**
-     * Returns the guide index of to use when looking for the specified key.
-     */
-    private int findLeafIndex(TreeTuple key) {
-        return bTree.findLeafIndex(this, key);
-    }
 }

@@ -23,6 +23,8 @@ public class NodeData {
 
         res.setIsLeaf(isLeaf);
         res.setAmountOfKeys(0);
+        res.setNextNodeId(NO_NODE_ID);
+        res.setPrevNodeId(NO_NODE_ID);
 
         return res;
     }

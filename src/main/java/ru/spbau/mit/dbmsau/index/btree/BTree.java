@@ -101,7 +101,7 @@ public class BTree extends ContextContainer {
         for (int i = 0; i < keyType.length; i++) {
             int cur = 0;
             if (keyType[i].getType() == Type.TYPE_INTEGER) {
-                cur = first.getInteger(i) - second.getInteger(i);
+                cur = Integer.compare(first.getInteger(i), second.getInteger(i));
             } else {
                 int maxLength = keyType[i].getLength();
                 cur = first.getString(offset, maxLength).compareTo(second.getString(offset, maxLength));
@@ -186,29 +186,67 @@ public class BTree extends ContextContainer {
         return get(key) != null;
     }
 
-    /**
-     * Returns the value to which this BPTree maps the specified key or null if it contains no mapping for the key.
-     */
-    public TreeTuple get(TreeTuple key) {
+    public class ItemLocation {
+        private int nodeId;
+        private int index;
+
+        public ItemLocation(int nodeId, int index) {
+            this.nodeId = nodeId;
+            this.index = index;
+        }
+
+        public int getNodeId() {
+            return nodeId;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+    }
+
+    public ItemLocation lower_bound(TreeTuple key) {
         Node cur = getNodeById(rootId, false);
         while (!cur.nodeData.isLeaf()) {
             int index = findGuideIndex(cur, key);
             int nextNodeIndex = cur.nodeData.getValue(index).getInteger(0);
-            releaseNode(cur);
             cur = getNodeById(nextNodeIndex, false);
         }
 
-        int index = findLeafIndex(cur, key);
-        TreeTuple res;
+        int index = findInsertIndex(cur, key);
+        int nodeId = cur.nodeId;
 
-        if (index == -1) {
-            res = null;
+        return new ItemLocation(nodeId, index);
+    }
+
+    public TreeTuple getLowerBoundKey(ItemLocation loc) {
+        Node node = this.getNodeById(loc.nodeId, false);
+
+        if (loc.getIndex() < node.nodeData.getAmountOfKeys()) {
+            return node.nodeData.getKey(loc.getIndex());
         } else {
-            res = cur.nodeData.getValue(index);
+            if (node.nodeData.getNextNodeId() == NodeData.NO_NODE_ID)
+                return null;
+            else
+                return getLowerBoundKey(new ItemLocation(node.nodeData.getNextNodeId(), 0));
+        }
+    }
+
+    /**
+     * Returns the value to which this BPTree maps the specified key or null if it contains no mapping for the key.
+     */
+    public TreeTuple get(TreeTuple key) {
+        ItemLocation loc = lower_bound(key);
+
+        Node node = this.getNodeById(loc.nodeId, false);
+
+        if (loc.getIndex() < node.nodeData.getAmountOfKeys()) {
+            TreeTuple foundKey = node.nodeData.getKey(loc.getIndex());
+
+            if (cmp(foundKey, key) == 0) {
+                return node.nodeData.getValue(loc.getIndex());
+            }
         }
 
-        releaseNode(cur);
-
-        return res;
+        return null;
     }
 }
