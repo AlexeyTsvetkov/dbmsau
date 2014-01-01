@@ -69,7 +69,7 @@ public class LoadDumpCommand extends AbstractSQLCommand {
     }
 
     @Override
-    protected SQLCommandResult doExecute() throws CommandExecutionException {
+    public SQLCommandResult execute() throws CommandExecutionException {
         FileInputStream inputStream;
 
         try {

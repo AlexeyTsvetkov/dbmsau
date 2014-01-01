@@ -34,30 +34,32 @@ public class App {
                     AbstractSQLCommand command = analyzer.next();
 
                     command.setContext(context);
-
+                    long start = System.currentTimeMillis();
                     result = command.execute();
+
+                    if (result.isOk()) {
+
+                        if (result.isIterable()) {
+                            for (String resultLine : result) {
+                                System.out.println(resultLine);
+                            }
+                        }
+
+                        long end = System.currentTimeMillis();
+
+                        System.out.println(
+                            String.format(
+                                "OK, %d ms, %d rows affected",
+                                end - start,
+                                result.getRowsAffected()
+                            )
+                        );
+                    } else {
+                        System.out.println("is not ok");
+                    }
                 } catch (UserError error) {
                     System.out.println(error.getMessage());
                     continue;
-                }
-
-                if (result.isOk()) {
-
-                    if (result.isIterable()) {
-                        for (String resultLine : result) {
-                            System.out.println(resultLine);
-                        }
-                    }
-
-                    System.out.println(
-                        String.format(
-                            "OK, %d ms, %d rows affected",
-                            result.getExecutionTime(),
-                            result.getRowsAffected()
-                        )
-                    );
-                } else {
-                    System.out.println("is not ok");
                 }
             }
 

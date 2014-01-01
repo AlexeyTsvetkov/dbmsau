@@ -109,7 +109,7 @@ public class SelectCommand extends ConditionalCommand {
         return result;
     }
 
-    protected SQLCommandResult doExecute() throws CommandExecutionException {
+    public SQLCommandResult execute() throws CommandExecutionException {
         RecordSet result = filterRecordSet(prepareRecordSet());
 
         return new SQLCommandResult(

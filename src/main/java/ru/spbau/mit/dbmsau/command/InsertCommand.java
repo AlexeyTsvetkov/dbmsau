@@ -32,7 +32,7 @@ public class InsertCommand extends AbstractSQLCommand {
     }
 
     @Override
-    protected SQLCommandResult doExecute() throws CommandExecutionException {
+    public SQLCommandResult execute() throws CommandExecutionException {
         Table table = getTable(getTableName());
 
         getContext().getSemanticValidator().checkColumnsForInsert(table, columns, values);

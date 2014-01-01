@@ -23,7 +23,7 @@ public class UpdateCommand extends ConditionalCommand {
     }
 
     @Override
-    protected SQLCommandResult doExecute() throws CommandExecutionException {
+    public SQLCommandResult execute() throws CommandExecutionException {
         Table table = getTable(tableName);
 
         int[] changesColumnIndexes = getColumnIndexesOf(table, columnAccessors);

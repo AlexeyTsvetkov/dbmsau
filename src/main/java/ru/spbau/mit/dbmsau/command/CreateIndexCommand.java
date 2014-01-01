@@ -16,7 +16,7 @@ public class CreateIndexCommand extends AbstractSQLCommand {
     }
 
     @Override
-    protected SQLCommandResult doExecute() throws CommandExecutionException {
+    public SQLCommandResult execute() throws CommandExecutionException {
         getContext().getIndexManager().createIndex(name, getTable(tableName), columns);
         return new SQLCommandResult();
     }
