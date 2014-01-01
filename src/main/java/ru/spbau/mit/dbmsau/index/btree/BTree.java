@@ -12,7 +12,6 @@ public class BTree extends ContextContainer {
     private int rootId;
     private int keySize, valSize;
     private Type[] keyType, valType;
-    int size;
 
     public BTree(Type[] keyType, Type[] valType, int rootId, Context context) {
         super(context);
@@ -28,7 +27,6 @@ public class BTree extends ContextContainer {
             valSize += aValType.getSize();
         }
 
-        size = 0;
         this.rootId = rootId;
     }
 
@@ -139,25 +137,9 @@ public class BTree extends ContextContainer {
         return insertIndex;
     }
 
-
-    public int findLeafIndex(Node node, TreeTuple key) {
-        for (int i = 0; i < node.nodeData.getAmountOfKeys(); i++) {
-            if (cmp(key, node.nodeData.getKey(i)) == 0) {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
     public void put(TreeTuple key, TreeTuple value) {
         if (key == null) {
             throw new NullPointerException();
-        }
-
-        // Increment size?
-        if (!containsKey(key)) {
-            size++;
         }
 
         // Insert the new key/value into the tree.
@@ -219,7 +201,7 @@ public class BTree extends ContextContainer {
     }
 
     public TreeTuple getLowerBoundKey(ItemLocation loc) {
-        Node node = this.getNodeById(loc.nodeId, false);
+        Node node = this.getNodeById(loc.getNodeId(), false);
 
         if (loc.getIndex() < node.nodeData.getAmountOfKeys()) {
             return node.nodeData.getKey(loc.getIndex());
@@ -248,5 +230,22 @@ public class BTree extends ContextContainer {
         }
 
         return null;
+    }
+
+    public void remove(TreeTuple key) {
+        ItemLocation loc = lower_bound(key);
+
+        Node node = this.getNodeById(loc.nodeId, true);
+
+        if (loc.getIndex() < node.nodeData.getAmountOfKeys()) {
+            TreeTuple foundKey = node.nodeData.getKey(loc.getIndex());
+
+            if (cmp(foundKey, key) == 0) {
+                node.nodeData.removeValue(loc.getIndex());
+                node.nodeData.removeKey(loc.getIndex());
+            }
+        }
+
+        releaseNode(node);
     }
 }

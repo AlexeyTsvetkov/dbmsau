@@ -10,10 +10,8 @@ import ru.spbau.mit.dbmsau.pages.Page;
 import ru.spbau.mit.dbmsau.relation.Type;
 import ru.spbau.mit.dbmsau.table.TestTableTest;
 
-import java.util.Map;
-import java.util.Random;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
+import java.util.concurrent.ThreadFactory;
 
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
@@ -85,6 +83,31 @@ public class BTreeTest extends BaseTest {
                 assertNull(res);
             } else {
                 assertThat(res.getInteger(0), is(expected));
+            }
+        }
+    }
+
+    @Test
+    public void testRemove() {
+        TreeMap<Integer, Integer> map = new TreeMap<>();
+        BTree bTree = initWithRandom(map);
+        Random rnd = new Random(123);
+
+        ArrayList<Integer> a = new ArrayList<>();
+        a.addAll(map.keySet());
+        Collections.shuffle(a, rnd);
+
+        int t = map.size() / 10;
+        for (int i = 0; i < t; ++i) {
+            bTree.remove(TreeTuple.getOneIntTuple(a.get(i)));
+        }
+
+        for (int i = 0; i < a.size(); ++i) {
+            TreeTuple res = bTree.get(TreeTuple.getOneIntTuple(a.get(i)));
+            if (i < t) {
+                assertNull(res);
+            } else {
+                assertThat(res.getInteger(0), is(map.get(a.get(i))));
             }
         }
     }
