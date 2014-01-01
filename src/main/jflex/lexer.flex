@@ -65,7 +65,10 @@ DecDoubleLiteral = (0 | [1-9][0-9]*)  "." [0-9]+
 "UPDATE"         { return symbol(LexemeType.UPDATE); }
 "SET"            { return symbol(LexemeType.SET); }
 "ON"             { return symbol(LexemeType.ON); }
-"INDEX"             { return symbol(LexemeType.INDEX); }
+"INDEX"          { return symbol(LexemeType.INDEX); }
+"LOAD"           { return symbol(LexemeType.LOAD); }
+"DUMP"           { return symbol(LexemeType.DUMP); }
+"FOR"            { return symbol(LexemeType.FOR); }
 "NOT"            { return symbol(LexemeType.NOT); }
 "AND"            { return symbol(LexemeType.AND); }
 "OR"             { return symbol(LexemeType.OR); }
@@ -74,6 +77,7 @@ DecDoubleLiteral = (0 | [1-9][0-9]*)  "." [0-9]+
 "("              { return symbol(LexemeType.LEFTPAR); }
 ")"              { return symbol(LexemeType.RIGHTPAR); }
 ";"              { return symbol(LexemeType.EOF); }
+<<EOF>>          { return symbol(LexemeType.EOF); }
 ","              { return symbol(LexemeType.COMMA); }
 "="              { return symbol(LexemeType.EQUALS); }
 ":"              { return symbol(LexemeType.COLON); }

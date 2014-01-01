@@ -39,7 +39,7 @@ init with {:
 :};
 
 terminal TerminalNode QUIT;
-terminal TerminalNode CREATE,TABLE,INSERT,INTO,VALUES,SELECT,FROM,DELETE,WHERE,JOIN,ON,UPDATE,SET,INDEX;
+terminal TerminalNode CREATE,TABLE,INSERT,INTO,VALUES,SELECT,FROM,DELETE,WHERE,JOIN,ON,UPDATE,SET,INDEX,LOAD,DUMP,FOR;
 terminal TerminalNode LEFTPAR,RIGHTPAR,LEFTBRACKET,RIGHTBRACKET;
 terminal TerminalNode OR,DIV,MOD,AND,MAIN,COMMA,EQUALS,COLON,NOT,NOTEQUAL,LESS,LESSOREQUAL,MORE,MOREOREQUAL,PLUS,MINUS,ASTERISK,DIVIDE,DOT;
 terminal TerminalNode INTEGER_LITERAL;
@@ -55,6 +55,7 @@ non terminal TerminalNode                 value;
 
 non terminal InsertStatementNode          insert_statement;
 non terminal LinkedList< TerminalNode >   columns_list;
+non terminal LoadDumpStatementNode        load_dump_statement;
 
 non terminal SelectStatementNode          select_statement;
 non terminal DeleteStatementNode          delete_statement;
@@ -101,6 +102,8 @@ statement ::= create_table_statement:e1 {: RESULT = e1; :}
              |
               create_index_statement:e1 {: RESULT = e1; :}
              |
+              load_dump_statement:e1 {: RESULT = e1; :}
+             |
               QUIT:e1 {: RESULT = null; :}
              ;
 
@@ -113,6 +116,9 @@ insert_statement ::= INSERT INTO IDENT:tableName LEFTPAR columns_list:cList RIGH
                         {: RESULT = new InsertStatementNode(tableName, cList, vList); :}
                     ;
 
+load_dump_statement ::= LOAD DUMP FOR IDENT:tableName FROM STRING_LITERAL:path
+                        {: RESULT = new LoadDumpStatementNode(tableName, path); :}
+                       ;
 create_index_statement ::= CREATE INDEX IDENT:indexName ON IDENT:tableName LEFTPAR columns_list:cList RIGHTPAR
                         {:  RESULT = new CreateIndexStatementNode(indexName, tableName, cList); :}
                        ;
