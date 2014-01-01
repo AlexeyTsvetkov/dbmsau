@@ -19,7 +19,16 @@ public class IndexQuery {
 
         for (int i = 0; i < queryColumnIndexes.length; i++) {
             this.matchingTypes[queryColumnIndexes[i]].add(getMatchingTypeForOperator(ops[i]));
-            this.values[queryColumnIndexes[i]].add(Integer.valueOf(values[i]));
+            int value = 0;
+
+            try {
+                value = Integer.valueOf(values[i]);
+            } catch (NumberFormatException e) {
+
+            }
+
+            this.values[queryColumnIndexes[i]].add(value);
+
         }
     }
 
