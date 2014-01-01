@@ -36,12 +36,13 @@ public class WhereExpression implements WhereMatcher {
     public List<ComparisonClause> getIndexCandidates() {
         return new ArrayList<>(
             Collections2.filter(
-                clauses, new Predicate<ComparisonClause>() {
-                @Override
-                public boolean apply(ComparisonClause input) {
-                    return input.isNotNotEquals();
+                clauses,
+                new Predicate<ComparisonClause>() {
+                    @Override
+                    public boolean apply(ComparisonClause input) {
+                        return input.isNotNotEquals() && input.isInteger();
+                    }
                 }
-            }
             )
         );
     }
