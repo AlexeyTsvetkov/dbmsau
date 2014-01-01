@@ -57,7 +57,7 @@ public class ConditionalCommandTest extends BaseTest {
         }
 
         @Override
-        public SQLCommandResult execute() throws CommandExecutionException {
+        protected SQLCommandResult doExecute() throws CommandExecutionException {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
     }

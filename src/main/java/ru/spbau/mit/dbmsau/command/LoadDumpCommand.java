@@ -69,7 +69,7 @@ public class LoadDumpCommand extends AbstractSQLCommand {
     }
 
     @Override
-    public SQLCommandResult execute() throws CommandExecutionException {
+    protected SQLCommandResult doExecute() throws CommandExecutionException {
         FileInputStream inputStream;
 
         try {
@@ -86,8 +86,13 @@ public class LoadDumpCommand extends AbstractSQLCommand {
 
         MemoryRelationRecord record = new MemoryRelationRecord(table);
 
+        int rows = 0;
+
         while (!eof) {
             readRecord(record);
+
+            rows++;
+
             try {
                 getContext().getTableRecordManager().insert(table, record);
             } catch (RecordManagerException e) {
@@ -95,6 +100,6 @@ public class LoadDumpCommand extends AbstractSQLCommand {
             }
         }
 
-        return new SQLCommandResult();
+        return new SQLCommandResult(rows);
     }
 }

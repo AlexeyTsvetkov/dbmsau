@@ -29,7 +29,7 @@ public class CreateTableCommand extends AbstractSQLCommand {
     }
 
     @Override
-    public SQLCommandResult execute() throws CommandExecutionException, SemanticError {
+    protected SQLCommandResult doExecute() throws CommandExecutionException, SemanticError {
         Table table = new Table(getTableName(), new ArrayList<>(getColumns()));
         TableManager manager = getContext().getTableManager();
 
