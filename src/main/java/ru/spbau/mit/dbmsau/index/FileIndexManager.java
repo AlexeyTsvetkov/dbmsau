@@ -72,7 +72,7 @@ public class FileIndexManager extends IndexManager {
     private void saveIndexToFile(Index index) throws IOException {
         PrintStream os = new PrintStream(
             new FileOutputStream(
-                context.getRootDir().getPath() + "/" + index.getName() + INDEX_FILE_EXTENSION
+                context.getRootDir().getPath() + File.separator + index.getName() + INDEX_FILE_EXTENSION
             )
         );
 

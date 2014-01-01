@@ -64,6 +64,7 @@ public class App {
             context.onQuit();
         } catch (Throwable e) {
             System.err.println(e.getMessage());
+            e.printStackTrace();
             System.exit(1);
         }
     }

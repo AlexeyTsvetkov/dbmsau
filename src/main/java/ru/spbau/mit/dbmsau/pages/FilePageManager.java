@@ -29,7 +29,7 @@ public class FilePageManager extends PageManager {
     }
 
     public PageManager init() throws PageManagerInitException {
-        String currentDataFilename = context.getPath() + "/" + dataFilename;
+        String currentDataFilename = context.getPath() + File.separator + dataFilename;
 
         File file = new File(currentDataFilename);
 
