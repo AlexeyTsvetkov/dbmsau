@@ -16,7 +16,7 @@ public class TreeTuple {
     }
 
     public static TreeTuple getTwoIntTuple(int val1, int val2) {
-        TreeTuple res = new TreeTuple(8);
+        TreeTuple res = new TreeTuple(4 * 2);
         res.setInteger(0, val1);
         res.setInteger(4, val2);
         return res;

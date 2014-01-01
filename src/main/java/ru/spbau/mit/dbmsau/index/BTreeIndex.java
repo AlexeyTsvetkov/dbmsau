@@ -2,6 +2,8 @@ package ru.spbau.mit.dbmsau.index;
 
 import ru.spbau.mit.dbmsau.Context;
 import ru.spbau.mit.dbmsau.index.btree.BTree;
+import ru.spbau.mit.dbmsau.index.btree.Node;
+import ru.spbau.mit.dbmsau.index.btree.NodeData;
 import ru.spbau.mit.dbmsau.index.btree.TreeTuple;
 import ru.spbau.mit.dbmsau.relation.RecordSet;
 import ru.spbau.mit.dbmsau.relation.RelationRecord;
@@ -78,7 +80,8 @@ public class BTreeIndex extends Index {
 
     @Override
     public void processDeletedRecord(TableRecord record) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        TreeTuple key = btree.getNewKeyTuple(columnIndexes, record);
+        btree.remove(key);
     }
 
     @Override
@@ -90,16 +93,38 @@ public class BTreeIndex extends Index {
     private class BTReeRecordSet extends RecordSet {
         IndexQueryRange[] ranges;
         private TableRecordsPage currentRecordPage;
-        private TreeTuple currentVal;
+        private Node currentNode;
+        private BTree.ItemLocation currentLoc;
+        private TreeTuple leftBound, rightBound;
 
         private BTReeRecordSet(ArrayList<IndexQueryRange> ranges) {
             super(table);
             this.ranges = ranges.toArray(new IndexQueryRange[ranges.size()]);
+            init();
         }
 
         private BTReeRecordSet(IndexQueryRange... ranges) {
             super(table);
             this.ranges = ranges;
+            init();
+        }
+
+        void init() {
+            Object[] leftBound = new Object[columnIndexes.length];
+            Object[] rightBound = new Object[columnIndexes.length];
+
+            for (int i = 0; i < ranges.length; ++i) {
+                leftBound[i] = ranges[i].getFrom();
+                rightBound[i] = ranges[i].getTo();
+            }
+
+            for (int i = ranges.length; i < columnIndexes.length; ++i) {
+                leftBound[i] = Integer.MIN_VALUE;
+                rightBound[i] = Integer.MAX_VALUE;
+            }
+
+            this.leftBound = btree.getNewKeyTuple(leftBound);
+            this.rightBound = btree.getNewKeyTuple(rightBound);
         }
 
         @Override
@@ -117,8 +142,8 @@ public class BTreeIndex extends Index {
 
         private TableRecord getTableRecord(int pageId, int slotIndex) {
             currentRecordPage = new TableRecordsPage(
-                table,
-                context.getPageManager().getPageById(pageId, false)
+                    table,
+                    context.getPageManager().getPageById(pageId, false)
             );
 
             return currentRecordPage.getTableRecordFromSlot(slotIndex);
@@ -126,24 +151,43 @@ public class BTreeIndex extends Index {
 
         @Override
         public void moveFirst() {
-            currentVal = btree.get(TreeTuple.getOneIntTuple(ranges[0].getFrom()));
+            currentLoc = btree.lower_bound(leftBound);
+            currentNode = btree.getNodeById(currentLoc.getNodeId(), false);
         }
 
         @Override
         public boolean hasNext() {
-            return currentVal != null;
+            moveToKey();
+            return currentLoc != null && btree.cmp(btree.getLowerBoundKey(currentLoc), rightBound) <= 0;
         }
 
         @Override
         public TableRecord next() {
-            TableRecord res = getTableRecord(currentVal.getInteger(0), currentVal.getInteger(4));
-            currentVal = null;
-            return res;
+            moveToKey();
+            TreeTuple val = currentNode.getNodeData().getValue(currentLoc.getIndex());
+            currentLoc.setIndex(currentLoc.getIndex() + 1);
+            return getTableRecord(val.getInteger(0), val.getInteger(4));
         }
 
         @Override
         public void remove() {
             //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        private void moveToKey() {
+            if (currentLoc == null)
+                return;
+
+            while (currentLoc.getIndex() >= currentNode.getNodeData().getAmountOfKeys() &&
+                    currentNode.getNodeData().getNextNodeId() != NodeData.NO_NODE_ID) {
+                currentNode = btree.getNodeById(currentNode.getNodeData().getNextNodeId(), false);
+                currentLoc.setNodeId(currentNode.getNodeId());
+                currentLoc.setIndex(0);
+            }
+
+            if (currentLoc.getIndex() >= currentNode.getNodeData().getAmountOfKeys()) {
+                currentLoc = null;
+            }
         }
     }
 }

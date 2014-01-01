@@ -2,6 +2,7 @@ package ru.spbau.mit.dbmsau.index.btree;
 
 import ru.spbau.mit.dbmsau.Context;
 import ru.spbau.mit.dbmsau.ContextContainer;
+import ru.spbau.mit.dbmsau.index.IndexQueryRange;
 import ru.spbau.mit.dbmsau.pages.Page;
 import ru.spbau.mit.dbmsau.relation.RelationRecord;
 import ru.spbau.mit.dbmsau.relation.Type;
@@ -94,12 +95,12 @@ public class BTree extends ContextContainer {
     }
 
 
-    private int cmp(TreeTuple first, TreeTuple second) {
+    public int cmp(TreeTuple first, TreeTuple second) {
         int offset = 0;
         for (int i = 0; i < keyType.length; i++) {
             int cur = 0;
             if (keyType[i].getType() == Type.TYPE_INTEGER) {
-                cur = Integer.compare(first.getInteger(i), second.getInteger(i));
+                cur = Integer.compare(first.getInteger(offset), second.getInteger(offset));
             } else {
                 int maxLength = keyType[i].getLength();
                 cur = first.getString(offset, maxLength).compareTo(second.getString(offset, maxLength));
@@ -183,6 +184,14 @@ public class BTree extends ContextContainer {
 
         public int getIndex() {
             return index;
+        }
+
+        public void setNodeId(int nodeId) {
+            this.nodeId = nodeId;
+        }
+
+        public void setIndex(int index) {
+            this.index = index;
         }
     }
 

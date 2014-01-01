@@ -4,7 +4,7 @@ import ru.spbau.mit.dbmsau.pages.Page;
 import ru.spbau.mit.dbmsau.pages.PageManager;
 
 public class NodeData {
-    static final int NO_NODE_ID = -1;
+    public static final int NO_NODE_ID = -1;
 
     Page dataPage;
 

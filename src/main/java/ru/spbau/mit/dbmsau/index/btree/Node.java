@@ -12,4 +12,12 @@ public abstract class Node {
     }
 
     public abstract Node put(TreeTuple key, TreeTuple value);
+
+    public NodeData getNodeData() {
+        return nodeData;
+    }
+
+    public int getNodeId() {
+        return nodeId;
+    }
 }
