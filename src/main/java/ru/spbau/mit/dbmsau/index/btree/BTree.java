@@ -3,12 +3,9 @@ package ru.spbau.mit.dbmsau.index.btree;
 import ru.spbau.mit.dbmsau.Context;
 import ru.spbau.mit.dbmsau.ContextContainer;
 import ru.spbau.mit.dbmsau.pages.Page;
-import ru.spbau.mit.dbmsau.relation.Relation;
 import ru.spbau.mit.dbmsau.relation.RelationRecord;
 import ru.spbau.mit.dbmsau.relation.Type;
 import ru.spbau.mit.dbmsau.table.TableRecord;
-
-import java.util.ArrayList;
 
 public class BTree extends ContextContainer {
     public static final int NODE_ID_SIZE = 4; // int size
@@ -35,8 +32,7 @@ public class BTree extends ContextContainer {
         this.rootId = rootId;
     }
 
-    public void initFirstTime()
-    {
+    public void initFirstTime() {
         Page page = context.getPageManager().getPageById(rootId, true);
         Node root = LeafNode.getNewLeafNode(page, keySize, valSize, this);
         releaseNode(root);
@@ -54,11 +50,11 @@ public class BTree extends ContextContainer {
         return TreeTuple.getOneIntTuple(nodeId);
     }
 
-    public TreeTuple getNewKeyTuple(int[] columnIndexes, RelationRecord record){
+    public TreeTuple getNewKeyTuple(int[] columnIndexes, RelationRecord record) {
         return TreeTuple.getTupleFromRecord(keySize, keyType, columnIndexes, record);
     }
 
-    public TreeTuple getNewValTuple(TableRecord record){
+    public TreeTuple getNewValTuple(TableRecord record) {
         int pageId = record.getRecord().getPageId();
         int slotIndex = record.getRecord().getSlotIndex();
 

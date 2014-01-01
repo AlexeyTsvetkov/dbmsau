@@ -11,7 +11,6 @@ import ru.spbau.mit.dbmsau.table.TableRecord;
 import ru.spbau.mit.dbmsau.table.TableRecordsPage;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class BTreeIndex extends Index {
     private int rootPageId;
@@ -27,7 +26,7 @@ public class BTreeIndex extends Index {
         Type[] valueTypes = new Type[]{Type.getIntegerType(), Type.getIntegerType()};
         Type[] keyTypes = new Type[columnIndexes.length];
 
-        for(int i=0; i < columnIndexes.length; ++i){
+        for (int i = 0; i < columnIndexes.length; ++i) {
             keyTypes[i] = table.getColumnType(columnIndexes[i]);
         }
 
@@ -132,7 +131,7 @@ public class BTreeIndex extends Index {
 
         @Override
         public boolean hasNext() {
-            return currentVal!=null;
+            return currentVal != null;
         }
 
         @Override

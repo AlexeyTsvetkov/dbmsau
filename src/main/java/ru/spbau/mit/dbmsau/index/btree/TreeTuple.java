@@ -3,32 +3,26 @@ package ru.spbau.mit.dbmsau.index.btree;
 import ru.spbau.mit.dbmsau.pages.DataHolder;
 import ru.spbau.mit.dbmsau.relation.RelationRecord;
 import ru.spbau.mit.dbmsau.relation.Type;
-import ru.spbau.mit.dbmsau.table.TableRecord;
-
-import java.util.ArrayList;
 
 public class TreeTuple {
     private DataHolder data;
     private int sizeInBytes;
 
 
-    public static TreeTuple getOneIntTuple(int val)
-    {
+    public static TreeTuple getOneIntTuple(int val) {
         TreeTuple res = new TreeTuple(4);
         res.setInteger(0, val);
         return res;
     }
 
-    public static TreeTuple getTwoIntTuple(int val1, int val2)
-    {
+    public static TreeTuple getTwoIntTuple(int val1, int val2) {
         TreeTuple res = new TreeTuple(8);
         res.setInteger(0, val1);
         res.setInteger(4, val2);
         return res;
     }
 
-    public static TreeTuple getTupleFromRecord(int typeSize, Type[] type, int[] columnIndexes, RelationRecord record)
-    {
+    public static TreeTuple getTupleFromRecord(int typeSize, Type[] type, int[] columnIndexes, RelationRecord record) {
         TreeTuple res = new TreeTuple(typeSize);
 
         int offset = 0;
