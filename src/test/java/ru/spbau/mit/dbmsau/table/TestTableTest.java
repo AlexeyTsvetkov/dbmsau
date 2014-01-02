@@ -69,4 +69,10 @@ public class TestTableTest extends BaseTest {
     protected Table getTestTable() {
         return context.getTableManager().getTable("test");
     }
+
+    public static final String[][] defaultContent = new String[][] {
+        new String[]{"1", "abc"},
+        new String[]{"3", "cde"},
+        new String[]{"5", "efg"}
+    };
 }

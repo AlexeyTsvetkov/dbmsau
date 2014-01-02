@@ -97,6 +97,8 @@ public class BTreeIndex extends Index {
         private BTree.ItemLocation currentLoc;
         private TreeTuple leftBound, rightBound;
 
+        private TableRecord currentTableRecord;
+
         private BTReeRecordSet(ArrayList<IndexQueryRange> ranges) {
             super(table);
             this.ranges = ranges.toArray(new IndexQueryRange[ranges.size()]);
@@ -163,15 +165,22 @@ public class BTreeIndex extends Index {
 
         @Override
         public TableRecord next() {
+            currentTableRecord = null;
+
             moveToKey();
             TreeTuple val = currentNode.getNodeData().getValue(currentLoc.getIndex());
             currentLoc.setIndex(currentLoc.getIndex() + 1);
-            return getTableRecord(val.getInteger(0), val.getInteger(4));
+
+            return currentTableRecord = getTableRecord(val.getInteger(0), val.getInteger(4));
         }
 
         @Override
         public void remove() {
-            //To change body of implemented methods use File | Settings | File Templates.
+            for (Index index : context.getIndexManager().getIndexesForTable(table)) {
+                index.processDeletedRecord(currentTableRecord);
+            }
+
+            currentRecordPage.freeRecord(currentTableRecord.getRecord().getSlotIndex());
         }
 
         private void moveToKey() {
