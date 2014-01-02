@@ -62,7 +62,7 @@ public class IndexQuery {
             return null;
         }
 
-        int from = -1, to = -1;
+        int from = Integer.MIN_VALUE, to = Integer.MAX_VALUE;
 
         for (int i = 0; i < matchingTypes[columnIndex].size(); i++) {
             int value = values[columnIndex].get(i);
@@ -73,17 +73,17 @@ public class IndexQuery {
             }
 
             if (type == Index.MATCHING_TYPE_GREATER) {
-                from = value + 1;
+                from = Math.max(from, value + 1);
             }
             if (type == Index.MATCHING_TYPE_GREATER_OR_EQUAL) {
-                from = value;
+                from = Math.max(from, value);
             }
 
             if (type == Index.MATCHING_TYPE_LESS) {
-                to = value - 1;
+                to = Math.min(to, value - 1);
             }
             if (type == Index.MATCHING_TYPE_LESS_OR_EQUAL) {
-                to = value;
+                to = Math.min(to, value);
             }
         }
 

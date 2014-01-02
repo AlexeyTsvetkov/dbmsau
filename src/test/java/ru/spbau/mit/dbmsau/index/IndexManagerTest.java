@@ -77,6 +77,34 @@ public class IndexManagerTest extends BaseTest {
             buildIndexedRecordSetIfPossible(
                 getTestTable(),
                 new IndexQuery(
+                    new int[]{TEST_COLUMN_INDEX_ID, 2},
+                    new String[]{">=", "="},
+                    new String[]{"80", "6"}
+                )
+            );
+
+        assertNotNull(indexedRecordSet);
+        assertThat(indexedRecordSet.toString(), is(String.format("[%d,%d]", 80, Integer.MAX_VALUE)));
+
+        indexedRecordSet = context.
+            getIndexManager().
+            buildIndexedRecordSetIfPossible(
+                getTestTable(),
+                new IndexQuery(
+                    new int[]{2, TEST_COLUMN_INDEX_ID},
+                    new String[]{">=", "<"},
+                    new String[]{"80", "90"}
+                )
+            );
+
+        assertNotNull(indexedRecordSet);
+        assertThat(indexedRecordSet.toString(), is(String.format("[%d,%d]", Integer.MIN_VALUE, 89)));
+
+        indexedRecordSet = context.
+            getIndexManager().
+            buildIndexedRecordSetIfPossible(
+                getTestTable(),
+                new IndexQuery(
                     new int[]{1, 2},
                     new String[]{"=", "="},
                     new String[]{"1", "7"}
