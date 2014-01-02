@@ -179,7 +179,7 @@ public class BTreeIndex extends Index {
             for (Index index : context.getIndexManager().getIndexesForTable(table)) {
                 index.processDeletedRecord(currentTableRecord);
             }
-
+            currentLoc.setIndex(currentLoc.getIndex() - 1);
             currentRecordPage.freeRecord(currentTableRecord.getRecord().getSlotIndex());
         }
 
