@@ -12,12 +12,15 @@ import ru.spbau.mit.dbmsau.table.Table;
 import ru.spbau.mit.dbmsau.table.TableRecord;
 import ru.spbau.mit.dbmsau.table.TableRecordsPage;
 
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class BTreeIndex extends Index {
     private int rootPageId;
     private BTree btree;
     private Context context;
+    private PrintWriter os;
 
     public BTreeIndex(String name, Table table, int[] columnIndexes, int rootPageId, Context context) {
         super(name, table, columnIndexes);
@@ -30,6 +33,13 @@ public class BTreeIndex extends Index {
 
         for (int i = 0; i < columnIndexes.length; ++i) {
             keyTypes[i] = table.getColumnType(columnIndexes[i]);
+        }
+
+        try {
+            os = new PrintWriter(new File("/home/sufix/dump.txt"));
+        } catch(Exception ex)
+        {
+
         }
 
         btree = new BTree(keyTypes, valueTypes, rootPageId, context);
@@ -68,6 +78,8 @@ public class BTreeIndex extends Index {
     public void processNewRecord(TableRecord record) {
         TreeTuple key = btree.getNewKeyTuple(columnIndexes, record);
         TreeTuple val = btree.getNewValTuple(record);
+
+        os.println(String.format("%d, %d, %d", key.getInteger(0), val.getInteger(0), val.getInteger(4)));
 
         btree.put(key, val);
     }
@@ -112,6 +124,8 @@ public class BTreeIndex extends Index {
         }
 
         void init() {
+            os.close();
+
             Object[] leftBound = new Object[columnIndexes.length];
             Object[] rightBound = new Object[columnIndexes.length];
 
@@ -124,6 +138,9 @@ public class BTreeIndex extends Index {
                 leftBound[i] = Integer.MIN_VALUE;
                 rightBound[i] = Integer.MAX_VALUE;
             }
+
+            //System.out.println(Arrays.toString(leftBound));
+            //System.out.println(Arrays.toString(rightBound));
 
             this.leftBound = btree.getNewKeyTuple(leftBound);
             this.rightBound = btree.getNewKeyTuple(rightBound);

@@ -110,7 +110,7 @@ public class SelectCommand extends ConditionalCommand {
     }
 
     public SQLCommandResult execute() throws CommandExecutionException {
-        RecordSet result = filterRecordSet(prepareRecordSet());
+        RecordSet result = prepareRecordSet();
 
         return new SQLCommandResult(
             new RecordSetCSVIterator(

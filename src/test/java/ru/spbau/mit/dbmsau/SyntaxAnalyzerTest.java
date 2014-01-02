@@ -146,8 +146,8 @@ public class SyntaxAnalyzerTest extends Assert {
     }
 
     @Test
-    public void testJoin() throws Exception {
-        SelectCommand command = (SelectCommand) getFirstResult("SELECT * FROM test JOIN test ON test.id = test.name WHERE id=2;");
+    public void testJoin() throws Exception {                  //967547
+        SelectCommand command = (SelectCommand) getFirstResult("SELECT * FROM test_children join test ON test_children.test_id = test.id WHERE test.id=2;");
 
         JoinDescription join = (JoinDescription) PrivateAccessor.getField(command, "join");
 

@@ -44,6 +44,7 @@ public class NodeData {
 
     public void calculateOrder(int keySize, int valSize) {
         order = (PageManager.PAGE_SIZE - headerSize) / (keySize + valSize) - 2;
+        //order = 3;
 
         keyOffset = headerSize;
         valOffset = headerSize + keySize * (order + 1);

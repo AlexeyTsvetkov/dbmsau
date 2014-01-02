@@ -4,9 +4,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import ru.spbau.mit.dbmsau.BaseTest;
+import ru.spbau.mit.dbmsau.Context;
 import ru.spbau.mit.dbmsau.index.btree.BTree;
 import ru.spbau.mit.dbmsau.index.btree.TreeTuple;
+import ru.spbau.mit.dbmsau.pages.FilePageManager;
 import ru.spbau.mit.dbmsau.pages.Page;
+import ru.spbau.mit.dbmsau.pages.PageManager;
 import ru.spbau.mit.dbmsau.relation.Type;
 import ru.spbau.mit.dbmsau.table.TestTableTest;
 
@@ -29,27 +32,38 @@ public class BTreeTest extends BaseTest {
         BTree bTree = new BTree(keyTypes, valueTypes, rootPageId, context);
         bTree.initFirstTime();
 
-        int n = 10000;
-        for (int i = 0; i < n; i += 2) {
+        int n = 100000;
+        for (int i = n-24; i < n; ++i) {
             TreeTuple key = TreeTuple.getOneIntTuple(i);
             TreeTuple val = TreeTuple.getTwoIntTuple(2 * i, 2 * i + 1);
             bTree.put(key, val);
         }
 
-        for (int i = 0; i < n; i += 2) {
+        for (int i = 1; i<n-24; ++i) {
+            TreeTuple key = TreeTuple.getOneIntTuple(i);
+            TreeTuple val = TreeTuple.getTwoIntTuple(2 * i, 2 * i + 1);
+            bTree.put(key, val);
+        }
+
+        for (int i = 1; i < n; i++) {
             TreeTuple key = TreeTuple.getOneIntTuple(i);
             TreeTuple res = bTree.get(key);
 
-            if (i % 2 == 1) {
-                assertNull(res);
-            } else {
+//            if (i % 2 == 1) {
+//                assertNull(res);
+//            } else {
                 int first = res.getInteger(0);
                 int second = res.getInteger(4);
 
                 assertThat(first, is(2 * i));
                 assertThat(second, is(2 * i + 1));
-            }
+            //}
         }
+    }
+
+    @Override
+    protected PageManager buildPageManager(Context context) {
+        return new FilePageManager(context);
     }
 
     @Test

@@ -66,8 +66,8 @@ abstract public class ConditionalCommand extends AbstractSQLCommand {
     }
 
     protected RecordSet createAppropriateFilteredRecordSet(Table table) {
-        return filterRecordSet(
-            createAppropriateRecordSet(table)
-        );
+        return //filterRecordSet(
+            createAppropriateRecordSet(table);
+        //);
     }
 }
