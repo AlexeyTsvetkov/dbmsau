@@ -3,12 +3,17 @@ package ru.spbau.mit.dbmsau.pages;
 import java.util.Iterator;
 
 public class RecordsPage extends Page implements Iterable<Record> {
+    final static int TAKEN_RECORDS_COUNT_OFFSET = PageManager.PAGE_SIZE - 4;
+
     private int recordsLength;
-    final static int takenRecordsCountOffset = PageManager.PAGE_SIZE-4;
+    private int maxRecordsCount;
+    private int bitmapOffset;
 
     public RecordsPage(Page page, int recordsLength) {
         super(page);
         this.recordsLength = recordsLength;
+        this.maxRecordsCount = (8 * PageManager.PAGE_SIZE - 32) / (8 * recordsLength + 1);
+        this.bitmapOffset = this.maxRecordsCount * recordsLength;
     }
 
     public int getRecordsLength() {
@@ -16,11 +21,7 @@ public class RecordsPage extends Page implements Iterable<Record> {
     }
 
     public int getMaxRecordsCount() {
-        return (8 * PageManager.PAGE_SIZE - 32) / (8 * getRecordsLength() + 1);
-    }
-
-    private int getBitmapOffset() {
-        return getMaxRecordsCount() * getRecordsLength();
+        return maxRecordsCount;
     }
 
     /**
@@ -28,23 +29,23 @@ public class RecordsPage extends Page implements Iterable<Record> {
      * @return индекс байта во всей странице, где лежит бит слота в битмапе
      */
     private int getBitmapSlotByteIndex(int slotIndex) {
-        return getBitmapOffset() + slotIndex / 8;
+        return bitmapOffset + (slotIndex >> 3);
     }
 
     public Boolean isSlotUsed(int slotIndex) {
         int byteNumber = getBitmapSlotByteIndex(slotIndex);
-        return (getByteBuffer().get(byteNumber) & (1 << (slotIndex % 8))) != 0;
+        return (getByteBuffer().get(byteNumber) & (1 << (slotIndex & 7))) != 0;
     }
 
     private void setSlotStatus(int slotIndex, boolean isUsed) {
         if (isSlotUsed(slotIndex) != isUsed) {
             int byteNumber = getBitmapSlotByteIndex(slotIndex);
-            byte newValue = (byte) (getByteBuffer().get(byteNumber) ^ (1 << (slotIndex % 8)));
+            byte newValue = (byte) (getByteBuffer().get(byteNumber) ^ (1 << (slotIndex & 7)));
             getByteBuffer().put(byteNumber, newValue);
 
-            int taken = getByteBuffer().getInt(takenRecordsCountOffset);
+            int taken = getByteBuffer().getInt(TAKEN_RECORDS_COUNT_OFFSET);
             taken += isUsed ? 1 : -1;
-            getByteBuffer().putInt(takenRecordsCountOffset, taken);
+            getByteBuffer().putInt(TAKEN_RECORDS_COUNT_OFFSET, taken);
         }
     }
 
@@ -57,7 +58,7 @@ public class RecordsPage extends Page implements Iterable<Record> {
     }
 
     protected int getFreeSlotsCount() {
-        int taken = getByteBuffer().getInt(takenRecordsCountOffset);
+        int taken = getByteBuffer().getInt(TAKEN_RECORDS_COUNT_OFFSET);
         return getMaxRecordsCount() - taken;
     }
 
