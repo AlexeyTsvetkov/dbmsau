@@ -5,9 +5,6 @@ import ru.spbau.mit.dbmsau.pages.PageManager;
 
 public class NodeData {
     public static final int NO_NODE_ID = -1;
-    public static int allCnt = 0;
-    public static int guideCnt = 0;
-    public static int leafCnt = 0;
 
     Page dataPage;
 
@@ -71,11 +68,15 @@ public class NodeData {
     }
 
     private void shiftRight(int startOffset, int endOffset, int elemSize) {
-        shift(startOffset, endOffset, elemSize, -1);
+        System.arraycopy(dataPage.getBytes(), startOffset,
+                dataPage.getBytes(), startOffset + elemSize,
+                endOffset - startOffset);
     }
 
     private void shiftLeft(int startOffset, int endOffset, int elemSize) {
-        shift(endOffset, startOffset, elemSize, 1);
+        System.arraycopy(dataPage.getBytes(), startOffset + elemSize,
+                dataPage.getBytes(), startOffset,
+                endOffset - startOffset);
     }
 
     public void addKey(TreeTuple key) {
@@ -126,9 +127,29 @@ public class NodeData {
         shiftLeft(valOffset + pos * valSize, valOffset + amountOfKeys * valSize, valSize);
     }
 
+    public int getKeyInt(int keyIndex, int intOffset) {
+        int offset = keyOffset + keyIndex * keySize + intOffset;
+        byte[] bytes = dataPage.getBytes();
+
+        return bytes[offset] << 24 | (bytes[offset + 1] & 0xFF) << 16 | (bytes[offset + 2] & 0xFF) << 8 | (bytes[offset + 3] & 0xFF);
+    }
+
+    public String getKeyString(int keyIndex, int strOffset, int maxLen) {
+        return dataPage.getByteBuffer().getString(keyOffset + keyIndex * keySize + strOffset, maxLen);
+    }
+
+    public void getKey(int pos, TreeTuple dst) {
+        System.arraycopy(dataPage.getBytes(), keyOffset + pos * keySize,
+                dst.getBytes(), 0, dst.getSize());
+        //dataPage.getByteBuffer().get(keyOffset + pos * keySize, dst.getBytes());
+    }
+
     public TreeTuple getKey(int pos) {
         TreeTuple res = new TreeTuple(keySize);
-        dataPage.getByteBuffer().get(keyOffset + pos * keySize, res.getBytes());
+
+        System.arraycopy(dataPage.getBytes(), keyOffset + pos * keySize,
+                res.getBytes(), 0, res.getSize());
+
         return res;
     }
 
@@ -148,6 +169,19 @@ public class NodeData {
         } else {
             dataPage.getByteBuffer().put(isLeafOffset, (byte) 0);
         }
+    }
+
+    public void splitTo(NodeData to) {
+        int startIndex = getAmountOfKeys() / 2;
+        int count = getAmountOfKeys() - startIndex;
+
+        System.arraycopy(dataPage.getBytes(), keyOffset + keySize * startIndex,
+                to.dataPage.getBytes(), to.keyOffset, keySize * count);
+        System.arraycopy(dataPage.getBytes(), valOffset + valSize * startIndex,
+                to.dataPage.getBytes(), to.valOffset, valSize * count);
+
+        this.setAmountOfKeys(startIndex);
+        to.setAmountOfKeys(count);
     }
 
     public void setAmountOfKeys(int amountOfKeys) {

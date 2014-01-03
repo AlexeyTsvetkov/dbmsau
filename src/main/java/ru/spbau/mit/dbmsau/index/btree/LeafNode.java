@@ -30,12 +30,7 @@ public class LeafNode extends Node {
             if (nodeData.getAmountOfKeys() > nodeData.getOrder()) {
                 newLeaf = bTree.getNewNode(true);
 
-                for (int i = nodeData.getAmountOfKeys() / 2; i < nodeData.getAmountOfKeys(); i++) {
-                    newLeaf.nodeData.addValue(nodeData.getValue(i));
-                    newLeaf.nodeData.addKey(nodeData.getKey(i));
-                }
-
-                nodeData.resize(nodeData.getAmountOfKeys() / 2);
+                this.nodeData.splitTo(newLeaf.getNodeData());
 
                 newLeaf.nodeData.setNextNodeId(nodeData.getNextNodeId());
                 newLeaf.nodeData.setPrevNodeId(this.nodeId);

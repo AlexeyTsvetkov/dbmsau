@@ -39,7 +39,7 @@ public class Page {
     }
 
     public byte[] getBytes() {
-        return data.byteBuffer.array();
+        return data.getBytes();
     }
 
     public void assignDataFrom(Page page) {

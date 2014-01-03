@@ -99,7 +99,6 @@ public class BTree extends ContextContainer {
         }
     }
 
-
     public int cmp(TreeTuple first, TreeTuple second) {
         int offset = 0;
         for (int i = 0; i < keyType.length; i++) {
@@ -121,20 +120,42 @@ public class BTree extends ContextContainer {
         return 0;
     }
 
+    public int cmp(TreeTuple first, Node node, int secondKeyId) {
+        int offset = 0;
+        for (int i = 0; i < keyType.length; i++) {
+            int cur = 0;
+            if (keyType[i].getType() == Type.TYPE_INTEGER) {
+                cur = Integer.compare(first.getInteger(offset), node.nodeData.getKeyInt(secondKeyId, offset));
+            } else {
+                int maxLength = keyType[i].getLength();
+                cur = first.getString(offset, maxLength).compareTo(node.nodeData.getKeyString(secondKeyId, offset, maxLength));
+            }
+
+            if (cur != 0) {
+                return cur;
+            }
+
+            offset += keyType[i].getSize();
+        }
+
+        return 0;
+    }
+
     public int findGuideIndex(Node node, TreeTuple key) {
         int b = 1;
         int e = node.nodeData.getAmountOfKeys() - 1;
 
         while (e - b > 0) {
             int c = (b + e) / 2;
-            if (cmp(key, node.nodeData.getKey(c)) >= 0) {
+
+            if (cmp(key, node, c) >= 0) {
                 b = c + 1;
             } else {
                 e = c;
             }
         }
 
-        if (e < 0 || cmp(key, node.nodeData.getKey(e)) >= 0) {
+        if (e < 0 || cmp(key, node, e) >= 0) {
             return node.nodeData.getAmountOfKeys() - 1;
         } else {
             return e - 1;
@@ -147,14 +168,15 @@ public class BTree extends ContextContainer {
 
         while (e - b > 0) {
             int c = (b + e) / 2;
-            if (cmp(key, node.nodeData.getKey(c)) > 0) {
+
+            if (cmp(key, node, c) > 0) {
                 b = c + 1;
             } else {
                 e = c;
             }
         }
 
-        if (e < 0 || cmp(key, node.nodeData.getKey(e)) > 0) {
+        if (e < 0 || cmp(key, node, e) > 0) {
             return node.nodeData.getAmountOfKeys();
         } else {
             return e;
@@ -244,7 +266,9 @@ public class BTree extends ContextContainer {
         if (loc.getIndex() < node.nodeData.getAmountOfKeys()) {
             return node.nodeData.getKey(loc.getIndex());
         } else {
-            if (node.nodeData.getNextNodeId() == NodeData.NO_NODE_ID) { return null; } else {
+            if (node.nodeData.getNextNodeId() == NodeData.NO_NODE_ID) {
+                return null;
+            } else {
                 return getLowerBoundKey(new ItemLocation(node.nodeData.getNextNodeId(), 0));
             }
         }
@@ -259,9 +283,8 @@ public class BTree extends ContextContainer {
         Node node = this.getNodeById(loc.nodeId, false);
 
         if (loc.getIndex() < node.nodeData.getAmountOfKeys()) {
-            TreeTuple foundKey = node.nodeData.getKey(loc.getIndex());
 
-            if (cmp(foundKey, key) == 0) {
+            if (cmp(key, node, loc.getIndex()) == 0) {
                 return node.nodeData.getValue(loc.getIndex());
             }
         }
@@ -275,9 +298,8 @@ public class BTree extends ContextContainer {
         Node node = this.getNodeById(loc.nodeId, true);
 
         if (loc.getIndex() < node.nodeData.getAmountOfKeys()) {
-            TreeTuple foundKey = node.nodeData.getKey(loc.getIndex());
 
-            if (cmp(foundKey, key) == 0) {
+            if (cmp(key, node, loc.getIndex()) == 0) {
                 node.nodeData.removeValue(loc.getIndex());
                 node.nodeData.removeKey(loc.getIndex());
             }
