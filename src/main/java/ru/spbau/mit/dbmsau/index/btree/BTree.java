@@ -69,7 +69,13 @@ public class BTree extends ContextContainer {
     }
 
     public Node getNewNode(boolean isLeaf) {
-        Page page = context.getPageManager().allocatePage();
+        return getNewNode(
+            context.getPageManager().allocatePage(),
+            isLeaf
+        );
+    }
+
+    public Node getNewNode(Page page, boolean isLeaf) {
         Node newNode;
 
         if (isLeaf) {
@@ -149,15 +155,20 @@ public class BTree extends ContextContainer {
 
         // Create new root?
         if (newNode != null) {
-            Node newRoot = getNewNode(false);
+            Page rootCopyPage = context.getPageManager().allocatePage();
+            rootCopyPage.assignDataFrom(root.getNodeData().dataPage);
+            context.getPageManager().releasePage(rootCopyPage);
 
-            newRoot.nodeData.addValue(0, getNewNodeIdTuple(rootId));
+            root.getNodeData().dataPage.clearData();
+            Node newRoot = getNewNode(root.getNodeData().dataPage, false);
+
+            newRoot.nodeData.addValue(0, getNewNodeIdTuple(rootCopyPage.getId()));
             newRoot.nodeData.setAmountOfKeys(1);
 
             newRoot.nodeData.addValue(1, getNewNodeIdTuple(newNode.nodeId));
             newRoot.nodeData.addKey(1, newNode.nodeData.getKey(0));
 
-            rootId = newRoot.nodeId;
+            assert rootId == newRoot.nodeId;
 
             releaseNode(newRoot);
             releaseNode(newNode);
