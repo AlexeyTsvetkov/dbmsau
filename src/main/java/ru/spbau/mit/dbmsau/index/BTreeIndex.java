@@ -144,8 +144,8 @@ public class BTreeIndex extends Index {
 
         private TableRecord getTableRecord(int pageId, int slotIndex) {
             currentRecordPage = new TableRecordsPage(
-                    table,
-                    context.getPageManager().getPageById(pageId, false)
+                table,
+                context.getPageManager().getPageById(pageId, false)
             );
 
             return currentRecordPage.getTableRecordFromSlot(slotIndex);
@@ -184,11 +184,10 @@ public class BTreeIndex extends Index {
         }
 
         private void moveToKey() {
-            if (currentLoc == null)
-                return;
+            if (currentLoc == null) { return; }
 
             while (currentLoc.getIndex() >= currentNode.getNodeData().getAmountOfKeys() &&
-                    currentNode.getNodeData().getNextNodeId() != NodeData.NO_NODE_ID) {
+                currentNode.getNodeData().getNextNodeId() != NodeData.NO_NODE_ID) {
                 currentNode = btree.getNodeById(currentNode.getNodeData().getNextNodeId(), false);
                 currentLoc.setNodeId(currentNode.getNodeId());
                 currentLoc.setIndex(0);

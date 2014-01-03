@@ -1,19 +1,14 @@
 package ru.spbau.mit.dbmsau.index;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import ru.spbau.mit.dbmsau.BaseTest;
 import ru.spbau.mit.dbmsau.index.btree.BTree;
 import ru.spbau.mit.dbmsau.index.btree.TreeTuple;
 import ru.spbau.mit.dbmsau.pages.Page;
 import ru.spbau.mit.dbmsau.relation.Type;
-import ru.spbau.mit.dbmsau.table.TestTableTest;
 
 import java.util.*;
-import java.util.concurrent.ThreadFactory;
 
-import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
 
 public class BTreeTest extends BaseTest {

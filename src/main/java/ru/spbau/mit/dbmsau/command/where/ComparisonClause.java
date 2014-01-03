@@ -1,6 +1,9 @@
 package ru.spbau.mit.dbmsau.command.where;
 
-import ru.spbau.mit.dbmsau.relation.*;
+import ru.spbau.mit.dbmsau.relation.ColumnAccessor;
+import ru.spbau.mit.dbmsau.relation.Relation;
+import ru.spbau.mit.dbmsau.relation.RelationRecord;
+import ru.spbau.mit.dbmsau.relation.WhereMatcher;
 import ru.spbau.mit.dbmsau.table.SemanticValidator;
 
 public class ComparisonClause implements WhereMatcher {

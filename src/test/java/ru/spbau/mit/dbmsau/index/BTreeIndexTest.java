@@ -10,7 +10,7 @@ import ru.spbau.mit.dbmsau.table.TestTableTest;
 public class BTreeIndexTest extends TestTableTest {
     private String[] getShouldBeRow(int id) {
         if (id <= 5) {
-            return defaultContent[id/2];
+            return defaultContent[id / 2];
         }
 
         return new String[]{
@@ -123,7 +123,7 @@ public class BTreeIndexTest extends TestTableTest {
             index.buildRecordSet(indexQuery)
         );
 
-        shouldBe = new String[to - from + 4 - (3000-from+3)][];
+        shouldBe = new String[to - from + 4 - (3000 - from + 3)][];
 
         shouldBe[0] = getShouldBeRow(1);
         cnt = 1;

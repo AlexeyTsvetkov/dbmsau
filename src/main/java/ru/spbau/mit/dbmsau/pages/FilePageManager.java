@@ -22,8 +22,8 @@ public class FilePageManager extends PageManager {
     private PagesList emptyPagesList;
 
     private boolean[] recentlyUsedBits = new boolean[MAX_PAGES_IN_CACHE];
-    private Page[]    pagesInCircle = new Page[MAX_PAGES_IN_CACHE];
-    private int       circlePointer = 0;
+    private Page[] pagesInCircle = new Page[MAX_PAGES_IN_CACHE];
+    private int circlePointer = 0;
 
     public FilePageManager(Context context) {
         super(context);
@@ -88,7 +88,7 @@ public class FilePageManager extends PageManager {
 
     private void kickPageFromCircle() {
         while (recentlyUsedBits[circlePointer] ||
-                (pagesInCircle[circlePointer] != null && isPageBusy(pagesInCircle[circlePointer].getId()))
+            (pagesInCircle[circlePointer] != null && isPageBusy(pagesInCircle[circlePointer].getId()))
             ) {
             recentlyUsedBits[circlePointer] = false;
             circlePointer = (circlePointer + 1) % MAX_PAGES_IN_CACHE;

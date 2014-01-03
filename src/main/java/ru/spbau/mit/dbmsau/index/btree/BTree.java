@@ -2,7 +2,6 @@ package ru.spbau.mit.dbmsau.index.btree;
 
 import ru.spbau.mit.dbmsau.Context;
 import ru.spbau.mit.dbmsau.ContextContainer;
-import ru.spbau.mit.dbmsau.index.IndexQueryRange;
 import ru.spbau.mit.dbmsau.pages.Page;
 import ru.spbau.mit.dbmsau.relation.RelationRecord;
 import ru.spbau.mit.dbmsau.relation.Type;
@@ -126,38 +125,40 @@ public class BTree extends ContextContainer {
         int b = 1;
         int e = node.nodeData.getAmountOfKeys() - 1;
 
-        while(e-b>0)
-        {
-            int c = (b+e)/2;
-            if (cmp(key, node.nodeData.getKey(c)) >= 0)
-                b=c+1;
-            else
-                e=c;
+        while (e - b > 0) {
+            int c = (b + e) / 2;
+            if (cmp(key, node.nodeData.getKey(c)) >= 0) {
+                b = c + 1;
+            } else {
+                e = c;
+            }
         }
 
-        if(e < 0 || cmp(key, node.nodeData.getKey(e)) >= 0)
+        if (e < 0 || cmp(key, node.nodeData.getKey(e)) >= 0) {
             return node.nodeData.getAmountOfKeys() - 1;
-        else
+        } else {
             return e - 1;
+        }
     }
 
     public int findInsertIndex(Node node, TreeTuple key) {
         int b = 0;
         int e = node.nodeData.getAmountOfKeys() - 1;
 
-        while(e-b>0)
-        {
-            int c = (b+e)/2;
-            if (cmp(key, node.nodeData.getKey(c)) > 0)
-                b=c+1;
-            else
-                e=c;
+        while (e - b > 0) {
+            int c = (b + e) / 2;
+            if (cmp(key, node.nodeData.getKey(c)) > 0) {
+                b = c + 1;
+            } else {
+                e = c;
+            }
         }
 
-        if(e < 0 || cmp(key, node.nodeData.getKey(e)) > 0)
+        if (e < 0 || cmp(key, node.nodeData.getKey(e)) > 0) {
             return node.nodeData.getAmountOfKeys();
-        else
+        } else {
             return e;
+        }
     }
 
     public void put(TreeTuple key, TreeTuple value) {
@@ -243,10 +244,9 @@ public class BTree extends ContextContainer {
         if (loc.getIndex() < node.nodeData.getAmountOfKeys()) {
             return node.nodeData.getKey(loc.getIndex());
         } else {
-            if (node.nodeData.getNextNodeId() == NodeData.NO_NODE_ID)
-                return null;
-            else
+            if (node.nodeData.getNextNodeId() == NodeData.NO_NODE_ID) { return null; } else {
                 return getLowerBoundKey(new ItemLocation(node.nodeData.getNextNodeId(), 0));
+            }
         }
     }
 
