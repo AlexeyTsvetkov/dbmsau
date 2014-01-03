@@ -146,7 +146,6 @@ public class BTree extends ContextContainer {
         // Insert the new key/value into the tree.
         Node root = getNodeById(rootId, true);
         Node newNode = root.put(key, value);
-        releaseNode(root);
 
         // Create new root?
         if (newNode != null) {
@@ -163,6 +162,8 @@ public class BTree extends ContextContainer {
             releaseNode(newRoot);
             releaseNode(newNode);
         }
+
+        releaseNode(root);
     }
 
     public boolean containsKey(TreeTuple key) {
