@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 public class RecordsPage extends Page implements Iterable<Record> {
     private int recordsLength;
+    final static int takenRecordsCountOffset = PageManager.PAGE_SIZE-4;
 
     public RecordsPage(Page page, int recordsLength) {
         super(page);
@@ -15,7 +16,7 @@ public class RecordsPage extends Page implements Iterable<Record> {
     }
 
     public int getMaxRecordsCount() {
-        return (8 * PageManager.PAGE_SIZE) / (8 * getRecordsLength() + 1);
+        return (8 * PageManager.PAGE_SIZE - 32) / (8 * getRecordsLength() + 1);
     }
 
     private int getBitmapOffset() {
@@ -40,6 +41,10 @@ public class RecordsPage extends Page implements Iterable<Record> {
             int byteNumber = getBitmapSlotByteIndex(slotIndex);
             byte newValue = (byte) (getByteBuffer().get(byteNumber) ^ (1 << (slotIndex % 8)));
             getByteBuffer().put(byteNumber, newValue);
+
+            int taken = getByteBuffer().getInt(takenRecordsCountOffset);
+            taken += isUsed ? 1 : -1;
+            getByteBuffer().putInt(takenRecordsCountOffset, taken);
         }
     }
 
@@ -52,14 +57,8 @@ public class RecordsPage extends Page implements Iterable<Record> {
     }
 
     protected int getFreeSlotsCount() {
-        int counter = 0;
-        for (int slotIndex = 0; slotIndex < getMaxRecordsCount(); slotIndex++) {
-            if (!isSlotUsed(slotIndex)) {
-                counter++;
-            }
-        }
-
-        return counter;
+        int taken = getByteBuffer().getInt(takenRecordsCountOffset);
+        return getMaxRecordsCount() - taken;
     }
 
     public boolean isEmpty() {
