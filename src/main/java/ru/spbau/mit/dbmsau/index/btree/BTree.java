@@ -123,25 +123,41 @@ public class BTree extends ContextContainer {
     }
 
     public int findGuideIndex(Node node, TreeTuple key) {
-        for (int i = 1; i < node.nodeData.getAmountOfKeys(); i++) {
-            if (cmp(key, node.nodeData.getKey(i)) < 0) {
-                return i - 1;
-            }
+        int b = 1;
+        int e = node.nodeData.getAmountOfKeys() - 1;
+
+        while(e-b>0)
+        {
+            int c = (b+e)/2;
+            if (cmp(key, node.nodeData.getKey(c)) >= 0)
+                b=c+1;
+            else
+                e=c;
         }
 
-        return node.nodeData.getAmountOfKeys() - 1;
+        if(e < 0 || cmp(key, node.nodeData.getKey(e)) >= 0)
+            return node.nodeData.getAmountOfKeys() - 1;
+        else
+            return e - 1;
     }
 
     public int findInsertIndex(Node node, TreeTuple key) {
-        int insertIndex = 0;
-        while (insertIndex < node.nodeData.getAmountOfKeys()) {
-            if (cmp(key, node.nodeData.getKey(insertIndex)) <= 0) {
-                break;
-            }
+        int b = 0;
+        int e = node.nodeData.getAmountOfKeys() - 1;
 
-            insertIndex++;
+        while(e-b>0)
+        {
+            int c = (b+e)/2;
+            if (cmp(key, node.nodeData.getKey(c)) > 0)
+                b=c+1;
+            else
+                e=c;
         }
-        return insertIndex;
+
+        if(e < 0 || cmp(key, node.nodeData.getKey(e)) > 0)
+            return node.nodeData.getAmountOfKeys();
+        else
+            return e;
     }
 
     public void put(TreeTuple key, TreeTuple value) {
