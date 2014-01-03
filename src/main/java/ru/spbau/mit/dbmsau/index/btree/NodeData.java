@@ -5,6 +5,9 @@ import ru.spbau.mit.dbmsau.pages.PageManager;
 
 public class NodeData {
     public static final int NO_NODE_ID = -1;
+    public static int allCnt = 0;
+    public static int guideCnt = 0;
+    public static int leafCnt = 0;
 
     Page dataPage;
 
@@ -57,11 +60,11 @@ public class NodeData {
     }
 
     private void shift(int startOffset, int endOffset, int elemSize, int direction) {
-        byte[] element = new byte[elemSize];
 
         while (endOffset != startOffset) {
-            dataPage.getByteBuffer().get(endOffset + direction * elemSize, element);
-            dataPage.getByteBuffer().put(endOffset, element);
+
+            System.arraycopy(dataPage.getBytes(), endOffset + direction * elemSize,
+                    dataPage.getBytes(), endOffset, elemSize);
 
             endOffset = endOffset + direction * elemSize;
         }
