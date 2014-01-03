@@ -2,6 +2,7 @@ package ru.spbau.mit.dbmsau;
 
 import ru.spbau.mit.dbmsau.command.AbstractSQLCommand;
 import ru.spbau.mit.dbmsau.command.SQLCommandResult;
+import ru.spbau.mit.dbmsau.command.exception.CommandExecutionException;
 import ru.spbau.mit.dbmsau.exception.UserError;
 import ru.spbau.mit.dbmsau.syntax.SyntaxAnalyzer;
 
@@ -58,6 +59,9 @@ public class App {
                         System.out.println("is not ok");
                     }
                 } catch (UserError error) {
+                    System.out.println(error.getMessage());
+                    continue;
+                } catch (CommandExecutionException error) {
                     System.out.println(error.getMessage());
                     continue;
                 }
