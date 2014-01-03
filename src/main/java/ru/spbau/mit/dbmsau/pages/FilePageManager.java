@@ -9,9 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Queue;
 
 public class FilePageManager extends PageManager {
     private static final String dataFilename = "data.db";
@@ -20,9 +18,12 @@ public class FilePageManager extends PageManager {
     private static final int MAX_PAGES_IN_CACHE = 50;
 
     private RandomAccessFile dataFile;
-    private Map<Integer, Page> cache = new HashMap<>();
+    private Map<Integer, Integer> cache = new HashMap<>();
     private PagesList emptyPagesList;
-    private Queue<Page> usageOrder = new LinkedList<>();
+
+    private boolean[] recentlyUsedBits = new boolean[MAX_PAGES_IN_CACHE];
+    private Page[]    pagesInCircle = new Page[MAX_PAGES_IN_CACHE];
+    private int       circlePointer = 0;
 
     public FilePageManager(Context context) {
         super(context);
@@ -67,41 +68,37 @@ public class FilePageManager extends PageManager {
 
     protected Page doGetPageById(int id) {
         if (cache.containsKey(id)) {
-            return cache.get(id);
+            int pageInCirclePlace = cache.get(id);
+            recentlyUsedBits[pageInCirclePlace] = true;
+
+            return pagesInCircle[pageInCirclePlace];
         }
 
-        if (cache.size() >= MAX_PAGES_IN_CACHE) {
-            this.shrinkCache(MAX_PAGES_IN_CACHE - 1);
-        }
+        kickPageFromCircle();
 
         Page page = readPageFromFile(id);
 
-        this.usageOrder.add(page);
-        this.cache.put(id, page);
+        this.cache.put(id, circlePointer);
+        recentlyUsedBits[circlePointer] = true;
+        pagesInCircle[circlePointer] = page;
+        circlePointer = (circlePointer + 1) % MAX_PAGES_IN_CACHE;
 
         return page;
     }
 
-    private void shrinkCache(int desiredSize) {
-        if (usageOrder.size() == 0) {
-            return;
+    private void kickPageFromCircle() {
+        while (recentlyUsedBits[circlePointer] ||
+                (pagesInCircle[circlePointer] != null && isPageBusy(pagesInCircle[circlePointer].getId()))
+            ) {
+            recentlyUsedBits[circlePointer] = false;
+            circlePointer = (circlePointer + 1) % MAX_PAGES_IN_CACHE;
         }
 
-        while (this.cache.size() > desiredSize) {
-            Page firstInFirstOut = usageOrder.poll();
+        if (pagesInCircle[circlePointer] != null) {
+            this.cache.remove(pagesInCircle[circlePointer].getId());
 
-            int pageId = firstInFirstOut.getId();
-
-            if (isPageBusy(pageId)) {
-                usageOrder.add(firstInFirstOut);
-                continue;
-            }
-
-            if (this.cache.containsKey(pageId)) {
-                this.cache.remove(pageId);
-            }
             try {
-                this.savePage(firstInFirstOut);
+                this.savePage(pagesInCircle[circlePointer]);
             } catch (IOException e) {
                 throw new PageManagerException("Saving error: " + e.getMessage());
             }
@@ -126,7 +123,9 @@ public class FilePageManager extends PageManager {
             throw new Error("freeing of system page");
         }
 
+        recentlyUsedBits[cache.get(pageId)] = false;
         cache.remove(pageId);
+
         emptyPagesList.put(pageId);
     }
 
@@ -167,8 +166,8 @@ public class FilePageManager extends PageManager {
         super.onQuit();
 
         try {
-            for (Page p : cache.values()) {
-                savePage(p);
+            for (int placeInCircle : cache.values()) {
+                savePage(pagesInCircle[placeInCircle]);
             }
 
             dataFile.close();
