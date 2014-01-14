@@ -98,19 +98,14 @@ public class PagesList implements Iterable<Page> {
     public void put(int newPageId) {
         DirectoryPage page = getHeadPage(true);
 
-        while (page.isDirectoryFull()) {
-            DirectoryPage oldPage = page;
-            DirectoryPage nextPage = getNextPage(page, true);
+        if (page.isDirectoryFull()) {
+            Page allocatedPage = context.getPageManager().allocatePage();
+            allocatedPage.assignDataFrom(page);
 
-            if (nextPage != null) {
-                page = nextPage;
-            } else {
-                Page allocatedPage = context.getPageManager().allocatePage();
-                page = initNewLastPage(allocatedPage);
-                oldPage.setNextDirectoryPageId(page.getId());
-            }
+            page.clearData();
+            page.getClearRecord().setIntegerValue(0, allocatedPage.getId());
 
-            context.getPageManager().releasePage(oldPage);
+            context.getPageManager().releasePage(allocatedPage);
         }
 
         page.getClearRecord().setIntegerValue(0, newPageId);
