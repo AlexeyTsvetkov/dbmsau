@@ -3,7 +3,9 @@ package ru.spbau.mit.dbmsau.pages;
 import org.junit.Test;
 import ru.spbau.mit.dbmsau.BaseTest;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 
@@ -26,20 +28,24 @@ public class PagesListTest extends BaseTest {
         assertThat(list.pop(), is(1000));
         checkBusyPages();
 
+        Set<Integer> testSet = new HashSet<>();
+
         for (int i = 1000; i < 5000; i++) {
             list.put(i);
             checkBusyPages();
+
+            testSet.add(i);
         }
 
         for (int i = 1000; i < 5000; i++) {
-            if (i == 1990) {
-                assertThat(list.peek(), is(i));
-            } else {
-                assertThat(list.peek(), is(i));
-                checkBusyPages();
-            }
-            assertThat(list.pop(), is(i));
+            assertTrue(testSet.contains(list.peek()));
             checkBusyPages();
+
+            int curVal = list.pop();
+            assertTrue(testSet.contains(curVal));
+            checkBusyPages();
+
+            testSet.remove(curVal);
         }
 
         checkBusyPages();
@@ -64,18 +70,25 @@ public class PagesListTest extends BaseTest {
 
         assertFalse(it.hasNext());
 
+        Set<Integer> testSet = new HashSet<>();
         for (int i = 1000; i < 5000; i++) {
             list.put(i);
+            testSet.add(i);
         }
 
         iterateList(list);
         iterateList(list);
 
         for (int i = 1000; i < 5000; i++) {
-            assertThat(list.peek(), is(i));
-            assertThat(list.pop(), is(i));
+            int curVal = list.peek();
+
+            assertTrue(testSet.contains(curVal));
+            assertThat(list.pop(), is(curVal));
+            testSet.remove(curVal);
         }
 
+        assertTrue(testSet.isEmpty());
+        
         assertNull(list.peek());
         assertNull(list.pop());
 
@@ -87,8 +100,10 @@ public class PagesListTest extends BaseTest {
         PagesList list = new PagesList(HEAD_PAGE_ID, context);
         list.initList();
 
+        Set<Integer> testSet = new HashSet<>();
         for (int i = 1000; i < 5000; i++) {
             list.put(i);
+            testSet.add(i);
         }
 
         Iterator<Page> it = list.iterator();
@@ -97,10 +112,12 @@ public class PagesListTest extends BaseTest {
             assertTrue(it.hasNext());
             Page next = it.next();
 
-            assertThat(next.getId(), is(i));
+            int curVal = next.getId();
+            assertTrue(testSet.contains(curVal));
 
-            if (i > 1000 && i < 4000) {
+            if (curVal > 1000 && curVal < 4000) {
                 it.remove();
+                testSet.remove(curVal);
             }
         }
 
@@ -113,9 +130,12 @@ public class PagesListTest extends BaseTest {
             assertTrue(it.hasNext());
             Page next = it.next();
 
-            assertThat(next.getId(), is(i));
+            int curVal = next.getId();
+            assertTrue(testSet.contains(curVal));
+            testSet.remove(curVal);
         }
 
+        assertTrue(testSet.isEmpty());
         assertFalse(it.hasNext());
         assertFalse(it.hasNext());
 
@@ -126,12 +146,21 @@ public class PagesListTest extends BaseTest {
     private void iterateList(PagesList list) {
         Iterator<Page> it = list.iterator();
 
+        Set<Integer> testSet = new HashSet<>();
+        for (int i = 1000; i < 5000; i++) {
+            testSet.add(i);
+        }
+
         for (int i = 1000; i < 5000; i++) {
             assertTrue(it.hasNext());
             Page next = it.next();
 
-            assertThat(next.getId(), is(i));
+            int curVal = next.getId();
+            assertTrue(testSet.contains(curVal));
+            testSet.remove(curVal);
         }
+
+        assertTrue(testSet.isEmpty());
 
         assertFalse(it.hasNext());
         assertFalse(it.hasNext());
